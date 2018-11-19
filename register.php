@@ -35,7 +35,9 @@
                 <div class="col-md-12">
                     <nav class="navbar navbar-expand-lg navbar-light">
                         <a class="navbar-brand" href="index.php">Calgary Reviews</a>
-                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                                data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+                                aria-label="Toggle navigation">
                             <span class="icon-menu"></span>
                         </button>
                         <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
@@ -43,32 +45,29 @@
                                 <li class="nav-item active">
                                     <a class="nav-link" href="#">Browse</a>
                                 </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Listing
-                                        <span class="icon-arrow-down"></span>
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                    </div>
-                                </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Pages
-                                        <span class="icon-arrow-down"></span>
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                    </div>
-                                </li>
-                                <li class="nav-item active">
-                                    <a class="nav-link" href="#">About</a>
-                                </li>
-                                <li><a href="#" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add Listing</a></li>
+                                <?php if (isset($_SESSION['user'])) : ?>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown"
+                                           aria-haspopup="true" aria-expanded="false">
+                                            <?php echo $_SESSION['user']['username']; ?>
+                                            <span class="icon-arrow-down"></span>
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                            <a class="dropdown-item" href="#">Profile</a>
+                                            <a class="dropdown-item" href="#">Lists</a>
+                                            <a class="dropdown-item" href="#">Photos</a>
+                                        </div>
+                                    </li>
+                                <?php else: ?>
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="register.php">Register</a>
+                                    </li>
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="login.php">Login</a>
+                                    </li>
+                                <?php endif ?>
+                                <li><a href="#" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
+                                        Listing</a></li>
                             </ul>
                         </div>
                     </nav>
@@ -87,15 +86,11 @@
             <input type="text" name="username" value="<?php echo $username; ?>">
         </div>
         <div class="reg-input">
-            <label>Email</label>
-            <input type="email" name="email" value="<?php echo $email; ?>">
-        </div>
-        <div class="reg-input">
-            <label>First name</label>
+            <label>First name (Optional)</label>
             <input type="text" name="fname" value="<?php echo $fname; ?>">
         </div>
         <div class="reg-input">
-            <label>Last name</label>
+            <label>Last name (Optional)</label>
             <input type="text" name="lname" value="<?php echo $lname; ?>">
         </div>
         <div class="reg-input">
