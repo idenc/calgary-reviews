@@ -17,6 +17,11 @@ $fname = "";
 $lname = "";
 $errors = array();
 
+/*
+ * =========================================================
+ * USER REGISTRATION AND LOGIN FUNCTIONS
+ * =========================================================
+ */
 // call the register() function if register_btn is clicked
 if (isset($_POST['register_btn'])) {
     register();
@@ -31,8 +36,10 @@ function register()
     // receive all input values from the form. Call the e() function
     // defined below to escape form values
     $username = e($_POST['username']);
-    $fname = e($_POST['fname']);
-    $lname = e($_POST['lname']);
+    if (isset($_POST['fname']) && isset($_POST['lname'])) {
+        $fname = e($_POST['fname']);
+        $lname = e($_POST['lname']);
+    }
     $password_1 = e($_POST['password_1']);
     $password_2 = e($_POST['password_2']);
 
@@ -192,5 +199,28 @@ function isAdmin()
         return true;
     }else{
         return false;
+    }
+}
+
+/*
+ * =========================================================
+ * RESTAURANT FUNCTIONS
+ * =========================================================
+ */
+
+function generatePhotos($rid) {
+    global $db;
+
+    $query = "SELECT p.file_path
+              FROM photo AS p, uploads AS u
+              WHERE p.photo_id = u.photoid AND u.r_id = $rid";
+    $query = mysqli_query($db, $query);
+
+    while ($temp = mysqli_fetch_array($query)) {
+        echo "<div class='swiper-slide'>";
+        echo "<a href=$temp[0] class='grid image-link'>";
+        echo "<img src=$temp[0] class='img-fluid' alt='#'>";
+        echo "</a>";
+        echo "</div>";
     }
 }

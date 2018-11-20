@@ -28,65 +28,62 @@
 </head>
 
 <body>
-    <!--============================= HEADER =============================-->
-    <div class="dark-bg sticky-top">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <nav class="navbar navbar-expand-lg navbar-light">
-                        <a class="navbar-brand" href="index.php">Listing</a>
-                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="icon-menu"></span>
-            </button>
-                        <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
-                            <ul class="navbar-nav">
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                   Explore
-                   <span class="icon-arrow-down"></span>
-                 </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                    </div>
-                                </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Listing
-                  <span class="icon-arrow-down"></span>
-                </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                    </div>
-                                </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Pages
-                  <span class="icon-arrow-down"></span>
-                </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                    </div>
-                                </li>
-                                <li class="nav-item active">
-                                    <a class="nav-link" href="#">About</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Blog</a>
-                                </li>
-                                <li><a href="#" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add Listing</a></li>
-                            </ul>
-                        </div>
-                    </nav>
-                </div>
+<!--============================= HEADER =============================-->
+<div class="dark-bg sticky-top">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <a class="navbar-brand" href="index.php">Browse</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="icon-menu"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+                        <ul class="navbar-nav">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="#">Browse</a>
+                            </li>
+                            <?php if (isset($_SESSION['user'])) : ?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown"
+                                   aria-haspopup="true" aria-expanded="false">
+                                    <?php echo $_SESSION['user']['username']; ?>
+                                    <small>
+                                        <i style="color: #888;">(<?php echo ucfirst($_SESSION['user']['user_type']); ?>)</i>
+                                    </small>
+                                    <span class="icon-arrow-down"></span>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" href="#">Profile</a>
+                                    <a class="dropdown-item" href="#">Lists</a>
+                                    <a class="dropdown-item" href="#">Photos</a>
+                                </div>
+                            </li>
+                            <?php if (isAdmin()) : ?>
+                            <li class="nav-item active">
+                                <a class="nav-link" href="admin/create_user.php" style="color: red;">Create User</a>
+                            </li>
+                            <?php endif ?>
+                            <li class="nav-item active">
+                                <a class="nav-link" href="index.php?logout='1'" style="color: red;">Logout</a>
+                            </li>
+                            <?php else: ?>
+                            <li class="nav-item active">
+                                <a class="nav-link" href="register.php">Register</a>
+                            </li>
+                            <li class="nav-item active">
+                                <a class="nav-link" href="login.php">Login</a>
+                            </li>
+                            <?php endif ?>
+                            <li><a href="#" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
+                                Listing</a></li>
+                        </ul>
+                    </div>
+                </nav>
             </div>
         </div>
     </div>
+</div>
     <!--//END HEADER -->
     <!--============================= DETAIL =============================-->
     <section>
@@ -186,7 +183,7 @@
                     <div class="row light-bg detail-options-wrap">
                         <div class="col-sm-6 col-lg-12 col-xl-6 featured-responsive">
                             <div class="featured-place-wrap">
-                                <a href="detail.html">
+                                <a href="detail.php">
                                     <img src="images/featured1.jpg" class="img-fluid" alt="#">
                                     <span class="featured-rating-orange ">6.5</span>
                                     <div class="featured-title-box">
@@ -217,7 +214,7 @@
                         </div>
                         <div class="col-sm-6 col-lg-12 col-xl-6 featured-responsive">
                             <div class="featured-place-wrap">
-                                <a href="detail.html">
+                                <a href="detail.php">
                                     <img src="images/featured2.jpg" class="img-fluid" alt="#">
                                     <span class="featured-rating-green">9.5</span>
                                     <div class="featured-title-box">
@@ -249,7 +246,7 @@
 
                         <div class="col-sm-6 col-lg-12 col-xl-6 featured-responsive">
                             <div class="featured-place-wrap">
-                                <a href="detail.html">
+                                <a href="detail.php">
                                     <img src="images/featured3.jpg" class="img-fluid" alt="#">
                                     <span class="featured-rating">3.2</span>
                                     <div class="featured-title-box">
@@ -280,7 +277,7 @@
                         </div>
                         <div class="col-sm-6 col-lg-12 col-xl-6 featured-responsive">
                             <div class="featured-place-wrap">
-                                <a href="detail.html">
+                                <a href="detail.php">
                                     <img src="images/featured4.jpg" class="img-fluid" alt="#">
                                     <span class="featured-rating-green">9.5</span>
                                     <div class="featured-title-box">
@@ -309,13 +306,6 @@
                                 </a>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-5 responsive-wrap map-wrap">
-                    <div class="map-fix">
-                        <!-- data-toggle="affix" -->
-                        <!-- Google map will appear here! Edit the Latitude, Longitude and Zoom Level below using data-attr-*  -->
-                        <div id="map" data-lat="40.674" data-lon="-73.945" data-zoom="14"></div>
                     </div>
                 </div>
             </div>
@@ -352,39 +342,6 @@
     <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
 
-
-    <script>
-        $(".map-icon").click(function() {
-            $(".map-fix").toggle();
-        });
-    </script>
-    <script>
-        // Want to customize colors? go to snazzymaps.com
-        function myMap() {
-            var maplat = $('#map').data('lat');
-            var maplon = $('#map').data('lon');
-            var mapzoom = $('#map').data('zoom');
-            // Styles a map in night mode.
-            var map = new google.maps.Map(document.getElementById('map'), {
-                center: {
-                    lat: maplat,
-                    lng: maplon
-                },
-                zoom: mapzoom,
-                scrollwheel: false
-            });
-            var marker = new google.maps.Marker({
-                position: {
-                    lat: maplat,
-                    lng: maplon
-                },
-                map: map,
-                title: 'We are here!'
-            });
-        }
-    </script>
-    <!-- Map JS (Please change the API key below. Read documentation for more info) -->
-    <script src="https://maps.googleapis.com/maps/api/js?callback=myMap&key=AIzaSyADhmI9w7ReYHP2f_WNVP2MKOZ_mrmzy7A"></script>
 </body>
 
 </html>

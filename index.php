@@ -68,6 +68,11 @@ if(isset($_SESSION['admin_success'])) {
                                             <a class="dropdown-item" href="#">Photos</a>
                                         </div>
                                     </li>
+                                    <?php if (isAdmin()) : ?>
+                                        <li class="nav-item active">
+                                            <a class="nav-link" href="admin/create_user.php" style="color: red;">Create User</a>
+                                        </li>
+                                    <?php endif ?>
                                     <li class="nav-item active">
                                         <a class="nav-link" href="index.php?logout='1'" style="color: red;">Logout</a>
                                     </li>
@@ -232,7 +237,7 @@ if(isset($_SESSION['admin_success'])) {
         <div class="row">
             <div class="col-md-4 featured-responsive">
                 <div class="featured-place-wrap">
-                    <a href="detail.html">
+                    <a href="detail.php">
                         <img src="images/featured1.jpg" class="img-fluid" alt="#">
                         <span class="featured-rating-orange">6.5</span>
                         <div class="featured-title-box">
@@ -263,7 +268,7 @@ if(isset($_SESSION['admin_success'])) {
             </div>
             <div class="col-md-4 featured-responsive">
                 <div class="featured-place-wrap">
-                    <a href="detail.html">
+                    <a href="detail.php">
                         <img src="images/featured2.jpg" class="img-fluid" alt="#">
                         <span class="featured-rating-green">9.5</span>
                         <div class="featured-title-box">
@@ -294,7 +299,7 @@ if(isset($_SESSION['admin_success'])) {
             </div>
             <div class="col-md-4 featured-responsive">
                 <div class="featured-place-wrap">
-                    <a href="detail.html">
+                    <a href="detail.php">
                         <img src="images/featured3.jpg" class="img-fluid" alt="#">
                         <span class="featured-rating">3.2</span>
                         <div class="featured-title-box">
