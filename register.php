@@ -1,4 +1,10 @@
-<?php include('functions.php') ?>
+<?php include('functions.php')
+/**
+ * Code adapted from http://codewithawa.com/posts/admin-and-user-login-in-php-and-mysql-database
+ * User: Iden
+ * Date: 11/18/2018
+ * Time: 9:14 PM
+ */?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,7 +17,7 @@
     <meta name="description" content="#">
     <meta name="keywords" content="#">
     <!-- Page Title -->
-    <title>Listing &amp; Directory Website Template</title>
+    <title>Calgary Reviews</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- Google Fonts -->

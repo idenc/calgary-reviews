@@ -1,4 +1,11 @@
-<?php include('functions.php') ?>
+<?php
+include('functions.php');
+if(isset($_SESSION['admin_success'])) {
+    echo '<script language="javascript">';
+    echo $_SESSION['admin_success'];
+    echo '</script>';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,7 +18,7 @@
     <meta name="description" content="#">
     <meta name="keywords" content="#">
     <!-- Page Title -->
-    <title>Listing &amp; Directory Website Template</title>
+    <title>Calgary Reviews</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- Google Fonts -->
@@ -50,6 +57,9 @@
                                         <a class="nav-link" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown"
                                            aria-haspopup="true" aria-expanded="false">
                                             <?php echo $_SESSION['user']['username']; ?>
+                                            <small>
+                                                <i style="color: #888;">(<?php echo ucfirst($_SESSION['user']['user_type']); ?>)</i>
+                                            </small>
                                             <span class="icon-arrow-down"></span>
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
@@ -57,6 +67,9 @@
                                             <a class="dropdown-item" href="#">Lists</a>
                                             <a class="dropdown-item" href="#">Photos</a>
                                         </div>
+                                    </li>
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="index.php?logout='1'" style="color: red;">Logout</a>
                                     </li>
                                 <?php else: ?>
                                     <li class="nav-item active">
@@ -103,7 +116,7 @@
                                 </div>
                             </form>
                             <div class="slider-link">
-                                <a href="#">Browse Popular</a><span>or</span> <a href="#">Recently Addred</a>
+                                <a href="#">Browse Popular</a><span>or</span> <a href="#">Recently Added</a>
                             </div>
                         </div>
                     </div>
