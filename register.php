@@ -152,7 +152,7 @@
 
             $('.fixed').removeClass('is-sticky');
 
-        };
+        }
     });
 </script>
 </body>

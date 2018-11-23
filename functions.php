@@ -1,9 +1,7 @@
 <?php
 /**
- * Code adapted from http://codewithawa.com/posts/admin-and-user-login-in-php-and-mysql-database
+ * Sections of code adapted from http://codewithawa.com/posts/admin-and-user-login-in-php-and-mysql-database
  * User: Iden
- * Date: 11/18/2018
- * Time: 7:22 PM
  */
 
 session_start();
@@ -72,7 +70,7 @@ function register()
         } else {
             $query = "INSERT INTO user (username, user_type, password, fname, lname) 
 					  VALUES('$username', 'user', '$password', '$fname', '$lname')";
-            mysqli_query($db, $query);
+            $query = mysqli_query($db, $query);
 
             if ($query) {
                 // get id of the created user
@@ -222,5 +220,88 @@ function generatePhotos($rid) {
         echo "<img src=$temp[0] class='img-fluid' alt='#'>";
         echo "</a>";
         echo "</div>";
+    }
+}
+
+function generateTitle($rid) {
+    global $db;
+
+    $query = "SELECT name
+              FROM restaurant
+              WHERE r_id = $rid";
+    $query = mysqli_query($db, $query);
+    $temp = mysqli_fetch_array($query);
+    echo "<h5>$temp[0]</h5>";
+}
+
+function generateTicks($rid) {
+    global $db;
+
+    $query = "SELECT wifi, delivery, alcohol
+              FROM restaurant
+              WHERE r_id = $rid";
+    $query = mysqli_query($db, $query);
+    $temp = mysqli_fetch_array($query);
+    foreach($temp as $cname => $cvalue) {
+        if ($cvalue == 1 and ($cname == 'wifi' or $cname == 'delivery' or $cname == 'alcohol')) {
+            echo "<div class='col-md-4'>";
+            echo "<label class='custom-checkbox'>";
+            echo "<span class='ti-check-box'></span>";
+            echo "<span class='custom-control-description'>$cname</span>";
+            echo "</label>";
+            echo "</div>";
+        }
+    }
+}
+
+/*
+ * =========================================================
+ * REVIEW FUNCTIONS
+ * =========================================================
+ */
+
+// call the login() function if register_btn is clicked
+if (isset($_POST['review_btn'])) {
+    submit_review();
+}
+
+function submit_review() {
+    global $db, $errors;
+    $r_id = $_GET['r_id'];
+    $review_content = e($_POST['review_content']);
+    $review_rating  = e($_POST['review_rating']);
+    $review_cost    = e($_POST['review_cost']);
+
+    // form validation: ensure that the form is correctly filled
+    if (empty($review_content)) {
+        array_push($errors, "Review is empty");
+    }
+
+    if (empty($review_rating)) {
+        array_push($errors, "Rating is empty");
+    }
+
+    if (empty($review_cost)) {
+        array_push($errors, "Cost Rating is empty");
+    }
+
+    if (empty($r_id)) {
+        array_push($errors, "Error on restaurant");
+    }
+
+    $logged_in_user_id = $_SESSION['user']['username'];
+
+    if (count($errors) == 0) {
+        $query = "INSERT INTO review (content, rating, r_id, user_id, cost) 
+				  VALUES('$review_content', $review_rating, $r_id, '$logged_in_user_id',
+				   $review_cost)";
+        $query = mysqli_query($db, $query);
+
+        if ($query) {
+            header('location: detail.php?r_id='.$r_id);
+        } else {
+            echo $query;
+            array_push($errors, "Error occurred");
+        }
     }
 }

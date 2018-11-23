@@ -117,9 +117,8 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <h5>Tasty Hand-Pulled Noodles</h5>
+                <?php generateTitle($r_id);?>
                 <p><span>$$$</span>$$</p>
-                <p class="reserve-description">Innovative cooking, paired with fine wines in a modern setting.</p>
             </div>
             <div class="col-md-6">
                 <div class="reserve-seat-block">
@@ -127,7 +126,7 @@
                         <span>9.5</span>
                     </div>
                     <div class="review-btn">
-                        <a href="#" class="btn btn-outline-danger">WRITE A REVIEW</a>
+                        <a href="review.php?r_id=<?php echo $r_id?>" class="btn btn-outline-danger">WRITE A REVIEW</a>
                         <span>34 reviews</span>
                     </div>
                     <div class="reserve-btn">
@@ -147,56 +146,8 @@
         <div class="row">
             <div class="col-md-8 responsive-wrap">
                 <div class="booking-checkbox_wrap">
-                    <div class="booking-checkbox">
-                        <p>Tasty Hand-Pulled Noodles is a 1950s style diner located in Madison, Wisconsin. Opened in
-                            1946 by Mickey Weidman, and located just across the street from Camp Randall Stadium, it has
-                            become a popular game day tradition amongst
-                            many Badger fans. The diner is well known for its breakfast selections, especially the
-                            Scrambler, which is a large mound of potatoes, eggs, cheese, gravy, and a patrons’ choice of
-                            other toppings.</p>
-                        <p>Mickies has also been featured on “Todd’s Taste of the Town” during one of ESPN’s college
-                            football broadcasts. We are one of the best Chinese restaurants in the New York, New York
-                            area. We have been recognized for our outstanding
-                            Chinese & Asian cuisine, excellent Chinese menu, and great restaurant specials. We are one
-                            of the best Chinese restaurants in the New York, New York area. We have been recognized for
-                            our outstanding Chinese & Asian cuisine,
-                            excellent Chinese menu, and great restaurant specials.</p>
-                        <hr>
-                    </div>
                     <div class="row">
-                        <div class="col-md-4">
-                            <label class="custom-checkbox">
-                                <span class="ti-check-box"></span>
-                                <span class="custom-control-description">Bike Parking</span>
-                            </label></div>
-                        <div class="col-md-4">
-                            <label class="custom-checkbox">
-                                <span class="ti-check-box"></span>
-                                <span class="custom-control-description">Wireless Internet  </span>
-                            </label>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="custom-checkbox">
-                                <span class="ti-check-box"></span>
-                                <span class="custom-control-description">Smoking Allowed  </span>
-                            </label></div>
-                        <div class="col-md-4">
-                            <label class="custom-checkbox">
-                                <span class="ti-check-box"></span>
-                                <span class="custom-control-description">Street Parking</span>
-                            </label>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="custom-checkbox">
-                                <span class="ti-check-box"></span>
-                                <span class="custom-control-description">Special</span>
-                            </label></div>
-                        <div class="col-md-4">
-                            <label class="custom-checkbox">
-                                <span class="ti-check-box"></span>
-                                <span class="custom-control-description">Accepts Credit cards</span>
-                            </label>
-                        </div>
+                        <?php generateTicks($r_id);?>
                     </div>
                 </div>
                 <div class="booking-checkbox_wrap mt-4">
