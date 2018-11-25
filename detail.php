@@ -1,4 +1,4 @@
-<?php include('functions.php')?>
+<?php include('functions.php') ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,39 +50,41 @@
                                 <a class="nav-link" href="#">Browse</a>
                             </li>
                             <?php if (isset($_SESSION['user'])) : ?>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown"
-                                   aria-haspopup="true" aria-expanded="false">
-                                    <?php echo $_SESSION['user']['username']; ?>
-                                    <small>
-                                        <i style="color: #888;">(<?php echo ucfirst($_SESSION['user']['user_type']); ?>)</i>
-                                    </small>
-                                    <span class="icon-arrow-down"></span>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" href="#">Profile</a>
-                                    <a class="dropdown-item" href="#">Lists</a>
-                                    <a class="dropdown-item" href="#">Photos</a>
-                                </div>
-                            </li>
-                            <?php if (isAdmin()) : ?>
-                            <li class="nav-item active">
-                                <a class="nav-link" href="admin/create_user.php" style="color: red;">Create User</a>
-                            </li>
-                            <?php endif ?>
-                            <li class="nav-item active">
-                                <a class="nav-link" href="index.php?logout='1'" style="color: red;">Logout</a>
-                            </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown"
+                                       aria-haspopup="true" aria-expanded="false">
+                                        <?php echo $_SESSION['user']['username']; ?>
+                                        <small>
+                                            <i style="color: #888;">(<?php echo ucfirst($_SESSION['user']['user_type']); ?>
+                                                )</i>
+                                        </small>
+                                        <span class="icon-arrow-down"></span>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                        <a class="dropdown-item" href="#">Profile</a>
+                                        <a class="dropdown-item" href="#">Lists</a>
+                                        <a class="dropdown-item" href="#">Photos</a>
+                                    </div>
+                                </li>
+                                <?php if (isAdmin()) : ?>
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="admin/create_user.php" style="color: red;">Create
+                                            User</a>
+                                    </li>
+                                <?php endif ?>
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="index.php?logout='1'" style="color: red;">Logout</a>
+                                </li>
                             <?php else: ?>
-                            <li class="nav-item active">
-                                <a class="nav-link" href="register.php">Register</a>
-                            </li>
-                            <li class="nav-item active">
-                                <a class="nav-link" href="login.php">Login</a>
-                            </li>
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="register.php">Register</a>
+                                </li>
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="login.php">Login</a>
+                                </li>
                             <?php endif ?>
                             <li><a href="#" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
-                                Listing</a></li>
+                                    Listing</a></li>
                         </ul>
                     </div>
                 </nav>
@@ -102,7 +104,10 @@
             if (isset($_GET['r_id'])) {
                 $r_id = $_GET['r_id'];
             }
-            generatePhotos($r_id)?>
+
+            global $info;
+            $info = get_info($r_id);
+            generatePhotos($r_id) ?>
         </div>
         <!-- Add Pagination -->
         <div class="swiper-pagination swiper-pagination-white"></div>
@@ -117,21 +122,21 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <?php generateTitle($r_id);?>
-                <p><span>$$$</span>$$</p>
+                <h5><?php echo $info['name'] ?></h5>
+                <?php generate_avg_cost($r_id); ?>
             </div>
             <div class="col-md-6">
                 <div class="reserve-seat-block">
                     <div class="reserve-rating">
-                        <span>9.5</span>
+                        <span><?php echo generate_avg_review($r_id) ?></span>
                     </div>
                     <div class="review-btn">
-                        <a href="review.php?r_id=<?php echo $r_id?>" class="btn btn-outline-danger">WRITE A REVIEW</a>
-                        <span>34 reviews</span>
+                        <a href="review.php?r_id=<?php echo $r_id ?>" class="btn btn-outline-danger">WRITE A REVIEW</a>
+                        <span><?php echo get_num_reviews($r_id) ?> Reviews</span>
                     </div>
                     <div class="reserve-btn">
                         <div class="featured-btn-wrap">
-                            <a href="#" class="btn btn-danger">RESERVE A SEAT</a>
+                            <a href="#" class="btn btn-danger">ORDER FROM HERE</a>
                         </div>
                     </div>
                 </div>
@@ -147,132 +152,32 @@
             <div class="col-md-8 responsive-wrap">
                 <div class="booking-checkbox_wrap">
                     <div class="row">
-                        <?php generateTicks($r_id);?>
+                        <?php generateTicks($r_id); ?>
                     </div>
                 </div>
                 <div class="booking-checkbox_wrap mt-4">
-                    <h5>34 Reviews</h5>
-                    <hr>
-                    <div class="customer-review_wrap">
-                        <div class="customer-img">
-                            <img src="images/customer-img1.jpg" class="img-fluid" alt="#">
-                            <p>Amanda G</p>
-                            <span>35 Reviews</span>
-                        </div>
-                        <div class="customer-content-wrap">
-                            <div class="customer-content">
-                                <div class="customer-review">
-                                    <h6>Best noodles in the Newyork city</h6>
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                    <span class="round-icon-blank"></span>
-                                    <p>Reviewed 2 days ago</p>
-                                </div>
-                                <div class="customer-rating">8.0</div>
-                            </div>
-                            <p class="customer-text">I love the noodles here but it is so rare that I get to come here.
-                                Tasty Hand-Pulled Noodles is the best type of whole in the wall restaurant. The staff
-                                are really nice, and you should be seated quickly. I usually get the
-                                hand pulled noodles in a soup. House Special #1 is amazing and the lamb noodles are also
-                                great. If you want your noodles a little chewier, get the knife cut noodles, which are
-                                also amazing. Their dumplings are great
-                                dipped in their chili sauce.
-                            </p>
-                            <p class="customer-text">I love how you can see into the kitchen and watch them make the
-                                noodles and you can definitely tell that this is a family run establishment. The prices
-                                are are great with one dish maybe being $9. You just have to remember
-                                to bring cash.
-                            </p>
-                            <ul>
-                                <li><img src="images/review-img1.jpg" class="img-fluid" alt="#"></li>
-                                <li><img src="images/review-img2.jpg" class="img-fluid" alt="#"></li>
-                                <li><img src="images/review-img3.jpg" class="img-fluid" alt="#"></li>
-                            </ul>
-                            <span>28 people marked this review as helpful</span>
-                            <a href="#"><span class="icon-like"></span>Helpful</a>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="customer-review_wrap">
-                        <div class="customer-img">
-                            <img src="images/customer-img2.jpg" class="img-fluid" alt="#">
-                            <p>Kevin W</p>
-                            <span>17 Reviews</span>
-                        </div>
-                        <div class="customer-content-wrap">
-                            <div class="customer-content">
-                                <div class="customer-review">
-                                    <h6>A hole-in-the-wall old school shop.</h6>
-                                    <span class="customer-rating-red"></span>
-                                    <span class="round-icon-blank"></span>
-                                    <span class="round-icon-blank"></span>
-                                    <span class="round-icon-blank"></span>
-                                    <span class="round-icon-blank"></span>
-                                    <p>Reviewed 3 months ago</p>
-                                </div>
-                                <div class="customer-rating customer-rating-red">2.0</div>
-                            </div>
-                            <p class="customer-text">The dumplings were so greasy...the pan-fried shrimp noodles were
-                                the same. So much oil and grease it was difficult to eat. The shrimp noodles only come
-                                with 3 shrimp (luckily the dish itself is cheap) </p>
-                            <p class="customer-text">The beef noodle soup was okay. I added black vinegar into the broth
-                                to give it some extra flavor. The soup has bok choy which I liked - it's a nice textural
-                                element. The shop itself is really unclean (which is the case
-                                in many restaurants in Chinatown) They don't wipe down the tables after customers have
-                                eaten. If you peak into the kitchen many of their supplies are on the ground which is
-                                unsettling... </p>
-                            <span>10 people marked this review as helpful</span>
-                            <a href="#"><span class="icon-like"></span>Helpful</a>
-                        </div>
-                    </div>
+                    <h5><?php echo get_num_reviews($r_id) ?> Reviews</h5>
+                    <?php get_reviews($r_id) ?>
                 </div>
             </div>
             <div class="col-md-4 responsive-wrap">
                 <div class="contact-info">
-                    <img src="images/map.jpg" class="img-fluid" alt="#">
                     <div class="address">
                         <span class="icon-location-pin"></span>
-                        <p> Doyers St<br> New York, NY 10013<br> b/t Division St & St James Pl <br> Chinatown, Civic
-                            Center</p>
+                        <p><?php echo $info['location'] ?><br>Calgary, AB<br>Canada</p>
                     </div>
                     <div class="address">
                         <span class="icon-screen-smartphone"></span>
-                        <p> +44 20 7336 8898</p>
+                        <p><?php echo $info['phone_num'] ?></p>
                     </div>
                     <div class="address">
                         <span class="icon-link"></span>
-                        <p>https://burgerandlobster.com</p>
+                        <a style="margin: 0 0 0 16px" href="<?php echo $info['website'] ?>">Visit their website!</a>
                     </div>
                     <div class="address">
                         <span class="icon-clock"></span>
-                        <p>Mon - Sun 09:30 am - 05:30 pm <br>
-                            <span class="open-now">OPEN NOW</span></p>
+                        <?php generate_hours($r_id) ?>
                     </div>
-                    <a href="#" class="btn btn-outline-danger btn-contact">SEND A MESSAGE</a>
-                </div>
-                <div class="follow">
-                    <div class="follow-img">
-                        <img src="images/follow-img.jpg" class="img-fluid" alt="#">
-                        <h6>Christine Evans</h6>
-                        <span>New York</span>
-                    </div>
-                    <ul class="social-counts">
-                        <li>
-                            <h6>26</h6>
-                            <span>Listings</span>
-                        </li>
-                        <li>
-                            <h6>326</h6>
-                            <span>Followers</span>
-                        </li>
-                        <li>
-                            <h6>12</h6>
-                            <span>Followers</span>
-                        </li>
-                    </ul>
-                    <a href="#">FOLLOW</a>
                 </div>
             </div>
         </div>
@@ -287,14 +192,10 @@
                 <div class="copyright">
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     <p>Copyright &copy; 2018 Listing. All rights reserved | This template is made with <i
-                            class="ti-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                class="ti-heart" aria-hidden="true"></i> by <a href="https://colorlib.com"
+                                                                               target="_blank">Colorlib</a>
                     </p>
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                    <ul>
-                        <li><a href="#"><span class="ti-facebook"></span></a></li>
-                        <li><a href="#"><span class="ti-twitter-alt"></span></a></li>
-                        <li><a href="#"><span class="ti-instagram"></span></a></li>
-                    </ul>
                 </div>
             </div>
         </div>

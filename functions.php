@@ -120,7 +120,7 @@ function display_error()
 
 function display_message($message)
 {
-    if(isset($_SESSION[$message])) {
+    if (isset($_SESSION[$message])) {
         echo $_SESSION[$message];
         unset($_SESSION[$message]);
     }
@@ -131,7 +131,7 @@ function isLoggedIn()
 {
     if (isset($_SESSION['user'])) {
         return true;
-    }else{
+    } else {
         return false;
     }
 }
@@ -149,7 +149,8 @@ if (isset($_POST['login_btn'])) {
 }
 
 // LOGIN USER
-function login(){
+function login()
+{
     global $db, $username, $errors;
 
     // grab form values
@@ -177,15 +178,15 @@ function login(){
             if ($logged_in_user['user_type'] == 'admin') {
 
                 $_SESSION['user'] = $logged_in_user;
-                $_SESSION['success']  = "You are now logged in";
+                $_SESSION['success'] = "You are now logged in";
                 header('location: index.php');
-            }else{
+            } else {
                 $_SESSION['user'] = $logged_in_user;
-                $_SESSION['success']  = "You are now logged in";
+                $_SESSION['success'] = "You are now logged in";
 
                 header('location: index.php');
             }
-        }else {
+        } else {
             array_push($errors, "Wrong username/password combination");
         }
     }
@@ -193,9 +194,9 @@ function login(){
 
 function isAdmin()
 {
-    if (isset($_SESSION['user']) && $_SESSION['user']['user_type'] == 'admin' ) {
+    if (isset($_SESSION['user']) && $_SESSION['user']['user_type'] == 'admin') {
         return true;
-    }else{
+    } else {
         return false;
     }
 }
@@ -206,7 +207,8 @@ function isAdmin()
  * =========================================================
  */
 
-function generatePhotos($rid) {
+function generatePhotos($rid)
+{
     global $db;
 
     $query = "SELECT p.file_path
@@ -223,18 +225,8 @@ function generatePhotos($rid) {
     }
 }
 
-function generateTitle($rid) {
-    global $db;
-
-    $query = "SELECT name
-              FROM restaurant
-              WHERE r_id = $rid";
-    $query = mysqli_query($db, $query);
-    $temp = mysqli_fetch_array($query);
-    echo "<h5>$temp[0]</h5>";
-}
-
-function generateTicks($rid) {
+function generateTicks($rid)
+{
     global $db;
 
     $query = "SELECT wifi, delivery, alcohol
@@ -242,7 +234,7 @@ function generateTicks($rid) {
               WHERE r_id = $rid";
     $query = mysqli_query($db, $query);
     $temp = mysqli_fetch_array($query);
-    foreach($temp as $cname => $cvalue) {
+    foreach ($temp as $cname => $cvalue) {
         if ($cvalue == 1 and ($cname == 'wifi' or $cname == 'delivery' or $cname == 'alcohol')) {
             echo "<div class='col-md-4'>";
             echo "<label class='custom-checkbox'>";
@@ -251,6 +243,158 @@ function generateTicks($rid) {
             echo "</label>";
             echo "</div>";
         }
+    }
+}
+
+function get_num_reviews($r_id)
+{
+    global $db;
+
+    $query = "SELECT COUNT(*)
+              FROM review
+              WHERE r_id = $r_id";
+    $query = mysqli_query($db, $query);
+    $query = mysqli_fetch_array($query);
+    return $query[0];
+}
+
+function generate_avg_cost($r_id)
+{
+    global $db;
+
+    $query = "SELECT AVG(cost)
+              FROM review
+              WHERE r_id = $r_id";
+    $query = mysqli_query($db, $query);
+    $query = mysqli_fetch_array($query);
+    $cost = ceil($query[0]);
+    generate_cost($cost);
+
+}
+
+function generate_cost($cost)
+{
+    $rem = 3 - $cost;
+    echo "<p>";
+    echo "<span>";
+    for ($i = 0; $i < $cost; $i++) {
+        echo "$";
+    }
+    echo "</span>";
+    for ($i = 0; $i < $rem; $i++) {
+        echo "$";
+    }
+    echo "</p>";
+}
+
+function get_reviews($r_id)
+{
+    global $db;
+
+    $query = "SELECT *
+              FROM review
+              WHERE r_id = $r_id";
+    $query = mysqli_query($db, $query);
+
+    while ($temp = mysqli_fetch_array($query)) {
+        $user_id = $temp['user_id'];
+        $cost = $temp['cost'];
+        $date_posted = date_format(date_create($temp['date_posted']), "F j, Y");
+        $rating = $temp['rating'];
+        $content = $temp['content'];
+
+        $query2 = "SELECT COUNT(*)
+                   FROM review
+                   WHERE user_id = '$user_id'";
+        $num_reviews = mysqli_query($db, $query2);
+        $num_reviews = mysqli_fetch_array($num_reviews);
+        $num_reviews = $num_reviews[0];
+        echo <<< EOT
+                    <hr>
+                    <div class="customer-review_wrap">
+                        <div class="customer-img">
+                            <p>$user_id</p>
+                            <span>$num_reviews Reviews</span>
+                        </div>
+                        <div class="customer-content-wrap">
+                            <div class="customer-content">
+                                <div class="customer-review">
+EOT;
+        generate_cost($cost);
+        echo <<< EOT
+                                    <p>Reviewed $date_posted</p>
+                                </div>
+                                <div class="customer-rating">$rating / 5</div>
+                            </div>
+                            <p class="customer-text">$content</p>          
+                        </div>
+                    </div>
+                    <hr>
+EOT;
+
+    }
+}
+
+function get_info($r_id)
+{
+    global $db;
+
+    $query = "SELECT *
+              FROM restaurant
+              WHERE r_id = $r_id";
+    $query = mysqli_query($db, $query);
+    $query = mysqli_fetch_array($query);
+    return $query;
+}
+
+function generate_avg_review($r_id)
+{
+    global $db;
+
+    $query = "SELECT AVG(rating)
+              FROM review
+              WHERE r_id = $r_id";
+    $query = mysqli_query($db, $query);
+    $query = mysqli_fetch_array($query);
+    $rating = round($query[0], 1);
+    return $rating - 1;
+}
+
+function generate_hours($r_id)
+{
+    global $db;
+
+    $query = "SELECT open_time, close_time
+              FROM business_hours
+              WHERE r_id = $r_id
+              ORDER BY day_of_week ASC";
+    $query = mysqli_query($db, $query);
+
+    $i = -1;
+    while ($temp = mysqli_fetch_assoc($query)) {
+        $open_time = date('H:i', mktime($temp['open_time']));
+        $close_time = $temp['close_time'];
+        echo "<p>";
+        echo date('l', mktime(0, 0, 0, 0, $i, 0)) . " " . $open_time . "AM" . "-" . $close_time . "PM";
+        echo "</p>";
+        $i++;
+    }
+}
+
+function is_open($r_id) {
+    global $db;
+
+    $day_of_week = date('N', strtotime('Monday'));
+    $time = date('H:i:s');
+    $query = "SELECT COUNT(*)
+              FROM business_hours
+              WHERE day_of_week = $day_of_week AND $time > open_time AND $time < close_time";
+    $query = mysqli_query($db, $query);
+
+    if (mysqli_num_rows($query) == 1) {
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -265,12 +409,13 @@ if (isset($_POST['review_btn'])) {
     submit_review();
 }
 
-function submit_review() {
+function submit_review()
+{
     global $db, $errors;
     $r_id = $_GET['r_id'];
     $review_content = e($_POST['review_content']);
-    $review_rating  = e($_POST['review_rating']);
-    $review_cost    = e($_POST['review_cost']);
+    $review_rating = e($_POST['review_rating']);
+    $review_cost = e($_POST['review_cost']);
 
     // form validation: ensure that the form is correctly filled
     if (empty($review_content)) {
@@ -298,10 +443,74 @@ function submit_review() {
         $query = mysqli_query($db, $query);
 
         if ($query) {
-            header('location: detail.php?r_id='.$r_id);
+            header('location: detail.php?r_id=' . $r_id);
         } else {
             echo $query;
             array_push($errors, "Error occurred");
         }
+    }
+}
+
+/*
+ * =========================================================
+ * LISTING FUNCTIONS
+ * =========================================================
+ */
+
+function generate_restaurants()
+{
+    global $db;
+
+    $query = "SELECT *
+              FROM restaurant";
+    $query = mysqli_query($db, $query);
+
+    while ($temp = mysqli_fetch_array($query)) {
+        $r_id = $temp['r_id'];
+        $name = $temp['name'];
+        $directory = "images/restaurants/$r_id/";
+        $files = scandir($directory);
+        $firstFile = $directory . $files[2];// because [0] = "." [1] = ".."
+        $avg_review = generate_avg_review($r_id);
+        $num_reviews = get_num_reviews($r_id);
+        $location = $temp['location'];
+        $phone_num = $temp['phone_num'];
+        $website = $temp['website'];
+        echo <<< EOT
+                    <div class="col-sm-6 col-lg-12 col-xl-6 featured-responsive">
+                        <div class="featured-place-wrap">
+                            <a href="detail.php?r_id=$r_id">
+                                <img src="$firstFile" class="img-fluid" alt="#">
+                                <span class="featured-rating-orange ">$avg_review</span>
+                                <div class="featured-title-box">
+                                    <h6>$name</h6>
+                                    <p>Restaurant </p> <span>• </span>
+                                    <p>$num_reviews Reviews</p> <span> • </span>
+EOT;
+                                    generate_avg_cost($r_id);
+        echo <<< EOT
+                                    <ul>
+                                        <li><span class="icon-location-pin"></span>
+                                            <p>$location</p>
+                                        </li>
+                                        <li><span class="icon-screen-smartphone"></span>
+                                            <p>$phone_num</p>
+                                        </li>
+                                        <li><span class="icon-link"></span>
+                                            <a style="color: #9fa9b9" href="$website">Visit their website!</a>
+                                        </li>
+
+                                    </ul>
+                                    <div class="bottom-icons">
+                               
+                                        <span class="ti-heart"></span>
+                                        <span class="ti-bookmark"></span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+EOT;
+
     }
 }

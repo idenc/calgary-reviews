@@ -1,4 +1,4 @@
-<?php include('functions.php')?>
+<?php include('functions.php') ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -55,7 +55,8 @@
                                        aria-haspopup="true" aria-expanded="false">
                                         <?php echo $_SESSION['user']['username']; ?>
                                         <small>
-                                            <i style="color: #888;">(<?php echo ucfirst($_SESSION['user']['user_type']); ?>)</i>
+                                            <i style="color: #888;">(<?php echo ucfirst($_SESSION['user']['user_type']); ?>
+                                                )</i>
                                         </small>
                                         <span class="icon-arrow-down"></span>
                                     </a>
@@ -67,7 +68,8 @@
                                 </li>
                                 <?php if (isAdmin()) : ?>
                                     <li class="nav-item active">
-                                        <a class="nav-link" href="admin/create_user.php" style="color: red;">Create User</a>
+                                        <a class="nav-link" href="admin/create_user.php" style="color: red;">Create
+                                            User</a>
                                     </li>
                                 <?php endif ?>
                                 <li class="nav-item active">
@@ -95,18 +97,18 @@
 global $r_id;
 if (isset($_GET['r_id'])) {
     $r_id = $_GET['r_id'];
-};?>
+}; ?>
 <!--//END HEADER -->
 <!-- SLIDER -->
 <div style="background: #3F3F3F; height: fit-content;">
-    <form method="post" action="review.php?r_id=<?php echo $r_id?>" class="register" style="margin-bottom: 30%;">
+    <form method="post" action="review.php?r_id=<?php echo $r_id ?>" class="register" style="margin-bottom: 30%;">
         <?php
         $query = "SELECT name
                   FROM restaurant
                   WHERE r_id = $r_id";
         $query = mysqli_query($db, $query);
         $temp = mysqli_fetch_array($query);
-        echo "<h5 style='color: white;'>$temp[0]</h5>";?>
+        echo "<h5 style='color: white;'>$temp[0]</h5>"; ?>
         <?php echo display_error(); ?>
         <div class="reg-input">
             <label>Your Review</label>
@@ -142,7 +144,8 @@ if (isset($_GET['r_id'])) {
                 <div class="copyright">
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     <p>Copyright &copy; 2018 Listing. All rights reserved | This template is made with <i
-                            class="ti-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                class="ti-heart" aria-hidden="true"></i> by <a href="https://colorlib.com"
+                                                                               target="_blank">Colorlib</a>
                     </p>
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     <ul>
