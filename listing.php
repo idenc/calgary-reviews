@@ -35,7 +35,7 @@
         <div class="row">
             <div class="col-md-12">
                 <nav class="navbar navbar-expand-lg navbar-light">
-                    <a class="navbar-brand" href="index.php">Browse</a>
+                    <a class="navbar-brand" href="index.php">Calgary Reviews</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
                             aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="icon-menu"></span>
@@ -79,7 +79,7 @@
                                     <a class="nav-link" href="login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="#" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
+                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
                     </div>
@@ -97,7 +97,7 @@
                 <div class="row detail-filter-wrap">
                     <div class="col-md-4 featured-responsive">
                         <div class="detail-filter-text">
-                            <p>34 Results For <span>Restaurant</span></p>
+                            <p><?php echo get_num_restaurants()?> Results For <span>Restaurant</span></p>
                         </div>
                     </div>
                     <div class="col-md-8 featured-responsive">

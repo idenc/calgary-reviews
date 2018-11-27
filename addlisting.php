@@ -13,7 +13,7 @@
     <!-- Favicons -->
     <link rel="shortcut icon" href="#">
     <!-- Page Title -->
-    <title>Listing &amp; Directory Website Template</title>
+    <title>Calgary Reviews</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- Google Fonts -->
@@ -39,7 +39,7 @@
         <div class="row">
             <div class="col-md-12">
                 <nav class="navbar navbar-expand-lg navbar-light">
-                    <a class="navbar-brand" href="index.php">Listing</a>
+                    <a class="navbar-brand" href="index.php">Calgary Reviews</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
                             aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="icon-menu"></span>
@@ -93,97 +93,129 @@
     </div>
 </div>
 <!--//END HEADER -->
-<!--============================= BOOKING =============================-->
-<div>
-    <!-- Swiper -->
-    <div class="swiper-container">
-        <div class="swiper-wrapper">
-
-            <?php
-            global $r_id;
-            if (isset($_GET['r_id'])) {
-                $r_id = $_GET['r_id'];
-            }
-
-            global $info;
-            $info = get_info($r_id);
-            generatePhotos($r_id) ?>
+<!-- SLIDER -->
+<div style="background: #3F3F3F; height: fit-content;">
+    <form method="post" action="addlisting.php" class="register" style="margin-bottom: 30%;"
+          enctype="multipart/form-data">
+        <?php echo display_error(); ?>
+        <div class="reg-input">
+            <label>Restaurant Name*</label>
+            <input type="text" name="name" value="<?php echo $r_name; ?>">
         </div>
-        <!-- Add Pagination -->
-        <div class="swiper-pagination swiper-pagination-white"></div>
-        <!-- Add Arrows -->
-        <div class="swiper-button-next swiper-button-white"></div>
-        <div class="swiper-button-prev swiper-button-white"></div>
-    </div>
+        <div class="reg-input">
+            <label>Location*</label>
+            <input type="text" name="location" value="<?php echo $location; ?>">
+        </div>
+        <div class="reg-input">
+            <label>Phone Number</label>
+            <input type="text" name="phone_num" value="<?php echo $phone_num; ?>">
+        </div>
+        <div class="reg-input">
+            <label>Website</label>
+            <input type="text" name="website" value="<?php echo $website; ?>">
+        </div>
+        <div class="hours">
+            <p style="color: white">Hours:</p>
+            <div>
+                <label for="monday" class="day">Monday</label>
+                <label for="monday_open" style="margin-left: 50px">Open</label>
+                <input type="time" name="monday_open">
+                <label for="monday_close">Close</label>
+                <input type="time" name="monday_close">
+            </div>
+            <div>
+                <label for="tuesday" class="day">Tuesday</label>
+                <label for="tuesday_open" style="margin-left: 50px">Open</label>
+                <input type="time" name="tuesday_open">
+                <label for="tuesday_close">Close</label>
+                <input type="time" name="tuesday_close">
+            </div>
+            <div>
+                <label for="wednesday" class="day">Wednesday</label>
+                <label for="wednesday_open" style="margin-left: 50px">Open</label>
+                <input type="time" name="wednesday_open">
+                <label for="wednesday_close">Close</label>
+                <input type="time" name="wednesday_close">
+            </div>
+            <div>
+                <label for="thursday" class="day">Thursday</label>
+                <label for="thursday_open" style="margin-left: 50px">Open</label>
+                <input type="time" name="thursday_open">
+                <label for="thursday_close">Close</label>
+                <input type="time" name="thursday_close">
+            </div>
+            <div>
+                <label for="friday" class="day">Friday</label>
+                <label for="friday_open" style="margin-left: 50px">Open</label>
+                <input type="time" name="friday_open">
+                <label for="friday_close">Close</label>
+                <input type="time" name="friday_close">
+            </div>
+            <div>
+                <label for="saturday" class="day">Saturday</label>
+                <label for="saturday_open" style="margin-left: 50px">Open</label>
+                <input type="time" name="saturday_open">
+                <label for="saturday_close">Close</label>
+                <input type="time" name="saturday_close">
+            </div>
+            <div>
+                <label for="sunday" class="day">Sunday</label>
+                <label for="sunday_open" style="margin-left: 50px">Open</label>
+                <input type="time" name="sunday_open">
+                <label for="sunday_close">Close</label>
+                <input type="time" name="sunday_close">
+            </div>
+            <br>
+        </div>
+        <div class="files">
+            Upload up to 3 images for the restaurant:
+            <input type="file" name="pic0" accept="image/*" style="padding: 5px 0 5px 0; width: 60%;">
+            <label for="category0">Category: </label>
+            <select name="category0">
+                <option value="decor">Decor</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="menu">Menu</option>
+                <option value="food">Food</option>
+                <option value="other">Other</option>
+            </select>
+            <input type="file" name="pic1" accept="image/*" style="padding: 5px 0 5px 0; width: 60%;">
+            <label for="category1">Category: </label>
+            <select name="category1">
+                <option value="decor">Decor</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="menu">Menu</option>
+                <option value="food">Food</option>
+                <option value="other">Other</option>
+            </select>
+            <input type="file" name="pic2" accept="image/*" style="padding: 5px 0 5px 0; width: 60%;">
+            <label for="category2">Category: </label>
+            <select name="category2" title="Category">
+                <option value="decor">Decor</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="menu">Menu</option>
+                <option value="food">Food</option>
+                <option value="other">Other</option>
+            </select>
+            <br>
+        </div>
+
+        <div class="reg-input" style="display: inline;">
+            <label>Has Wifi?</label>
+            <input id="listing_box" type="checkbox" name="wifi">
+        </div>
+        <div class="reg-input">
+            <label>Has Delivery?</label>
+            <input id="listing_box" type="checkbox" name="delivery">
+        </div>
+        <div class="reg-input">
+            <label>Has Alcohol?</label>
+            <input id="listing_box" type="checkbox" name="alcohol">
+        </div>
+        <div class="reg-input">
+            <button type="submit" class="btn" name="listing_btn">Add Listing</button>
+        </div>
+    </form>
 </div>
-<!--//END BOOKING -->
-<!--============================= RESERVE A SEAT =============================-->
-<section class="reserve-block">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h5><?php echo $info['name'] ?></h5>
-                <?php generate_avg_cost($r_id); ?>
-            </div>
-            <div class="col-md-6">
-                <div class="reserve-seat-block">
-                    <div class="reserve-rating">
-                        <span><?php echo generate_avg_review($r_id) ?></span>
-                    </div>
-                    <div class="review-btn">
-                        <a href="review.php?r_id=<?php echo $r_id ?>" class="btn btn-outline-danger">WRITE A REVIEW</a>
-                        <span><?php echo get_num_reviews($r_id) ?> Reviews</span>
-                    </div>
-                    <div class="reserve-btn">
-                        <div class="featured-btn-wrap">
-                            <a href="#" class="btn btn-danger">ORDER FROM HERE</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!--//END RESERVE A SEAT -->
-<!--============================= BOOKING DETAILS =============================-->
-<section class="light-bg booking-details_wrap">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 responsive-wrap">
-                <div class="booking-checkbox_wrap">
-                    <div class="row">
-                        <?php generateTicks($r_id); ?>
-                    </div>
-                </div>
-                <div class="booking-checkbox_wrap mt-4">
-                    <h5><?php echo get_num_reviews($r_id) ?> Reviews</h5>
-                    <?php get_reviews($r_id) ?>
-                </div>
-            </div>
-            <div class="col-md-4 responsive-wrap">
-                <div class="contact-info">
-                    <div class="address">
-                        <span class="icon-location-pin"></span>
-                        <p><?php echo $info['location'] ?><br>Calgary, AB<br>Canada</p>
-                    </div>
-                    <div class="address">
-                        <span class="icon-screen-smartphone"></span>
-                        <p><?php echo $info['phone_num'] ?></p>
-                    </div>
-                    <div class="address">
-                        <span class="icon-link"></span>
-                        <a style="margin: 0 0 0 16px" href="<?php echo $info['website'] ?>">Visit their website!</a>
-                    </div>
-                    <div class="address">
-                        <span class="icon-clock"></span>
-                        <?php generate_hours($r_id) ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!--//END BOOKING DETAILS -->
 <!--============================= FOOTER =============================-->
 <footer class="main-block dark-bg">
     <div class="container">
@@ -196,6 +228,11 @@
                                                                                target="_blank">Colorlib</a>
                     </p>
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    <ul>
+                        <li><a href="#"><span class="ti-facebook"></span></a></li>
+                        <li><a href="#"><span class="ti-twitter-alt"></span></a></li>
+                        <li><a href="#"><span class="ti-instagram"></span></a></li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -213,40 +250,6 @@
 <script src="js/jquery.magnific-popup.js"></script>
 <!-- Swipper Slider JS -->
 <script src="js/swiper.min.js"></script>
-<script>
-    var swiper = new Swiper('.swiper-container', {
-        slidesPerView: 3,
-        slidesPerGroup: 3,
-        loop: true,
-        loopFillGroupWithBlank: true,
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-    });
-</script>
-<script>
-    if ($('.image-link').length) {
-        $('.image-link').magnificPopup({
-            type: 'image',
-            gallery: {
-                enabled: true
-            }
-        });
-    }
-    if ($('.image-link2').length) {
-        $('.image-link2').magnificPopup({
-            type: 'image',
-            gallery: {
-                enabled: true
-            }
-        });
-    }
-</script>
 </body>
 
 </html>

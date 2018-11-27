@@ -372,16 +372,23 @@ function generate_hours($r_id)
 
     $i = -1;
     while ($temp = mysqli_fetch_assoc($query)) {
-        $open_time = date('H:i', mktime($temp['open_time']));
-        $close_time = $temp['close_time'];
+        $open_time = date("g:ia", strtotime($temp['open_time']));
+        $close_time = date("g:ia", strtotime($temp['close_time']));
         echo "<p>";
-        echo date('l', mktime(0, 0, 0, 0, $i, 0)) . " " . $open_time . "AM" . "-" . $close_time . "PM";
-        echo "</p>";
+        echo date('l', mktime(0, 0, 0, 0, $i, 0)) . " " . $open_time . "-" . $close_time;
+        echo "<br>";
         $i++;
     }
+    if (is_open($r_id)) {
+        echo "<span class=\"open-now\">OPEN NOW</span>";
+    } else {
+        echo "<span class=\"closed-now\">CLOSED NOW</span>";
+    }
+    echo "</p>";
 }
 
-function is_open($r_id) {
+function is_open($r_id)
+{
     global $db;
 
     $day_of_week = date('N', strtotime('Monday'));
@@ -391,7 +398,7 @@ function is_open($r_id) {
               WHERE day_of_week = $day_of_week AND $time > open_time AND $time < close_time";
     $query = mysqli_query($db, $query);
 
-    if (mysqli_num_rows($query) == 1) {
+    if ($query && mysqli_num_rows($query) == 1) {
         return true;
     } else {
         return false;
@@ -445,7 +452,6 @@ function submit_review()
         if ($query) {
             header('location: detail.php?r_id=' . $r_id);
         } else {
-            echo $query;
             array_push($errors, "Error occurred");
         }
     }
@@ -487,7 +493,7 @@ function generate_restaurants()
                                     <p>Restaurant </p> <span>• </span>
                                     <p>$num_reviews Reviews</p> <span> • </span>
 EOT;
-                                    generate_avg_cost($r_id);
+        generate_avg_cost($r_id);
         echo <<< EOT
                                     <ul>
                                         <li><span class="icon-location-pin"></span>
@@ -502,8 +508,13 @@ EOT;
 
                                     </ul>
                                     <div class="bottom-icons">
-                               
-                                        <span class="ti-heart"></span>
+EOT;
+        if (is_open($r_id)) {
+            echo "<div class=\"open-now\">OPEN NOW</div>";
+        } else {
+            echo "<div class=\"closed-now\">CLOSED NOW</div>";
+        }
+        echo <<< EOT
                                         <span class="ti-bookmark"></span>
                                     </div>
                                 </div>
@@ -513,4 +524,181 @@ EOT;
 EOT;
 
     }
+}
+
+function get_num_restaurants()
+{
+    global $db;
+
+    $query = "SELECT COUNT(*)
+              FROM restaurant";
+    $query = mysqli_query($db, $query);
+    $query = mysqli_fetch_array($query);
+    return $query[0];
+}
+
+/*
+ * =========================================================
+ * ADD LISTING FUNCTIONS
+ * =========================================================
+ */
+
+$r_name = "";
+$location = "";
+$phone_num = "";
+$website = "";
+
+// call the register() function if register_btn is clicked
+if (isset($_POST['listing_btn'])) {
+    add_listing();
+}
+
+function add_listing()
+{
+    // call these variables with the global keyword to make them available in function
+    global $db, $errors, $r_name, $location, $phone_num, $website;
+
+    $wifi = 0;
+    $delivery = 0;
+    $alcohol = 0;
+    // receive all input values from the form. Call the e() function
+    // defined below to escape form values
+    $r_name = e($_POST['name']);
+    $location = e($_POST['location']);
+    if (isset($_POST['phone_num']))
+        $phone_num = e($_POST['phone_num']);
+    if (isset($_POST['wifi']))
+        $wifi = 1;
+    if (isset($_POST['delivery']))
+        $delivery = 1;
+    if (isset($_POST['alcohol']))
+        $alcohol = 1;
+    if (isset($_POST['website']))
+        $website = e($_POST['website']);
+
+    // form validation: ensure that the form is correctly filled
+    if (empty($r_name)) {
+        array_push($errors, "Restaurant name is required");
+    }
+    if (empty($location)) {
+        array_push($errors, "Restaurant location is required");
+    }
+
+    if (count($errors) == 0) {
+
+        if (isAdmin()) {
+            $query = "INSERT INTO restaurant (name, location, wifi, delivery, alcohol, phone_num, website, pending) 
+					  VALUES('$r_name', '$location', $wifi, $delivery, $alcohol, '$phone_num', '$website', 0)";
+            $query = mysqli_query($db, $query);
+            if ($query) {
+                $_SESSION['listing_success'] = "New restaurant successfully created!!";
+                $new_r_id = mysqli_insert_id($db);
+                handle_images($new_r_id);
+                handle_hours($new_r_id);
+                if (count($errors) == 0) {
+                    header('location: detail.php?r_id=' . $new_r_id);
+                }
+            } else {
+                array_push($errors, mysqli_error($db));
+            }
+        } else {
+            $query = "INSERT INTO restaurant (name, location, wifi, delivery, alcohol, phone_num, website, pending) 
+					  VALUES('$r_name', '$location', $wifi, $delivery, $alcohol, '$phone_num', '$website', 1)";
+            $query = mysqli_query($db, $query);
+
+            if ($query) {
+                // get id of the created user
+                $_SESSION['listing_pend_success'] = "Restaurant submitted for approval";
+                header('location: index.php');
+            } else {
+                array_push($errors, "Error submitting restaurant");
+            }
+        }
+    }
+}
+
+function handle_images($r_id) {
+    global $errors, $db;
+
+    //Code taken from https://www.w3schools.com/php/php_file_upload.asp
+    for ($i = 0; $i < 3; $i++) {
+        $target_dir = "images\\restaurants\\$r_id\\";
+        $target_file = $target_dir . basename($_FILES["pic$i"]["name"]);
+        $uploadOk = 1;
+        $category = $_POST["category$i"];
+
+        if (!file_exists($target_dir)) {
+            mkdir($target_dir, 0777, true);
+        }
+
+        // Check if image file is a actual image or fake image
+        if (isset($_POST["pic$i"])) {
+            $check = getimagesize($_FILES["pic$i"]["tmp_name"]);
+            if ($check !== false) {
+                echo "File is an image - " . $check["mime"] . ".";
+                $uploadOk = 1;
+            } else {
+                array_push($errors, "File is not an image.");
+                $uploadOk = 0;
+            }
+        }
+        // Check if file already exists
+        if (file_exists($target_file)) {
+            array_push($errors,"Sorry, file already exists.");
+            $uploadOk = 0;
+        }
+        // Check file size
+        if ($_FILES["pic$i"]["size"] > 500000) {
+            array_push($errors, "Sorry, your file is too large.");
+            $uploadOk = 0;
+        }
+        // Check if $uploadOk is set to 0 by an error
+        if ($uploadOk == 0) {
+            array_push($errors,"Sorry, your file was not uploaded.");
+            // if everything is ok, try to upload file
+        } else {
+            $filename = basename($_FILES["pic$i"]["name"]);
+            $filepath = addslashes($target_file);
+            $query = "INSERT INTO photo (title, category, file_path) 
+					  VALUES('$filename', '$category', '$filepath')";
+            $query = mysqli_query($db, $query);
+
+            if (!$query) {
+                array_push($errors, "Insertion into photos failed: " . mysqli_error($db));
+            }
+
+            $photo_id = mysqli_insert_id($db);
+            $logged_in_user = $_SESSION['user']['username'];
+            $query = "INSERT INTO uploads (user_id, photoid, r_id) 
+					  VALUES('$logged_in_user', $photo_id, $r_id)";
+            $query = mysqli_query($db, $query);
+
+            if (!$query) {
+                array_push($errors, "Insertion into uploads failed" . mysqli_error($db));
+            }
+            if (move_uploaded_file($_FILES["pic$i"]["tmp_name"], $target_file)) {
+                echo "The file " . basename($_FILES["pic$i"]["name"]) . " has been uploaded.";
+            } else {
+                array_push($errors,"Sorry, there was an error uploading your file.");
+            }
+        }
+    }
+}
+
+function handle_hours($r_id)
+{
+    global $db, $errors;
+
+    for ($i = -1; $i < 6; $i++) {
+        $day = strtolower(date('l', mktime(0, 0, 0, 0, $i, 0)));
+        $open = $_POST[$day."_open"];
+        $close = $_POST[$day.'_close'];
+        $query = "INSERT INTO business_hours (r_id, day_of_week, open_time, close_time)
+                  VALUES ($r_id, ($i + 2), '$open', '$close')";
+        $query = mysqli_query($db, $query);
+        if (!$query) {
+            array_push($errors, "Insertion into hours failed" . mysqli_error($db));
+        }
+    }
+
 }

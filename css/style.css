@@ -402,6 +402,20 @@ p {
     margin: 10px 0 10px 0;
 }
 
+.hours {
+    display: grid;
+    color: white;
+}
+
+.day {
+    display: inline-block;
+    width: 20%;
+}
+
+.files {
+    color: white;
+}
+
 .reg-input label {
     display: block;
     text-align: left;
@@ -416,6 +430,11 @@ p {
     font-size: 16px;
     border-radius: 5px;
     border: 1px solid gray;
+}
+
+#listing_box {
+    width: 25px;
+    height: 20px;
 }
 
 .error {
