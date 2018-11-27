@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 20, 2018 at 03:01 AM
+-- Generation Time: Nov 27, 2018 at 08:28 AM
 -- Server version: 5.7.23
 -- PHP Version: 7.2.10
 
@@ -12,6 +12,7 @@ SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
+SET FOREIGN_KEY_CHECKS = 0;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -49,8 +50,8 @@ DROP TABLE IF EXISTS `business_hours`;
 CREATE TABLE IF NOT EXISTS `business_hours` (
   `r_id` int(255) NOT NULL,
   `day_of_week` int(1) NOT NULL,
-  `open_time` varchar(7) NOT NULL,
-  `close_time` varchar(7) NOT NULL,
+  `open_time` time(5) NOT NULL,
+  `close_time` time(5) NOT NULL,
   PRIMARY KEY (`r_id`,`day_of_week`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -59,7 +60,15 @@ CREATE TABLE IF NOT EXISTS `business_hours` (
 --
 
 INSERT INTO `business_hours` (`r_id`, `day_of_week`, `open_time`, `close_time`) VALUES
-(1, 0, '8:30 AM', '5:00 PM');
+(1, 1, '08:30:00.00000', '17:00:00.00000'),
+(1, 2, '07:30:00.00000', '23:00:00.00000'),
+(2, 1, '10:00:00.00000', '23:00:00.00000'),
+(2, 2, '10:00:00.00000', '23:00:00.00000'),
+(2, 3, '10:00:00.00000', '23:00:00.00000'),
+(2, 4, '10:00:00.00000', '23:00:00.00000'),
+(2, 5, '10:00:00.00000', '23:00:00.00000'),
+(2, 6, '10:00:00.00000', '23:00:00.00000'),
+(2, 7, '10:00:00.00000', '23:00:00.00000');
 
 --
 -- Triggers `business_hours`
@@ -67,7 +76,7 @@ INSERT INTO `business_hours` (`r_id`, `day_of_week`, `open_time`, `close_time`) 
 DROP TRIGGER IF EXISTS `check_day`;
 DELIMITER $$
 CREATE TRIGGER `check_day` BEFORE INSERT ON `business_hours` FOR EACH ROW BEGIN
-IF new.day_of_week NOT IN (0, 1, 2, 3, 4, 5, 6) THEN
+IF new.day_of_week NOT IN (1, 2, 3, 4, 5, 6, 7) THEN
 	SIGNAL SQLSTATE '45000'
     	SET MESSAGE_TEXT = 'Invalid day of week (range from 0-6)';
 END IF;
@@ -270,16 +279,18 @@ CREATE TABLE IF NOT EXISTS `photo` (
   `num_likes` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `file_path` varchar(255) NOT NULL,
   PRIMARY KEY (`photo_id`),
-  UNIQUE KEY `date_posted` (`date_posted`),
   UNIQUE KEY `file_path` (`file_path`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `photo`
 --
 
 INSERT INTO `photo` (`photo_id`, `title`, `date_posted`, `category`, `num_likes`, `file_path`) VALUES
-(1, 'Minha\'s outside', '2018-11-19 00:11:17', 'restaurant', 0, 'C:\\wamp64\\www\\test\\images\\restaurants\\1\\minhasmicrobrewery.jpg');
+(1, 'Minha\'s outside', '2018-11-19 00:11:17', 'restaurant', 0, 'images\\restaurants\\1\\minhasmicrobrewery.jpg'),
+(2, 'o.jpg', '2018-11-27 08:19:14', 'decor', 0, 'images\restaurants2o.jpg'),
+(3, 'menu.jpg', '2018-11-27 08:19:14', 'menu', 0, 'images\restaurants2menu.jpg'),
+(4, 'sushi.jpg', '2018-11-27 08:19:14', 'food', 0, 'images\restaurants2sushi.jpg');
 
 -- --------------------------------------------------------
 
@@ -292,16 +303,23 @@ CREATE TABLE IF NOT EXISTS `restaurant` (
   `r_id` int(255) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `location` varchar(255) NOT NULL,
+  `wifi` tinyint(1) DEFAULT NULL,
+  `delivery` tinyint(1) DEFAULT NULL,
+  `alcohol` tinyint(1) DEFAULT NULL,
+  `phone_num` varchar(15) DEFAULT NULL,
+  `website` varchar(100) DEFAULT NULL,
+  `pending` binary(1) NOT NULL,
   PRIMARY KEY (`r_id`),
   UNIQUE KEY `location` (`location`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `restaurant`
 --
 
-INSERT INTO `restaurant` (`r_id`, `name`, `location`) VALUES
-(1, 'Minhas Micro Brewery', '1314 44 Avenue NE');
+INSERT INTO `restaurant` (`r_id`, `name`, `location`, `wifi`, `delivery`, `alcohol`, `phone_num`, `website`, `pending`) VALUES
+(1, 'Minhas Micro Brewery', '1314 44 Avenue NE', NULL, 0, 1, '(403) 695-3701', 'http://minhasbrewery.com/minhas-micro-brewery-calgary', 0x00),
+(2, 'Kinjo Sushi', '5005 Dalhousie Drive NW Unit 415', 0, 1, 1, '(403) 452-8389', 'https://www.kinjosushiandgrill.com/', 0x30);
 
 -- --------------------------------------------------------
 
@@ -326,7 +344,7 @@ DROP TABLE IF EXISTS `review`;
 CREATE TABLE IF NOT EXISTS `review` (
   `content` text NOT NULL,
   `rating` enum('0','1','2','3','4','5') NOT NULL,
-  `date_posted` date NOT NULL,
+  `date_posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `r_id` int(255) NOT NULL,
   `user_id` varchar(255) NOT NULL,
   `cost` enum('1','2','3') NOT NULL,
@@ -334,6 +352,14 @@ CREATE TABLE IF NOT EXISTS `review` (
   KEY `r_id` (`r_id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `review`
+--
+
+INSERT INTO `review` (`content`, `rating`, `date_posted`, `r_id`, `user_id`, `cost`) VALUES
+('Amazing!!! We did the tour for 4 and had such a great time. Tanner was very informative and very generous with beer samples :p It was an awesome experience seeing behind the scenes.\r\nWhat an awesome time. It was a better than we expected Would 10/10 recommend!!!', '5', '2018-11-23 08:31:14', 1, 'idenc', '2'),
+('Fun tour! You see the entire production process from grain to can! Absolutely loved the samples we were given and was blown away by how delicious the beers were. I\'m not too much of a beer person, but I think Minhas is going to change that real soon.', '2', '2018-11-25 02:23:08', 1, 'abcd', '3');
 
 -- --------------------------------------------------------
 
@@ -346,10 +372,20 @@ CREATE TABLE IF NOT EXISTS `uploads` (
   `user_id` varchar(100) NOT NULL,
   `photoid` int(255) NOT NULL,
   `r_id` int(255) NOT NULL,
-  KEY `user_id` (`user_id`),
+  PRIMARY KEY (`user_id`,`photoid`,`r_id`),
   KEY `r_id` (`r_id`),
   KEY `photoid` (`photoid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `uploads`
+--
+
+INSERT INTO `uploads` (`user_id`, `photoid`, `r_id`) VALUES
+('idenc', 1, 1),
+('admin', 2, 2),
+('admin', 3, 2),
+('admin', 4, 2);
 
 -- --------------------------------------------------------
 
@@ -373,12 +409,15 @@ CREATE TABLE IF NOT EXISTS `user` (
 --
 
 INSERT INTO `user` (`username`, `password`, `date_joined`, `user_type`, `fname`, `lname`) VALUES
+('abcd', '81dc9bdb52d04dc20036dbd8313ed055', '2018-11-25 02:22:33', 'user', 'ab', 'cd'),
 ('admin', 'ed38c5a8ab903bee65878fe334a5e9ec', '2018-11-19 04:32:38', 'admin', NULL, NULL),
 ('idenc', '758251d6a1f4ea9abc8b872d4917b231', '2018-11-19 03:02:53', 'user', '', '');
 
 --
 -- Constraints for dumped tables
 --
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 --
 -- Constraints for table `adds_to`
