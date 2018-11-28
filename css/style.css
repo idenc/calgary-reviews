@@ -493,6 +493,7 @@ p {
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
     position: relative;
+    min-height: 100%;
 }
 
 .featured-place-wrap:hover {

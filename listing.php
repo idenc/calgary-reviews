@@ -67,6 +67,10 @@
                                         <a class="nav-link" href="admin/create_user.php" style="color: red;">Create
                                             User</a>
                                     </li>
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="admin/viewpending.php" style="color: red;">View
+                                            Pending</a>
+                                    </li>
                                 <?php endif ?>
                                 <li class="nav-item active">
                                     <a class="nav-link" href="index.php?logout='1'" style="color: red;">Logout</a>
@@ -185,7 +189,7 @@
                     </div>
                 </div>
                 <div class="row light-bg detail-options-wrap">
-                    <?php generate_restaurants()?>
+                    <?php generate_restaurants(false)?>
                 </div>
             </div>
         </div>

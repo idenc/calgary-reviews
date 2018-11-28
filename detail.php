@@ -179,6 +179,9 @@
                         <?php generate_hours($r_id) ?>
                     </div>
                 </div>
+                <div class="review-btn" style="margin: 0">
+                    <a href=# class="btn btn-outline-danger">EDIT THIS RESTAURANT</a>
+                </div>
             </div>
         </div>
     </div>

@@ -463,12 +463,20 @@ function submit_review()
  * =========================================================
  */
 
-function generate_restaurants()
+function generate_restaurants($find_pending)
 {
     global $db;
 
-    $query = "SELECT *
-              FROM restaurant";
+    if ($find_pending) {
+        $query = "SELECT *
+                  FROM restaurant
+                  WHERE pending = 1";
+    } else {
+        $query = "SELECT *
+                  FROM restaurant
+                  WHERE pending = 0";
+    }
+
     $query = mysqli_query($db, $query);
 
     while ($temp = mysqli_fetch_array($query)) {
