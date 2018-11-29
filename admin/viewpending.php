@@ -49,7 +49,7 @@ if (!isAdmin()) {
                     <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                         <ul class="navbar-nav">
                             <li class="nav-item active">
-                                <a class="nav-link" href="#">Browse</a>
+                                <a class="nav-link" href="../listing.php">Browse</a>
                             </li>
                             <?php if (isset($_SESSION['user'])) : ?>
                                 <li class="nav-item dropdown">

@@ -207,7 +207,7 @@ function isAdmin()
  * =========================================================
  */
 
-function generatePhotos($rid)
+function generatePhotos($rid, $isEdit)
 {
     global $db;
 
@@ -221,6 +221,9 @@ function generatePhotos($rid)
         echo "<a href=$temp[0] class='grid image-link'>";
         echo "<img src=$temp[0] class='img-fluid' alt='#'>";
         echo "</a>";
+        if ($isEdit) {
+            echo "<button type='button'>Delete</button>";
+        }
         echo "</div>";
     }
 }
@@ -391,12 +394,15 @@ function is_open($r_id)
 {
     global $db;
 
-    $day_of_week = date('N', strtotime('Monday'));
+    $day_of_week = date('N');
     $time = date('H:i:s');
     $query = "SELECT COUNT(*)
               FROM business_hours
-              WHERE day_of_week = $day_of_week AND $time > open_time AND $time < close_time";
-    $query = mysqli_query($db, $query);
+              WHERE day_of_week = $day_of_week AND
+              '$time' > open_time AND '$time' < close_time
+               AND r_id = $r_id";
+
+    $query = mysqli_query($db, $query) or die(mysqli_error($db));
 
     if ($query && mysqli_num_rows($query) == 1) {
         return true;
@@ -625,7 +631,8 @@ function add_listing()
     }
 }
 
-function handle_images($r_id) {
+function handle_images($r_id)
+{
     global $errors, $db;
 
     //Code taken from https://www.w3schools.com/php/php_file_upload.asp
@@ -652,7 +659,7 @@ function handle_images($r_id) {
         }
         // Check if file already exists
         if (file_exists($target_file)) {
-            array_push($errors,"Sorry, file already exists.");
+            array_push($errors, "Sorry, file already exists.");
             $uploadOk = 0;
         }
         // Check file size
@@ -662,7 +669,7 @@ function handle_images($r_id) {
         }
         // Check if $uploadOk is set to 0 by an error
         if ($uploadOk == 0) {
-            array_push($errors,"Sorry, your file was not uploaded.");
+            array_push($errors, "Sorry, your file was not uploaded.");
             // if everything is ok, try to upload file
         } else {
             $filename = basename($_FILES["pic$i"]["name"]);
@@ -687,7 +694,7 @@ function handle_images($r_id) {
             if (move_uploaded_file($_FILES["pic$i"]["tmp_name"], $target_file)) {
                 echo "The file " . basename($_FILES["pic$i"]["name"]) . " has been uploaded.";
             } else {
-                array_push($errors,"Sorry, there was an error uploading your file.");
+                array_push($errors, "Sorry, there was an error uploading your file.");
             }
         }
     }
@@ -699,8 +706,8 @@ function handle_hours($r_id)
 
     for ($i = -1; $i < 6; $i++) {
         $day = strtolower(date('l', mktime(0, 0, 0, 0, $i, 0)));
-        $open = $_POST[$day."_open"];
-        $close = $_POST[$day.'_close'];
+        $open = $_POST[$day . "_open"];
+        $close = $_POST[$day . '_close'];
         $query = "INSERT INTO business_hours (r_id, day_of_week, open_time, close_time)
                   VALUES ($r_id, ($i + 2), '$open', '$close')";
         $query = mysqli_query($db, $query);
@@ -709,4 +716,77 @@ function handle_hours($r_id)
         }
     }
 
+}
+
+/*
+ * =========================================================
+ * EDIT FUNCTIONS
+ * =========================================================
+ */
+
+if (isset($_POST['edit_listing_btn'])) {
+    edit_listing();
+}
+
+$category = "";
+
+function edit_listing()
+{
+    // call these variables with the global keyword to make them available in function
+    global $db, $errors, $r_name, $location, $phone_num, $website, $category;
+
+    $r_id = $_GET['r_id'];
+    $wifi = 0;
+    $delivery = 0;
+    $alcohol = 0;
+    // receive all input values from the form. Call the e() function
+    // defined below to escape form values
+    if (isset($_POST['r_name']))
+        $r_name = e($_POST['name']);
+    if (isset($_POST['location']))
+        $location = e($_POST['location']);
+    if (isset($_POST['phone_num']))
+        $phone_num = e($_POST['phone_num']);
+    if (isset($_POST['wifi']))
+        $wifi = 1;
+    if (isset($_POST['delivery']))
+        $delivery = 1;
+    if (isset($_POST['alcohol']))
+        $alcohol = 1;
+    if (isset($_POST['website']))
+        $website = e($_POST['website']);
+    if (isset($_POST['category']))
+        $category = e($_POST['category']);
+
+    if (count($errors) == 0) {
+        //Handle restaurant info update
+        $query1 = "UPDATE restaurant
+                  SET
+                  `name` = IF('" . $r_name . "' = '', name, $r_name), 
+                  `location` = IF('" . $location . "' = '', location, $location), 
+                  `wifi` = $wifi, 
+                  `delivery` = $delivery,
+                  `alcohol` = $alcohol,
+                  `phone_num` = IF('" . $phone_num . "' = '', phone_num, $phone_num),
+                  `website` = IF('" . $website . "' = '', website, $website),
+                  WHERE r_id = $r_id";
+        $query1 = mysqli_query($db, $query1);
+
+        //Handle adding category
+        if (!empty($category)) {
+            $query2 = "INSERT INTO `restaurant_category` (`r_id`, `category`)
+                       VALUES ($r_id, '$category')";
+
+            $query2 = mysqli_query($db, $query2) or die(mysqli_error($db));
+        }
+
+        handle_hours($r_id);
+        handle_images($r_id);
+        if ($query1) {
+            $_SESSION['edit_success'] = "Restaurant successfully edited!!";
+            echo $_SESSION['edit_success'];
+        } else {
+            array_push($errors, mysqli_error($db));
+        }
+    }
 }

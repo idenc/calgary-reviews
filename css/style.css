@@ -412,8 +412,21 @@ p {
     width: 20%;
 }
 
+.swiper-container {
+    max-height: 700px;
+}
+
 .files {
     color: white;
+}
+
+.editphotos {
+    width: 30%;
+}
+
+.editphotos button {
+    position: absolute;
+    margin: 30% 0 0 30%;
 }
 
 .reg-input label {

@@ -107,7 +107,7 @@
 
             global $info;
             $info = get_info($r_id);
-            generatePhotos($r_id) ?>
+            generatePhotos($r_id, false) ?>
         </div>
         <!-- Add Pagination -->
         <div class="swiper-pagination swiper-pagination-white"></div>
@@ -180,7 +180,7 @@
                     </div>
                 </div>
                 <div class="review-btn" style="margin: 0">
-                    <a href=# class="btn btn-outline-danger">EDIT THIS RESTAURANT</a>
+                    <a href="editrestaurant.php?r_id=<?php echo $r_id?>" class="btn btn-outline-danger">EDIT THIS RESTAURANT</a>
                 </div>
             </div>
         </div>
