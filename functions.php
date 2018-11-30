@@ -238,7 +238,7 @@ function generateTicks($rid)
     $query = mysqli_query($db, $query);
     $temp = mysqli_fetch_array($query);
     foreach ($temp as $cname => $cvalue) {
-        if ($cvalue == 1 and ($cname == 'wifi' or $cname == 'delivery' or $cname == 'alcohol')) {
+        if (($cname == 'wifi' or $cname == 'delivery' or $cname == 'alcohol') and $cvalue == 1) {
             echo "<div class='col-md-4'>";
             echo "<label class='custom-checkbox'>";
             echo "<span class='ti-check-box'></span>";
@@ -259,6 +259,14 @@ function get_num_reviews($r_id)
     $query = mysqli_query($db, $query);
     $query = mysqli_fetch_array($query);
     return $query[0];
+}
+
+function review_button($r_id) {
+    if (isset($_SESSION['user'])) {
+        echo "href='review.php?r_id=$r_id'";
+    } else {
+        echo "href = 'login.php'";
+    }
 }
 
 function generate_avg_cost($r_id)
@@ -393,7 +401,7 @@ function generate_hours($r_id)
 function is_open($r_id)
 {
     global $db;
-
+    date_default_timezone_set('America/Phoenix');
     $day_of_week = date('N');
     $time = date('H:i:s');
     $query = "SELECT COUNT(*)
@@ -404,7 +412,7 @@ function is_open($r_id)
 
     $query = mysqli_query($db, $query) or die(mysqli_error($db));
 
-    if ($query && mysqli_num_rows($query) == 1) {
+    if ($query && mysqli_fetch_array($query) == 1) {
         return true;
     } else {
         return false;
@@ -451,7 +459,7 @@ function submit_review()
 
     if (count($errors) == 0) {
         $query = "INSERT INTO review (content, rating, r_id, user_id, cost) 
-				  VALUES('$review_content', $review_rating, $r_id, '$logged_in_user_id',
+				  VALUES('$review_content', $review_rating + 1, $r_id, '$logged_in_user_id',
 				   $review_cost)";
         $query = mysqli_query($db, $query);
 
@@ -472,15 +480,17 @@ function submit_review()
 function generate_restaurants($find_pending)
 {
     global $db;
+    $pendingpath = "";
 
     if ($find_pending) {
         $query = "SELECT *
                   FROM restaurant
-                  WHERE pending = 1";
+                  WHERE pending = 0x1";
+        $pendingpath = "../";
     } else {
         $query = "SELECT *
                   FROM restaurant
-                  WHERE pending = 0";
+                  WHERE pending = '0'";
     }
 
     $query = mysqli_query($db, $query);
@@ -488,7 +498,7 @@ function generate_restaurants($find_pending)
     while ($temp = mysqli_fetch_array($query)) {
         $r_id = $temp['r_id'];
         $name = $temp['name'];
-        $directory = "images/restaurants/$r_id/";
+        $directory = $pendingpath."images/restaurants/$r_id/";
         $files = scandir($directory);
         $firstFile = $directory . $files[2];// because [0] = "." [1] = ".."
         $avg_review = generate_avg_review($r_id);
@@ -499,7 +509,7 @@ function generate_restaurants($find_pending)
         echo <<< EOT
                     <div class="col-sm-6 col-lg-12 col-xl-6 featured-responsive">
                         <div class="featured-place-wrap">
-                            <a href="detail.php?r_id=$r_id">
+                            <a href=$pendingpath . "detail.php?r_id=$r_id">
                                 <img src="$firstFile" class="img-fluid" alt="#">
                                 <span class="featured-rating-orange ">$avg_review</span>
                                 <div class="featured-title-box">
@@ -528,6 +538,11 @@ EOT;
         } else {
             echo "<div class=\"closed-now\">CLOSED NOW</div>";
         }
+        if ($find_pending) {
+            echo "<form method = 'post' action='viewpending.php'>";
+            echo "<button type='submit' class='btn' name='accept_res' style='margin: 10px'>Accept</button>";
+            echo "</form>";
+        }
         echo <<< EOT
                                         <span class="ti-bookmark"></span>
                                     </div>
@@ -549,6 +564,19 @@ function get_num_restaurants()
     $query = mysqli_query($db, $query);
     $query = mysqli_fetch_array($query);
     return $query[0];
+}
+
+if (isset($_POST['accept_res'])) {
+    accept_pending();
+}
+
+function accept_pending() {
+    global $db;
+
+    $query1 = "UPDATE restaurant
+               SET pending = 0";
+    $query1 = mysqli_query($db, $query1) or die(mysqli_error($db));
+    header('location: viewpending.php');
 }
 
 /*
@@ -621,8 +649,12 @@ function add_listing()
             $query = mysqli_query($db, $query);
 
             if ($query) {
-                // get id of the created user
                 $_SESSION['listing_pend_success'] = "Restaurant submitted for approval";
+                if (isset($_SESSION['admin_success'])) {
+                    echo '<script language="javascript">';
+                    echo $_SESSION['listing_pend_success'];
+                    echo '</script>';
+                }
                 header('location: index.php');
             } else {
                 array_push($errors, "Error submitting restaurant");
@@ -635,12 +667,17 @@ function handle_images($r_id)
 {
     global $errors, $db;
 
+
     //Code taken from https://www.w3schools.com/php/php_file_upload.asp
     for ($i = 0; $i < 3; $i++) {
         $target_dir = "images\\restaurants\\$r_id\\";
         $target_file = $target_dir . basename($_FILES["pic$i"]["name"]);
         $uploadOk = 1;
         $category = $_POST["category$i"];
+
+        if(!file_exists($_FILES["pic$i"]['tmp_name']) || !is_uploaded_file($_FILES["pic$i"]['tmp_name'])) {
+            continue;
+        }
 
         if (!file_exists($target_dir)) {
             mkdir($target_dir, 0777, true);
@@ -708,8 +745,13 @@ function handle_hours($r_id)
         $day = strtolower(date('l', mktime(0, 0, 0, 0, $i, 0)));
         $open = $_POST[$day . "_open"];
         $close = $_POST[$day . '_close'];
+        $day_num = $i + 2;
         $query = "INSERT INTO business_hours (r_id, day_of_week, open_time, close_time)
-                  VALUES ($r_id, ($i + 2), '$open', '$close')";
+                  VALUES ($r_id, $day_num, '$open', '$close')
+                      ON DUPLICATE KEY UPDATE
+                      `open_time` = IF('" . $open . "' = '', open_time, '$open'),
+                      `close_time` = IF('" . $close . "' = '', close_time, '$close')";
+
         $query = mysqli_query($db, $query);
         if (!$query) {
             array_push($errors, "Insertion into hours failed" . mysqli_error($db));
@@ -724,11 +766,23 @@ function handle_hours($r_id)
  * =========================================================
  */
 
+function get_ticks($r_id) {
+    global $db;
+
+    $query = "SELECT wifi, delivery, alcohol
+              FROM restaurant
+              WHERE r_id = $r_id";
+    $query = mysqli_query($db, $query) or die(mysqli_error($db));
+    $query = mysqli_fetch_assoc($query);
+    return $query;
+}
+
 if (isset($_POST['edit_listing_btn'])) {
     edit_listing();
 }
 
 $category = "";
+
 
 function edit_listing()
 {
@@ -736,9 +790,7 @@ function edit_listing()
     global $db, $errors, $r_name, $location, $phone_num, $website, $category;
 
     $r_id = $_GET['r_id'];
-    $wifi = 0;
-    $delivery = 0;
-    $alcohol = 0;
+
     // receive all input values from the form. Call the e() function
     // defined below to escape form values
     if (isset($_POST['r_name']))
@@ -749,10 +801,16 @@ function edit_listing()
         $phone_num = e($_POST['phone_num']);
     if (isset($_POST['wifi']))
         $wifi = 1;
+    else
+        $wifi = 0;
     if (isset($_POST['delivery']))
         $delivery = 1;
+    else
+        $delivery = 0;
     if (isset($_POST['alcohol']))
         $alcohol = 1;
+    else
+        $alcohol = 0;
     if (isset($_POST['website']))
         $website = e($_POST['website']);
     if (isset($_POST['category']))
@@ -762,15 +820,15 @@ function edit_listing()
         //Handle restaurant info update
         $query1 = "UPDATE restaurant
                   SET
-                  `name` = IF('" . $r_name . "' = '', name, $r_name), 
-                  `location` = IF('" . $location . "' = '', location, $location), 
+                  `name` = IF('" . $r_name . "' = '', name, '$r_name'), 
+                  `location` = IF('" . $location . "' = '', location, '$location'), 
                   `wifi` = $wifi, 
                   `delivery` = $delivery,
                   `alcohol` = $alcohol,
-                  `phone_num` = IF('" . $phone_num . "' = '', phone_num, $phone_num),
-                  `website` = IF('" . $website . "' = '', website, $website),
+                  `phone_num` = IF('" . $phone_num . "' = '', phone_num, '$phone_num'),
+                  `website` = IF('" . $website . "' = '', website, '$website')
                   WHERE r_id = $r_id";
-        $query1 = mysqli_query($db, $query1);
+        $query1 = mysqli_query($db, $query1) or die(mysqli_error($db));
 
         //Handle adding category
         if (!empty($category)) {

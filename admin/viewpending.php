@@ -108,19 +108,44 @@ if (!isAdmin()) {
                                 global $db;
                                 $query = "SELECT COUNT(*)
                                           FROM restaurant
-                                          WHERE pending = 1";
+                                          WHERE pending = 0x1";
                                 $query = mysqli_query($db, $query);
                                 $query = mysqli_fetch_array($query);
                                 echo $query[0];
                                 ?> Results For <span>Pending Restaurants</span></p>
                         </div>
                     </div>
-                    <div class="row light-bg detail-options-wrap">
-                        <?php generate_restaurants(true) ?>
+                    <div class="col-md-8 featured-responsive">
+                        <div class="detail-filter">
+                            <p>Filter by</p>
+                            <form class="filter-dropdown">
+                                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
+                                    <option selected>Best Match</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                </select>
+                            </form>
+                            <form class="filter-dropdown">
+                                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect1">
+                                    <option selected>Restaurants</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                </select>
+                            </form>
+                            <div class="map-responsive-wrap">
+                                <a class="map-icon" href="#"><span class="icon-location-pin"></span></a>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                <div class="row light-bg detail-options-wrap">
+                    <?php generate_restaurants(true) ?>
                 </div>
             </div>
         </div>
+    </div>
 </section>
 <!--//END DETAIL -->
 <!--============================= FOOTER =============================-->
