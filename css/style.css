@@ -524,7 +524,10 @@ p {
 }
 
 .featured-place-wrap img {
+    position: relative;
     width: 100%;
+    height: 290px;
+    object-fit: cover;
 }
 
 .featured-rating,

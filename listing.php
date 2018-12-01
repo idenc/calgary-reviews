@@ -1,4 +1,4 @@
-<?php include('functions.php')?>
+<?php include('functions.php') ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -83,7 +83,8 @@
                                     <a class="nav-link" href="login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
+                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span
+                                            class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
                     </div>
@@ -101,7 +102,7 @@
                 <div class="row detail-filter-wrap">
                     <div class="col-md-4 featured-responsive">
                         <div class="detail-filter-text">
-                            <p><?php echo get_num_restaurants()?> Results For <span>Restaurant</span></p>
+                            <p><?php echo get_num_restaurants() ?> Results For <span>Restaurant</span></p>
                         </div>
                     </div>
                     <div class="col-md-8 featured-responsive">
@@ -189,7 +190,7 @@
                     </div>
                 </div>
                 <div class="row light-bg detail-options-wrap">
-                    <?php generate_restaurants(false)?>
+                    <?php generate_restaurants(false) ?>
                 </div>
             </div>
         </div>
