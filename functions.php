@@ -899,15 +899,72 @@ function show_user()
         $last_name = $temp['lname'];
 
         echo <<< EOT
-            <h7>Username: $usern</h7>
+        <h4> User info: </h4>
+        <hr>
+            <p>Username: $usern</p>
             <br>
-            <h7>Date joined: $date_joined</h7>
+            <p>Date joined: $date_joined</p>
             <br>
-            <h7>First Name: $first_name</h7>
+            <p>First Name: $first_name</p>
             <br>
-            <h7>Last Name: $last_name</h7>
+            <p>Last Name: $last_name</p>
+        <hr>
 
 EOT;
 
     }
 }
+
+function get_profile_reviews() 
+{
+    global $db;
+
+    $query = "SELECT * FROM review WHERE user_id = '{$_SESSION['user']['username']}'";
+    $result = mysqli_query($db, $query);
+    
+
+    while ($temp = mysqli_fetch_array($result)){
+        $user_review = $temp['content'];
+        $user_rating = $temp['rating'];
+        $user_review_date = $temp['date_posted'];
+        $user_review_rid = $temp['r_id'];
+        $user_review_cost = $temp['cost'];
+        $reviewer = $temp['user_id'];
+
+        // get how manyy reviews the use has reviewed
+        $query2 = "SELECT COUNT(*)
+                   FROM review
+                   WHERE user_id = '{$_SESSION['user']['username']}'";
+        $num_reviews = mysqli_query($db, $query2);
+        $num_reviews = mysqli_fetch_array($num_reviews);
+        $num_reviews = $num_reviews[0];
+
+        echo <<< EOT
+                    <h4> User Reviews: <h4>
+                    <hr>
+                    <div class="customer-review_wrap">
+                        <div class="customer-img">
+                            <p>$reviewer</p>
+                            <span>$num_reviews Reviews</span>
+                        </div>
+                        <div class="customer-content-wrap">
+                            <div class="customer-content">
+                                <div class="customer-review">
+EOT;
+        generate_cost($user_review_cost);
+        echo <<< EOT
+                    <br>
+                    <p>Reviewed $user_review_date</p>
+                    </div>
+                    <div class="customer-rating">$user_rating / 5</div>
+                    </div>
+                    <p class="customer-text">$user_review</p>          
+                    </div>
+                    </div>
+                    <hr>
+EOT;
+
+        
+
+    }
+} 

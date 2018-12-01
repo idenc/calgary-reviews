@@ -102,6 +102,7 @@
             <div>
             <?php  
             show_user();
+            get_profile_reviews(); 
             ?>
             </div>
 
