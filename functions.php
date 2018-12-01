@@ -848,3 +848,37 @@ function edit_listing()
         }
     }
 }
+
+/*
+ * =========================================================
+ * USER FUNCTIONS
+ * =========================================================
+ */
+
+
+function show_user()
+{
+    global $db;
+
+    $query = "SELECT * FROM user WHERE username = '{$_SESSION['user']['username']}'";
+    $result = mysqli_query($db, $query);
+
+    while ($temp = mysqli_fetch_array($result)){
+        $usern = $temp['username'];
+        $date_joined = $temp['date_joined'];
+        $first_name = $temp['fname'];
+        $last_name = $temp['lname'];
+
+        echo <<< EOT
+            <h7>Username: $usern</h7>
+            <br>
+            <h7>Date joined: $date_joined</h7>
+            <br>
+            <h7>First Name: $first_name</h7>
+            <br>
+            <h7>Last Name: $last_name</h7>
+
+EOT;
+
+    }
+}
