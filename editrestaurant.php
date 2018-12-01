@@ -113,7 +113,8 @@ $alcohol = $array['alcohol'];
 <!--//END HEADER -->
 <!-- SLIDER -->
 <div style="background: #3F3F3F; height: fit-content;">
-    <form method="post" action="editrestaurant.php?r_id=<?php echo $r_id ?>" class="register" style="margin-bottom: 30%;"
+    <form method="post" action="editrestaurant.php?r_id=<?php echo $r_id ?>" class="register"
+          style="margin-bottom: 30%;"
           enctype="multipart/form-data">
         <?php display_error(); ?>
         <div class="reg-input">
@@ -191,7 +192,7 @@ $alcohol = $array['alcohol'];
         </div>
         <h5 style="color:white">Current Photos</h5>
         <div class="editphotos">
-            <?php generatePhotos($r_id, true)?>
+            <?php generatePhotos($r_id, true) ?>
         </div>
         <div class="files">
             Upload up to 3 images for the restaurant:
@@ -227,15 +228,15 @@ $alcohol = $array['alcohol'];
 
         <div class="reg-input">
             <label>Has Wifi?</label>
-            <input id="listing_box" type="checkbox" name="wifi" <?php echo ($wifi == 1 ? 'checked' : '');?>>
+            <input id="listing_box" type="checkbox" name="wifi" <?php echo($wifi == 1 ? 'checked' : ''); ?>>
         </div>
         <div class="reg-input">
             <label>Has Delivery?</label>
-            <input id="listing_box" type="checkbox" name="delivery" <?php echo ($delivery == 1 ? 'checked' : '');?>>
+            <input id="listing_box" type="checkbox" name="delivery" <?php echo($delivery == 1 ? 'checked' : ''); ?>>
         </div>
         <div class="reg-input">
             <label>Has Alcohol?</label>
-            <input id="listing_box" type="checkbox" name="alcohol" <?php echo ($alcohol == 1 ? 'checked' : '');?>>
+            <input id="listing_box" type="checkbox" name="alcohol" <?php echo($alcohol == 1 ? 'checked' : ''); ?>>
         </div>
         <div class="reg-input">
             <button type="submit" class="btn" name="edit_listing_btn">Edit Restaurant</button>

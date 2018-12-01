@@ -83,7 +83,7 @@
                                     <a class="nav-link" href="login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="#" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
+                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
                     </div>
@@ -123,7 +123,9 @@
         <div class="row">
             <div class="col-md-6">
                 <h5><?php echo $info['name'] ?></h5>
-                <?php generate_avg_cost($r_id); ?>
+                <?php generate_avg_cost($r_id);
+                      generate_categories($r_id)?>
+
             </div>
             <div class="col-md-6">
                 <div class="reserve-seat-block">
@@ -131,7 +133,7 @@
                         <span><?php echo generate_avg_review($r_id) ?></span>
                     </div>
                     <div class="review-btn">
-                        <a <?php review_button($r_id)?> class="btn btn-outline-danger">WRITE A REVIEW</a>
+                        <a <?php review_button($r_id) ?> class="btn btn-outline-danger">WRITE A REVIEW</a>
                         <span><?php echo get_num_reviews($r_id) ?> Reviews</span>
                     </div>
                     <div class="reserve-btn">
@@ -180,7 +182,8 @@
                     </div>
                 </div>
                 <div class="review-btn" style="margin: 0">
-                    <a href='editrestaurant.php?r_id=<?php echo $r_id ?>' class="btn btn-outline-danger">EDIT THIS RESTAURANT</a>
+                    <a href='editrestaurant.php?r_id=<?php echo $r_id ?>' class="btn btn-outline-danger">EDIT THIS
+                        RESTAURANT</a>
                 </div>
             </div>
         </div>

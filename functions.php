@@ -236,7 +236,7 @@ function generateTicks($rid)
               FROM restaurant
               WHERE r_id = $rid";
     $query = mysqli_query($db, $query);
-    $temp = mysqli_fetch_array($query);
+    $temp = mysqli_fetch_array($query, MYSQLI_ASSOC);
     foreach ($temp as $cname => $cvalue) {
         if (($cname == 'wifi' or $cname == 'delivery' or $cname == 'alcohol') and $cvalue == 1) {
             echo "<div class='col-md-4'>";
@@ -261,7 +261,8 @@ function get_num_reviews($r_id)
     return $query[0];
 }
 
-function review_button($r_id) {
+function review_button($r_id)
+{
     if (isset($_SESSION['user'])) {
         echo "href='review.php?r_id=$r_id'";
     } else {
@@ -412,7 +413,7 @@ function is_open($r_id)
 
     $query = mysqli_query($db, $query) or die(mysqli_error($db));
 
-    if ($query && mysqli_fetch_array($query) == 1) {
+    if ($query && mysqli_fetch_array($query)[0] == 1) {
         return true;
     } else {
         return false;
@@ -498,7 +499,7 @@ function generate_restaurants($find_pending)
     while ($temp = mysqli_fetch_array($query)) {
         $r_id = $temp['r_id'];
         $name = $temp['name'];
-        $directory = $pendingpath."images/restaurants/$r_id/";
+        $directory = $pendingpath . "images/restaurants/$r_id/";
         $files = scandir($directory);
         $firstFile = $directory . $files[2];// because [0] = "." [1] = ".."
         $avg_review = generate_avg_review($r_id);
@@ -507,9 +508,12 @@ function generate_restaurants($find_pending)
         $phone_num = $temp['phone_num'];
         $website = $temp['website'];
         echo <<< EOT
-                    <div class="col-sm-6 col-lg-12 col-xl-6 featured-responsive">
+                    <div class="col-sm-6 col-lg-12 col-xl-6 featured-responsive" style="margin-bottom: 15px">
                         <div class="featured-place-wrap">
-                            <a href=$pendingpath . "detail.php?r_id=$r_id">
+EOT;
+        $href = $pendingpath . "detail.php?r_id=$r_id";
+        echo "<a href=$href>";
+        echo <<< EOT
                                 <img src="$firstFile" class="img-fluid" alt="#">
                                 <span class="featured-rating-orange ">$avg_review</span>
                                 <div class="featured-title-box">
@@ -518,6 +522,8 @@ function generate_restaurants($find_pending)
                                     <p>$num_reviews Reviews</p> <span> • </span>
 EOT;
         generate_avg_cost($r_id);
+        generate_categories($r_id);
+
         echo <<< EOT
                                     <ul>
                                         <li><span class="icon-location-pin"></span>
@@ -555,6 +561,27 @@ EOT;
     }
 }
 
+function generate_categories($r_id) {
+    global $db;
+
+    $cg = "SELECT category
+           FROM restaurant_category
+           WHERE r_id = $r_id";
+    $rows = array();
+    $cg = mysqli_query($db, $cg) or die(mysqli_error($db));
+
+    while ($row = mysqli_fetch_array($cg, MYSQLI_NUM)) $rows[] = $row[0];
+    echo "<ul style='padding-left: 0'>";
+    for ($i = 0; $i < count($rows) - 1; $i++) {
+        echo "<p style='padding-left: 0'>$rows[$i]</p>";
+        echo "<span style='padding: 0 10px'>• </span>";
+    }
+    $last = end($rows);
+    echo "<p style='padding-left: 0'>$last</p>";
+    echo "</ul>";
+
+}
+
 function get_num_restaurants()
 {
     global $db;
@@ -570,7 +597,8 @@ if (isset($_POST['accept_res'])) {
     accept_pending();
 }
 
-function accept_pending() {
+function accept_pending()
+{
     global $db;
 
     $query1 = "UPDATE restaurant
@@ -675,7 +703,7 @@ function handle_images($r_id)
         $uploadOk = 1;
         $category = $_POST["category$i"];
 
-        if(!file_exists($_FILES["pic$i"]['tmp_name']) || !is_uploaded_file($_FILES["pic$i"]['tmp_name'])) {
+        if (!file_exists($_FILES["pic$i"]['tmp_name']) || !is_uploaded_file($_FILES["pic$i"]['tmp_name'])) {
             continue;
         }
 
@@ -766,7 +794,8 @@ function handle_hours($r_id)
  * =========================================================
  */
 
-function get_ticks($r_id) {
+function get_ticks($r_id)
+{
     global $db;
 
     $query = "SELECT wifi, delivery, alcohol
