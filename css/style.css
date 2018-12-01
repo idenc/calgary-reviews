@@ -416,6 +416,13 @@ p {
     max-height: 700px;
 }
 
+.img-fluid {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+}
+
 .files {
     color: white;
 }

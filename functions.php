@@ -561,7 +561,8 @@ EOT;
     }
 }
 
-function generate_categories($r_id) {
+function generate_categories($r_id)
+{
     global $db;
 
     $cg = "SELECT category
@@ -892,7 +893,7 @@ function show_user()
     $query = "SELECT * FROM user WHERE username = '{$_SESSION['user']['username']}'";
     $result = mysqli_query($db, $query);
 
-    while ($temp = mysqli_fetch_array($result)){
+    while ($temp = mysqli_fetch_array($result)) {
         $usern = $temp['username'];
         $date_joined = $temp['date_joined'];
         $first_name = $temp['fname'];
@@ -915,37 +916,42 @@ EOT;
     }
 }
 
-function get_profile_reviews() 
+function get_profile_reviews()
 {
     global $db;
 
-    $query = "SELECT * FROM review WHERE user_id = '{$_SESSION['user']['username']}'";
-    $result = mysqli_query($db, $query);
-    
+    $query = "SELECT rev.*, res.name FROM review AS rev, restaurant AS res WHERE rev.user_id = '{$_SESSION['user']['username']}' AND res.r_id = rev.r_id";
+    $result = mysqli_query($db, $query) or die(mysqli_error($db));
 
-    while ($temp = mysqli_fetch_array($result)){
+    // get how many reviews the user has posted
+    $query2 = "SELECT COUNT(*)
+               FROM review
+               WHERE user_id = '{$_SESSION['user']['username']}'";
+    $num_reviews = mysqli_query($db, $query2);
+    $num_reviews = mysqli_fetch_array($num_reviews);
+    $num_reviews = $num_reviews[0];
+
+    echo "<h4> User Reviews ($num_reviews): </h4>";
+    while ($temp = mysqli_fetch_array($result)) {
         $user_review = $temp['content'];
         $user_rating = $temp['rating'];
         $user_review_date = $temp['date_posted'];
-        $user_review_rid = $temp['r_id'];
+        $r_id = $temp['r_id'];
+        $rev_res_name = $temp['name'];
         $user_review_cost = $temp['cost'];
         $reviewer = $temp['user_id'];
 
-        // get how manyy reviews the use has reviewed
-        $query2 = "SELECT COUNT(*)
-                   FROM review
-                   WHERE user_id = '{$_SESSION['user']['username']}'";
-        $num_reviews = mysqli_query($db, $query2);
-        $num_reviews = mysqli_fetch_array($num_reviews);
-        $num_reviews = $num_reviews[0];
 
         echo <<< EOT
-                    <h4> User Reviews: <h4>
                     <hr>
+                    <h6>
+                        <a href='detail.php?r_id=$r_id'>
+                            $rev_res_name
+                        </a>
+                    </h6>
                     <div class="customer-review_wrap">
                         <div class="customer-img">
                             <p>$reviewer</p>
-                            <span>$num_reviews Reviews</span>
                         </div>
                         <div class="customer-content-wrap">
                             <div class="customer-content">
@@ -964,7 +970,6 @@ EOT;
                     <hr>
 EOT;
 
-        
 
     }
 } 
