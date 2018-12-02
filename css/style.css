@@ -429,11 +429,22 @@ p {
 
 .editphotos {
     width: 30%;
+    color: white;
 }
 
-.editphotos button {
-    position: absolute;
-    margin: 30% 0 0 30%;
+.editphotos img {
+    height: auto;
+    object-fit: initial;
+}
+
+#edit_pics {
+    padding: 0;
+}
+
+.editphotos input {
+    width: 25px;
+    height: 20px;
+    margin: 10px 0 0 10px;
 }
 
 .reg-input label {
@@ -455,6 +466,7 @@ p {
 #listing_box {
     width: 25px;
     height: 20px;
+    margin: 10px 0 0 10px;
 }
 
 .error {

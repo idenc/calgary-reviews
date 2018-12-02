@@ -159,7 +159,7 @@
                 </div>
                 <div class="booking-checkbox_wrap mt-4">
                     <h5><?php echo get_num_reviews($r_id) ?> Reviews</h5>
-                    <?php get_reviews($r_id) ?>
+                    <?php generate_reviews($r_id) ?>
                 </div>
             </div>
             <div class="col-md-4 responsive-wrap">
