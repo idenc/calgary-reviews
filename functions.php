@@ -511,7 +511,7 @@ function delete_review()
  * =========================================================
  */
 
-function generate_restaurants($find_pending)
+function generate_restaurants($find_pending, $featured)
 {
     global $db;
     $pendingpath = "";
@@ -521,6 +521,12 @@ function generate_restaurants($find_pending)
                   FROM restaurant
                   WHERE pending = 0x1";
         $pendingpath = "../";
+    } else if ($featured){
+        $query = "SELECT res.*, AVG(rating)
+                  FROM restaurant AS res, review AS rev
+                  WHERE pending = '0'
+                  ORDER BY AVG(rating)
+                  LIMIT 3";
     } else {
         $query = "SELECT *
                   FROM restaurant

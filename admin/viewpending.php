@@ -141,7 +141,7 @@ if (!isAdmin()) {
                     </div>
                 </div>
                 <div class="row light-bg detail-options-wrap">
-                    <?php generate_restaurants(true) ?>
+                    <?php generate_restaurants(true, false) ?>
                 </div>
             </div>
         </div>

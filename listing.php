@@ -190,7 +190,7 @@
                     </div>
                 </div>
                 <div class="row light-bg detail-options-wrap">
-                    <?php generate_restaurants(false) ?>
+                    <?php generate_restaurants(false, false) ?>
                 </div>
             </div>
         </div>
