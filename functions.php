@@ -516,18 +516,21 @@ function generate_restaurants($find_pending, $featured)
 {
     global $db;
     $pendingpath = "";
+    $div_class = "col-sm-6 col-lg-12 col-xl-6 featured-responsive";
 
     if ($find_pending) {
         $query = "SELECT *
                   FROM restaurant
                   WHERE pending = 0x1";
         $pendingpath = "../";
-    } else if ($featured){
-        $query = "SELECT res.*, AVG(rating)
-                  FROM restaurant AS res, review AS rev
-                  WHERE pending = '0'
-                  ORDER BY AVG(rating)
-                  LIMIT 3";
+    } else if ($featured) {
+        $query = "SELECT res.*
+                    FROM restaurant AS res, review AS rev
+                    WHERE res.pending = '0' AND res.r_id = rev.r_id
+                    GROUP BY rev.r_id
+                    ORDER BY AVG(rev.rating) DESC
+                    LIMIT 3";
+        $div_class = "col-md-4 featured-responsive";
     } else {
         $query = "SELECT *
                   FROM restaurant
@@ -548,7 +551,7 @@ function generate_restaurants($find_pending, $featured)
         $phone_num = $temp['phone_num'];
         $website = $temp['website'];
         echo <<< EOT
-                    <div class="col-sm-6 col-lg-12 col-xl-6 featured-responsive" style="margin-bottom: 15px">
+                    <div class="$div_class" style="margin-bottom: 15px">
                         <div class="featured-place-wrap">
 EOT;
         $href = $pendingpath . "detail.php?r_id=$r_id";
@@ -1059,7 +1062,7 @@ EOT;
 
 
     }
-} 
+}
 
 
 function get_profile_reviews()
@@ -1120,28 +1123,60 @@ EOT;
     }
 }
 
-function viewUserPhotos($isEdit, $username)
+function viewUserPhotos($username)
 {
     global $db;
 
-    $query = "SELECT p.file_path
+    $query = "SELECT p.file_path, p.photo_id
               FROM photo AS p, uploads AS u
               WHERE p.photo_id = u.photoid AND u.user_id = '$username'";
     $query = mysqli_query($db, $query);
-    echo "<h4> Photos uploaded by user: </h4>";
-
+    echo "<h4>Photos uploaded by $username:</h4>";
+    echo "<form method = 'post' action='viewuserphotos.php?username=$username'>";
     while ($temp = mysqli_fetch_array($query)) {
 
         echo <<< EOT
-        "<a href=$temp[0] class='grid image-link'>";
-        "<img src=$temp[0] class='img-fluid' alt='#'>";
-        "</a>";
-        
-
+            <div class='swiper-slide'>
+                <a href=$temp[0] class='grid image-link' id='edit_pics'>
+                    <img src=$temp[0] class='img-profile' alt='#'>
+                </a>
+                <label for='pic_delete[]' style='vertical-align: middle'>Delete</label>
+                <input type='checkbox' name='pic_delete[]' value='$temp[1]' style="width: 25px; height: 25px">      
+            </div>
+            
 EOT;
-        if ($isEdit) {
-            echo "<button type='button'>Delete</button>";
+    }
+    echo <<< EOT
+            <div class="reg-input">
+                <button type="submit" class="btn" name="edit_photos">Submit</button>
+            </div>
+        </form>
+EOT;
+}
+
+if (isset($_POST['edit_photos'])) {
+    delete_user_photo();
+}
+
+function delete_user_photo() {
+    global $db;
+
+    if (!empty($_POST['pic_delete'])) {
+        $good = true;
+        foreach ($_POST['pic_delete'] as $id) {
+            $query = "DELETE FROM uploads WHERE photoid = $id";
+            $query = mysqli_query($db, $query);
+            if (!$query)
+                $good = false;
+            $query = "DELETE FROM photo WHERE photo_id = $id";
+            $query = mysqli_query($db, $query);
+            if (!$query)
+                $good = false;
         }
-        echo "</div>";
+        if ($good) {
+            echo "Photos deleted successfully";
+        } else {
+            echo "There was an error deleting photos";
+        }
     }
 }

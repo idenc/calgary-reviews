@@ -1,4 +1,4 @@
-<?php include('functions.php')?>
+<?php include('functions.php') ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -83,7 +83,8 @@
                                     <a class="nav-link" href="login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
+                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span
+                                            class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
                     </div>
@@ -99,11 +100,11 @@
         <div class="row">
             <div class="col-md-7 responsive-wrap">
 
-            <div>
-            <?php  
-            viewuserphotos(false, $_GET['username']);
-            ?>
-            </div>
+                <div>
+                    <?php
+                    viewuserphotos($_GET['username']);
+                    ?>
+                </div>
 
 
             </div>

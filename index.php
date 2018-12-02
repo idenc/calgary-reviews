@@ -66,7 +66,8 @@ if (isset($_SESSION['admin_success'])) {
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                             <a class="dropdown-item" href="profile.php?">Profile</a>
                                             <a class="dropdown-item" href="#">Lists</a>
-                                            <a class="dropdown-item" href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username']?>">Photos</a>
+                                            <a class="dropdown-item"
+                                               href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
                                         </div>
                                     </li>
                                     <?php if (isAdmin()) : ?>
@@ -150,7 +151,7 @@ if (isset($_SESSION['admin_success'])) {
             </div>
         </div>
         <div class="row">
-           <?php generate_restaurants(false, true)?>
+            <?php generate_restaurants(false, true) ?>
         </div>
         <div class="row justify-content-center">
             <div class="col-md-4">
