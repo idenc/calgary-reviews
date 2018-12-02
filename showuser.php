@@ -1,4 +1,4 @@
-<?php include('functions.php')?>
+<?php include('functions.php');?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,7 +43,7 @@
                     <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                         <ul class="navbar-nav">
                             <li class="nav-item active">
-                                <a class="nav-link" href="#">Browse</a>
+                                <a class="nav-link" href="listing.php">Browse</a>
                             </li>
                             <?php if (isset($_SESSION['user'])) : ?>
                                 <li class="nav-item dropdown">
@@ -57,9 +57,9 @@
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="#">Profile</a>
+                                        <a class="dropdown-item" href="profile.php">Profile</a>
                                         <a class="dropdown-item" href="#">Lists</a>
-                                        <a class="dropdown-item" href="#">Photos</a>
+                                        <a class="dropdown-item" href="userphotos.php">Photos</a>
                                     </div>
                                 </li>
                                 <?php if (isAdmin()) : ?>
@@ -101,7 +101,11 @@
 
             <div>
             <?php  
-            generateUserPhotos(false);
+            show_user();
+            show_user_reviews();
+            $user_id = $_GET['username'];
+            $href = "viewuserphotos.php?username=$user_id";
+            echo "<a href=$href> <p>View photos</p> </a>";
             ?>
             </div>
 

@@ -64,9 +64,9 @@ if (isset($_SESSION['admin_success'])) {
                                             <span class="icon-arrow-down"></span>
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                            <a class="dropdown-item" href="profile.php">Profile</a>
+                                            <a class="dropdown-item" href="profile.php?">Profile</a>
                                             <a class="dropdown-item" href="#">Lists</a>
-                                            <a class="dropdown-item" href="userphotos.php">Photos</a>
+                                            <a class="dropdown-item" href="profilephotos.php">Photos</a>
                                         </div>
                                     </li>
                                     <?php if (isAdmin()) : ?>
