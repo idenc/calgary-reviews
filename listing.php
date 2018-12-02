@@ -1,4 +1,4 @@
-<?php include('functions.php') ?>
+<?php include('functions.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,7 +13,7 @@
     <!-- Favicons -->
     <link rel="shortcut icon" href="#">
     <!-- Page Title -->
-    <title>Listing &amp; Directory Website Template</title>
+    <title>Browse</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- Google Fonts -->
@@ -43,7 +43,7 @@
                     <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                         <ul class="navbar-nav">
                             <li class="nav-item active">
-                                <a class="nav-link" href="#">Browse</a>
+                                <a class="nav-link" href="listing.php">Browse</a>
                             </li>
                             <?php if (isset($_SESSION['user'])) : ?>
                                 <li class="nav-item dropdown">
@@ -59,7 +59,8 @@
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                         <a class="dropdown-item" href="profile.php">Profile</a>
                                         <a class="dropdown-item" href="#">Lists</a>
-                                        <a class="dropdown-item" href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
+                                        <a class="dropdown-item"
+                                           href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
                                     </div>
                                 </li>
                                 <?php if (isAdmin()) : ?>
@@ -104,38 +105,47 @@
                         <div class="detail-filter-text">
                             <p><?php echo get_num_restaurants() ?> Results For <span>Restaurant</span></p>
                         </div>
-                        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Search</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" type="text/css" href="style.css"/>
-</head>
-<body>
-    <form action="search.php" method="GET">
-        <input type="text" placeholder="Find Users" class="btn-group1" name="search" />
-        <input type="submit" value="Search" />
-    </form>
-</body>
-</html>
+                        <form action="search.php" method="GET">
+                            <input type="text" placeholder="Find Users" class="btn-group1" name="search"/>
+                            <input type="submit" class="btn" value="Search"/>
+                        </form>
                     </div>
                     <div class="col-md-8 featured-responsive">
                         <div class="detail-filter">
                             <p>Filter by</p>
-                            <form class="filter-dropdown">
-                                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                                    <option selected>Best Match</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                            <form class="filter-dropdown" action="listing.php" method="get">
+                                <select name="filter_by" class="custom-select mb-2 mr-sm-2 mb-sm-0"
+                                        id="inlineFormCustomSelect" onchange="this.form.submit()">
+                                    <option disabled selected value> -- select an option --</option>
+                                    <option value="cost" <?= isset($_GET['filter_by']) && $_GET['filter_by'] == 'cost' ? ' selected="selected"' : ''; ?>>
+                                        Cost
+                                    </option>
+                                    <option value="rating" <?= isset($_GET['filter_by']) && $_GET['filter_by'] == 'rating' ? ' selected="selected"' : ''; ?>>
+                                        Rating
+                                    </option>
+                                    <option value="open" <?= isset($_GET['filter_by']) && $_GET['filter_by'] == 'open' ? ' selected="selected"' : ''; ?>>
+                                        Open Now
+                                    </option>
+                                    <option value="category" <?= isset($_GET['filter_by']) && $_GET['filter_by'] == 'category' ? ' selected="selected"' : ''; ?>>
+                                        Category
+                                    </option>
                                 </select>
-                            </form>
-                            <form class="filter-dropdown">
-                                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect1">
-                                    <option selected>Restaurants</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                <select name="order_by" class="custom-select mb-2 mr-sm-2 mb-sm-0"
+                                        id="inlineFormCustomSelect" onchange="this.form.submit()">
+                                    <option disabled selected value></option>
+                                    <?php if (isset($_GET['order_by']))
+                                        echo $_GET['order_by'] ?>
+                                    <?php if (isset($_GET['filter_by']) && ($_GET['filter_by'] == 'cost'
+                                            || $_GET['filter_by'] == 'rating')) : ?>
+                                        <option value="ASC" <?= ($_GET['filter_by'] == 'cost' && !isset($_GET['order_by']))
+                                        || (isset($_GET['order_by']) && $_GET['order_by'] == 'ASC') ? ' selected="selected"' : ''; ?>>
+                                            Ascending
+                                        </option>
+                                        <option value="DESC" <?= ($_GET['filter_by'] == 'rating' && !isset($_GET['order_by']))
+                                        || (isset($_GET['order_by']) && $_GET['order_by'] == 'DESC') ? ' selected="selected"' : ''; ?>>
+                                            Descending
+                                        </option>
+                                    <?php endif ?>
                                 </select>
                             </form>
                             <div class="map-responsive-wrap">
@@ -204,7 +214,15 @@
                     </div>
                 </div>
                 <div class="row light-bg detail-options-wrap">
-                    <?php generate_restaurants(false, false) ?>
+                    <?php
+                    if (isset($_GET['filter_by']) && isset($_GET['order_by'])) {
+                        generate_restaurants(false, false, $_GET['filter_by'], $_GET['order_by']);
+                    } else if (isset($_GET['filter_by'])) {
+                        generate_restaurants(false, false, $_GET['filter_by']);
+                    } else {
+                        generate_restaurants(false, false);
+                    }
+                    ?>
                 </div>
             </div>
         </div>
