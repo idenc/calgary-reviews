@@ -326,11 +326,12 @@ function generate_reviews($r_id)
         $num_reviews = mysqli_query($db, $query2);
         $num_reviews = mysqli_fetch_array($num_reviews);
         $num_reviews = $num_reviews[0];
+        $href = "showuser.php?username=$user_id";
         echo <<< EOT
                     <hr>
                     <div class="customer-review_wrap">
                         <div class="customer-img">
-                            <p>$user_id</p>
+                            <a href=$href> <p>$user_id</p> </a>
                             <span>$num_reviews Reviews</span>
                         </div>
                         <div class="customer-content-wrap">
@@ -939,8 +940,40 @@ function edit_listing()
  * =========================================================
  */
 
-
+// Used to display another user's profile
 function show_user()
+{
+    global $db;
+
+    $query = "SELECT * FROM user WHERE username = '{$_GET['username']}'";
+    $result = mysqli_query($db, $query);
+
+    while ($temp = mysqli_fetch_array($result)) {
+        $usern = $temp['username'];
+        $date_joined = $temp['date_joined'];
+        $first_name = $temp['fname'];
+        $last_name = $temp['lname'];
+
+        echo <<< EOT
+        <h4> User info: </h4>
+        <hr>
+            <p>Username: $usern</p>
+            <br>
+            <p>Date joined: $date_joined</p>
+            <br>
+            <p>First Name: $first_name</p>
+            <br>
+            <p>Last Name: $last_name</p>
+        <hr>
+
+EOT;
+
+    }
+}
+
+
+// Used to display information for the logged in users profile 
+function view_profile()
 {
     global $db;
 
@@ -969,6 +1002,65 @@ EOT;
 
     }
 }
+
+function show_user_reviews()
+{
+    global $db;
+
+    $query = "SELECT rev.*, res.name FROM review AS rev, restaurant AS res WHERE rev.user_id = '{$_GET['username']}' AND res.r_id = rev.r_id";
+    $result = mysqli_query($db, $query) or die(mysqli_error($db));
+
+    // get how many reviews the user has posted
+    $query2 = "SELECT COUNT(*)
+               FROM review
+               WHERE user_id = '{$_GET['username']}'";
+    $num_reviews = mysqli_query($db, $query2);
+    $num_reviews = mysqli_fetch_array($num_reviews);
+    $num_reviews = $num_reviews[0];
+
+    echo "<h4> User Reviews ($num_reviews): </h4>";
+    while ($temp = mysqli_fetch_array($result)) {
+        $user_review = $temp['content'];
+        $user_rating = $temp['rating'];
+        $user_review_date = $temp['date_posted'];
+        $r_id = $temp['r_id'];
+        $rev_res_name = $temp['name'];
+        $user_review_cost = $temp['cost'];
+        $reviewer = $temp['user_id'];
+
+
+        echo <<< EOT
+                    <hr>
+                    <h6>
+                        <a href='detail.php?r_id=$r_id'>
+                            $rev_res_name
+                        </a>
+                    </h6>
+                    <div class="customer-review_wrap">
+                        <div class="customer-img">
+                            <p>$reviewer</p>
+                        </div>
+                        <div class="customer-content-wrap">
+                            <div class="customer-content">
+                                <div class="customer-review">
+EOT;
+        generate_cost($user_review_cost);
+        echo <<< EOT
+                    <br>
+                    <p>Reviewed $user_review_date</p>
+                    </div>
+                    <div class="customer-rating">$user_rating / 5</div>
+                    </div>
+                    <p class="customer-text">$user_review</p>          
+                    </div>
+                    </div>
+                    <hr>
+EOT;
+
+
+    }
+} 
+
 
 function get_profile_reviews()
 {
@@ -1028,13 +1120,39 @@ EOT;
     }
 }
 
-function generateUserPhotos($isEdit)
+function generateProfilePhotos($isEdit)
 {
     global $db;
 
     $query = "SELECT p.file_path
               FROM photo AS p, uploads AS u
               WHERE p.photo_id = u.photoid AND u.user_id = '{$_SESSION['user']['username']}'";
+    $query = mysqli_query($db, $query);
+    echo "<h4> Photos uploaded by user: </h4>";
+
+    while ($temp = mysqli_fetch_array($query)) {
+
+        echo <<< EOT
+        "<a href=$temp[0] class='grid image-link'>";
+        "<img src=$temp[0] class='img-fluid' alt='#'>";
+        "</a>";
+        
+
+EOT;
+        if ($isEdit) {
+            echo "<button type='button'>Delete</button>";
+        }
+        echo "</div>";
+    }
+}
+
+function viewUserPhotos($isEdit)
+{
+    global $db;
+
+    $query = "SELECT p.file_path
+              FROM photo AS p, uploads AS u
+              WHERE p.photo_id = u.photoid AND u.user_id = '{$_GET['username']}'";
     $query = mysqli_query($db, $query);
     echo "<h4> Photos uploaded by user: </h4>";
 
