@@ -1120,39 +1120,13 @@ EOT;
     }
 }
 
-function generateProfilePhotos($isEdit)
+function viewUserPhotos($isEdit, $username)
 {
     global $db;
 
     $query = "SELECT p.file_path
               FROM photo AS p, uploads AS u
-              WHERE p.photo_id = u.photoid AND u.user_id = '{$_SESSION['user']['username']}'";
-    $query = mysqli_query($db, $query);
-    echo "<h4> Photos uploaded by user: </h4>";
-
-    while ($temp = mysqli_fetch_array($query)) {
-
-        echo <<< EOT
-        "<a href=$temp[0] class='grid image-link'>";
-        "<img src=$temp[0] class='img-fluid' alt='#'>";
-        "</a>";
-        
-
-EOT;
-        if ($isEdit) {
-            echo "<button type='button'>Delete</button>";
-        }
-        echo "</div>";
-    }
-}
-
-function viewUserPhotos($isEdit)
-{
-    global $db;
-
-    $query = "SELECT p.file_path
-              FROM photo AS p, uploads AS u
-              WHERE p.photo_id = u.photoid AND u.user_id = '{$_GET['username']}'";
+              WHERE p.photo_id = u.photoid AND u.user_id = '$username'";
     $query = mysqli_query($db, $query);
     echo "<h4> Photos uploaded by user: </h4>";
 
