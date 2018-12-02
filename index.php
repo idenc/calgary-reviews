@@ -65,7 +65,7 @@ if (isset($_SESSION['admin_success'])) {
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                             <a class="dropdown-item" href="profile.php?">Profile</a>
-                                            <a class="dropdown-item" href="lists.php">Lists</a>
+                                            <a class="dropdown-item" href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
                                             <a class="dropdown-item"
                                                href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
                                         </div>

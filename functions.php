@@ -1181,11 +1181,17 @@ function delete_user_photo() {
     }
 }
 
+$name = "";
+$num_likes = "";
+$num_restaurants = "";
+$user_id = "";
 
-function create_list($listname)
+
+function create_list()
 {
     
     global $db;
+    $listname = e($_POST['listname']);
     $user_id = $_SESSION['user']['username'];
     $query = "INSERT INTO list (name, num_likes, num_restaurants, user_id) 
 			  VALUES('$listname', 0, 0, '$user_id')";
@@ -1197,5 +1203,52 @@ function create_list($listname)
     echo $user_id;
     */
 } 
+
+function view_list_info()
+{
+    global $db;
+    $query = "SELECT * FROM list WHERE user_id = '{$_GET['username']}'";
+    $result = mysqli_query($db, $query) or die(mysqli_error($db));
+    while ($temp = mysqli_fetch_array($result)) {
+        $name = $temp['name'];
+        $date_created = $temp['date_created'];
+        $num_likes = $temp['num_likes'];
+        //$num_restaurants = $temp['num_restaurants'];
+        $num_restaurants = num_restaurants_in_list($name);
+
+        echo <<< EOT
+        <h4> $name </h4>
+        <hr>
+            <p>Date created: $date_created</p>
+            <br>
+            <p>Number of likes: $num_likes</p>
+            <br>
+            <p>Number of restaurants: $num_restaurants</p>
+        <hr>
+
+EOT;
+
+    }
+}
+
+if (isset($_POST['add_list_btn'])) {
+    create_list();
+}
+
+// Get the number of restaurants that are in a list
+function num_restaurants_in_list($name)
+{
+    global $db;
+
+    $query = "SELECT COUNT(*)
+              FROM adds_to
+              WHERE list_name = '$name'";
+    $query = mysqli_query($db, $query) or die(mysqli_error($db));
+    $query = mysqli_fetch_array($query);
+    return $query[0];
+}
+
+
+
 
 

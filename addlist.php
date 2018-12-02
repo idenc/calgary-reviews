@@ -13,7 +13,7 @@
     <!-- Favicons -->
     <link rel="shortcut icon" href="#">
     <!-- Page Title -->
-    <title>Listing &amp; Directory Website Template</title>
+    <title>Calgary Reviews</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- Google Fonts -->
@@ -24,6 +24,10 @@
     <link rel="stylesheet" href="css/themify-icons.css">
     <!-- Hover Effects -->
     <link rel="stylesheet" href="css/set1.css">
+    <!-- Swipper Slider -->
+    <link rel="stylesheet" href="css/swiper.min.css">
+    <!-- Magnific Popup CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
     <!-- Main CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -67,10 +71,6 @@
                                         <a class="nav-link" href="admin/create_user.php" style="color: red;">Create
                                             User</a>
                                     </li>
-                                    <li class="nav-item active">
-                                        <a class="nav-link" href="admin/viewpending.php" style="color: red;">View
-                                            Pending</a>
-                                    </li>
                                 <?php endif ?>
                                 <li class="nav-item active">
                                     <a class="nav-link" href="index.php?logout='1'" style="color: red;">Logout</a>
@@ -83,8 +83,7 @@
                                     <a class="nav-link" href="login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span
-                                            class="ti-plus"></span> Add
+                            <li><a href="#" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
                     </div>
@@ -94,28 +93,21 @@
     </div>
 </div>
 <!--//END HEADER -->
-<!--============================= DETAIL =============================-->
-<section>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-7 responsive-wrap">
+<!-- SLIDER -->
+<div style="background: #3F3F3F; height: fit-content;">
+    <form method="post" action="lists.php?username=<?php echo $_SESSION['user']['username'] ?>" class="list" style="margin-bottom: 30%;"
+          enctype="multipart/form-data">
+        <?php echo display_error(); ?>
 
-                <div>
-                    <div class="featured-btn-wrap">
-                        <a href="addlist.php" class="btn btn-danger">Create a new list!</a>
-                    </div>
-
-                    <?php 
-                        view_list_info();
-                    ?>
-                </div>
-
-
-            </div>
+        <div class="list-input">
+            <label>List Name*</label>
+            <input type="text" name="listname" value="<?php echo $name; ?>">
         </div>
-    </div>
-</section>
-<!--//END DETAIL -->
+        <div class="list-input">
+            <button type="submit" class="btn" name="add_list_btn">Create List</button>
+        </div>
+    </form>
+</div>
 <!--============================= FOOTER =============================-->
 <footer class="main-block dark-bg">
     <div class="container">
@@ -125,8 +117,14 @@
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     <p>Copyright &copy; 2018 Listing. All rights reserved | This template is made with <i
                                 class="ti-heart" aria-hidden="true"></i> by <a href="https://colorlib.com"
-                                                                               target="_blank">Colorlib</a></p>
+                                                                               target="_blank">Colorlib</a>
+                    </p>
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    <ul>
+                        <li><a href="#"><span class="ti-facebook"></span></a></li>
+                        <li><a href="#"><span class="ti-twitter-alt"></span></a></li>
+                        <li><a href="#"><span class="ti-instagram"></span></a></li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -140,7 +138,10 @@
 <script src="js/jquery-3.2.1.min.js"></script>
 <script src="js/popper.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
-
+<!-- Magnific popup JS -->
+<script src="js/jquery.magnific-popup.js"></script>
+<!-- Swipper Slider JS -->
+<script src="js/swiper.min.js"></script>
 </body>
 
 </html>
