@@ -74,9 +74,11 @@ function register()
 
             if ($query) {
                 // get id of the created user
-                $logged_in_user_id = mysqli_insert_id($db);
+                $query2 = "SELECT * FROM user WHERE username='$username' LIMIT 1";
+                $results2 = mysqli_query($db, $query2);
+                $logged_in_reguser = mysqli_fetch_assoc($results2);
 
-                $_SESSION['user'] = getUserById($logged_in_user_id); // put logged in user in session
+                $_SESSION['user'] = $logged_in_reguser; // put logged in user in session
                 $_SESSION['success'] = "You are now logged in";
                 header('location: index.php');
             } else {
