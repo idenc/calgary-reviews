@@ -512,12 +512,13 @@ function delete_review()
  * =========================================================
  */
 
-function generate_restaurants($find_pending, $featured)
+function generate_restaurants($find_pending, $featured, $filter_by = -1, $order_by = -1)
 {
     global $db;
     $pendingpath = "";
     $div_class = "col-sm-6 col-lg-12 col-xl-6 featured-responsive";
 
+    //Determine how to query restaurants
     if ($find_pending) {
         $query = "SELECT *
                   FROM restaurant
@@ -531,6 +532,35 @@ function generate_restaurants($find_pending, $featured)
                     ORDER BY AVG(rev.rating) DESC
                     LIMIT 3";
         $div_class = "col-md-4 featured-responsive";
+    } else if ($filter_by != -1) {
+        if ($filter_by == 'cost') {
+            if ($order_by == -1) {
+                $order_by = 'ASC';
+            }
+            $query = "SELECT res.*
+                        FROM restaurant AS res, review AS rev
+                        WHERE res.pending = '0' AND res.r_id = rev.r_id
+                        GROUP BY rev.r_id
+                        ORDER BY AVG(rev.cost) $order_by";
+        } else if ($filter_by == 'rating') {
+            if ($order_by == -1) {
+                $order_by = 'DESC';
+            }
+            $query = "SELECT res.*
+                        FROM restaurant AS res, review AS rev
+                        WHERE res.pending = '0' AND res.r_id = rev.r_id
+                        GROUP BY rev.r_id
+                        ORDER BY AVG(rev.rating) $order_by";
+        } else if ($filter_by == 'open') {
+            date_default_timezone_set('America/Phoenix');
+            $day_of_week = date('N');
+            $time = date('H:i:s');
+            $query = "SELECT res.*
+                      FROM restaurant AS res, business_hours AS bh
+                      WHERE bh.day_of_week = $day_of_week AND
+                      '$time' > bh.open_time AND '$time' < bh.close_time
+                       AND res.r_id = bh.r_id";
+        }
     } else {
         $query = "SELECT *
                   FROM restaurant
@@ -1158,7 +1188,8 @@ if (isset($_POST['edit_photos'])) {
     delete_user_photo();
 }
 
-function delete_user_photo() {
+function delete_user_photo()
+{
     global $db;
 
     if (!empty($_POST['pic_delete'])) {

@@ -1,4 +1,4 @@
-<?php include('functions.php');?>
+<?php include('functions.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -59,7 +59,8 @@
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                         <a class="dropdown-item" href="profile.php">Profile</a>
                                         <a class="dropdown-item" href="#">Lists</a>
-                                        <a class="dropdown-item" href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
+                                        <a class="dropdown-item"
+                                           href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
                                     </div>
                                 </li>
                                 <?php if (isAdmin()) : ?>
@@ -83,7 +84,8 @@
                                     <a class="nav-link" href="login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
+                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span
+                                            class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
                     </div>
@@ -94,85 +96,81 @@
 </div>
 <!--//END HEADER -->
 <!--============================= DETAIL =============================-->
- 
- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
- <html xmlns="http://www.w3.org/1999/xhtml">
- <head>
-     <title>Search results</title>
-     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-     <link rel="stylesheet" type="text/css" href="style.css"/>
- </head>
- <body>
- <?php
- 
-     $query = $_GET['search']; 
-     // gets value sent over search form
-      
-      
-     if(strlen($query) >=1){ // if query length is more or equal minimum length then
-          
-         $query = htmlspecialchars($query); 
-         // changes characters used in html to their equivalents, for example: < to &gt;
-          
-         $query = e($query);
-         // makes sure nobody uses SQL injection
-          
-         $results = "SELECT username,fname,lname FROM user WHERE username LIKE '%" . $query . "%' OR fname LIKE '%" . $query ."%' OR lname LIKE '%" . $query ."%'" ;
-             
-         $raw_results = mysqli_query($db, $results);
-              
 
-          
-         // '%$query%' is what we're looking for, % means anything, for example if $query is Hello
-         // it will match "hello", "Hello man", "gogohello", if you want exact match use `title`='$query'
-         // or if you want to match just full word so "gogohello" is out use '% $query %' ...OR ... '$query %' ... OR ... '% $query'
-         echo "<div>SEARCH RESULTS: '$query'</div>";
-         
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Search results</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+<?php
 
-         if(mysqli_num_rows($raw_results) > 0){ // if one or more rows are returned do following
-              
-             while($results2 = mysqli_fetch_array($raw_results)){
-             // $results = mysql_fetch_array($raw_results) puts data from database into array, while it's valid it does the loop
-                 
-                 //echo "<p><h3>".$results2['username']."</h3>".$results2['fname']."</p>";
-                 // posts results gotten from database(title and text) you can also show id ($results['id'])
-                 $user_id = $results2['username'];
-                 $href = "showuser.php?username=$user_id";
-                 echo <<< EOT
+$query = $_GET['search'];
+// gets value sent over search form
+
+
+if (strlen($query) >= 1) { // if query length is more or equal minimum length then
+
+    $query = htmlspecialchars($query);
+    // changes characters used in html to their equivalents, for example: < to &gt;
+
+    $query = e($query);
+    // makes sure nobody uses SQL injection
+
+    $results = "SELECT username,fname,lname FROM user WHERE username LIKE '%" . $query . "%' OR fname LIKE '%" . $query . "%' OR lname LIKE '%" . $query . "%'";
+
+    $raw_results = mysqli_query($db, $results);
+
+
+    // '%$query%' is what we're looking for, % means anything, for example if $query is Hello
+    // it will match "hello", "Hello man", "gogohello", if you want exact match use `title`='$query'
+    // or if you want to match just full word so "gogohello" is out use '% $query %' ...OR ... '$query %' ... OR ... '% $query'
+    echo "<div>SEARCH RESULTS: '$query'</div>";
+
+
+    if (mysqli_num_rows($raw_results) > 0) { // if one or more rows are returned do following
+
+        while ($results2 = mysqli_fetch_array($raw_results)) {
+            // $results = mysql_fetch_array($raw_results) puts data from database into array, while it's valid it does the loop
+
+            //echo "<p><h3>".$results2['username']."</h3>".$results2['fname']."</p>";
+            // posts results gotten from database(title and text) you can also show id ($results['id'])
+            $user_id = $results2['username'];
+            $href = "showuser.php?username=$user_id";
+            echo <<< EOT
 
                 
                  <div class="customer-img">
                      <a href=$href> <p>$user_id</p> </a> 
                  
 EOT;
-                if ($results2['fname'] == NULL){
-                    echo "First Name: NULL";
-                }
-                else{
-                    echo "First Name: "."".$results2['fname'];
-                }
-                echo "<div>";
-                if ($results2['lname'] == NULL){
-                    echo "Last Name: NULL";
-                }
-                else{
-                    echo "Last Name: "."".$results2['lname'];
-                }
-                echo "<hr>";
-             }
-              
-         }
-         else{ // if there is no matching rows do following
-             echo "There are no results";
-         }
-          
-     }
-     else{ // if query length is less than minimum
-         echo "Please enter at least one letter";
-     }
- ?>
- </body>
- </html>
+            if ($results2['fname'] == NULL) {
+                echo "First Name: NULL";
+            } else {
+                echo "First Name: " . "" . $results2['fname'];
+            }
+            echo "<div>";
+            if ($results2['lname'] == NULL) {
+                echo "Last Name: NULL";
+            } else {
+                echo "Last Name: " . "" . $results2['lname'];
+            }
+            echo "<hr>";
+        }
+
+    } else { // if there is no matching rows do following
+        echo "There are no results";
+    }
+
+} else { // if query length is less than minimum
+    echo "Please enter at least one letter";
+}
+?>
+</body>
+</html>
 
 <!--//END DETAIL -->
 <!--============================= FOOTER =============================-->
