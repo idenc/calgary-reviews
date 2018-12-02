@@ -1211,3 +1211,22 @@ function delete_user_photo()
         }
     }
 }
+
+
+function create_list($listname)
+{
+    
+    global $db;
+    $user_id = $_SESSION['user']['username'];
+    $query = "INSERT INTO list (name, num_likes, num_restaurants, user_id) 
+			  VALUES('$listname', 0, 0, '$user_id')";
+    $query = mysqli_query($db, $query) or die(mysqli_error($db));
+             
+    /*
+    $user_id = $_SESSION['user']['username'];
+    echo $listname;
+    echo $user_id;
+    */
+} 
+
+
