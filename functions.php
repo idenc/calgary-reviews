@@ -211,18 +211,20 @@ function generatePhotos($rid, $isEdit)
 {
     global $db;
 
-    $query = "SELECT p.file_path
+    $query = "SELECT p.file_path, p.photo_id
               FROM photo AS p, uploads AS u
               WHERE p.photo_id = u.photoid AND u.r_id = $rid";
     $query = mysqli_query($db, $query);
 
     while ($temp = mysqli_fetch_array($query)) {
+        $pic_id = $temp['photo_id'];
         echo "<div class='swiper-slide'>";
-        echo "<a href=$temp[0] class='grid image-link'>";
+        echo "<a href=$temp[0] class='grid image-link' id='edit_pics'>";
         echo "<img src=$temp[0] class='img-fluid' alt='#'>";
         echo "</a>";
         if ($isEdit) {
-            echo "<button type='button'>Delete</button>";
+            echo "<label for='pic_delete[]' style='vertical-align: middle'>Delete</label>";
+            echo "<input type='checkbox' name='pic_delete[]' value='$pic_id'>";
         }
         echo "</div>";
     }
@@ -299,7 +301,7 @@ function generate_cost($cost)
     echo "</p>";
 }
 
-function get_reviews($r_id)
+function generate_reviews($r_id)
 {
     global $db;
 
@@ -311,6 +313,7 @@ function get_reviews($r_id)
     while ($temp = mysqli_fetch_array($query)) {
         $user_id = $temp['user_id'];
         $cost = $temp['cost'];
+        $date_value = $temp['date_posted'];
         $date_posted = date_format(date_create($temp['date_posted']), "F j, Y");
         $rating = $temp['rating'];
         $content = $temp['content'];
@@ -340,6 +343,16 @@ EOT;
                             </div>
                             <p class="customer-text">$content</p>          
                         </div>
+EOT;
+        if (isAdmin()) {
+            echo <<< EOT
+                        <form method = 'post' action='detail.php?r_id=$r_id'>
+                            <button type='submit' class='btn' name='delete_review' value='$date_value;$r_id;$user_id'
+                             style='margin: 10px; color: red'>Delete</button>
+                        </form>
+EOT;
+        }
+        echo <<< EOT
                     </div>
                     <hr>
 EOT;
@@ -469,6 +482,24 @@ function submit_review()
         } else {
             array_push($errors, "Error occurred");
         }
+    }
+}
+
+if (isset($_POST['delete_review'])) {
+    delete_review();
+}
+
+function delete_review()
+{
+    global $db;
+    $info = explode(';', $_POST['delete_review']);
+
+    $query = "DELETE FROM review WHERE date_posted = '$info[0]' AND r_id = $info[1] AND user_id = '$info[2]'";
+    $query = mysqli_query($db, $query);
+    if ($query) {
+        echo "Review successfully deleted!";
+    } else {
+        echo "Error deleting review!";
     }
 }
 
@@ -846,6 +877,21 @@ function edit_listing()
     if (isset($_POST['category']))
         $category = e($_POST['category']);
 
+    if (!empty($_POST['pic_delete'])) {
+        $good = true;
+        foreach ($_POST['pic_delete'] as $id) {
+            $query = "DELETE FROM uploads WHERE photoid = $id";
+            $query = mysqli_query($db, $query);
+            if (!$query)
+                $good = false;
+        }
+        if ($good) {
+            echo "Photos deleted from restaurant successfully";
+        } else {
+            echo "There was an error deleting photos";
+        }
+    }
+
     if (count($errors) == 0) {
         //Handle restaurant info update
         $query1 = "UPDATE restaurant
@@ -871,7 +917,7 @@ function edit_listing()
         handle_hours($r_id);
         handle_images($r_id);
         if ($query1) {
-            $_SESSION['edit_success'] = "Restaurant successfully edited!!";
+            $_SESSION['edit_success'] = "<br>Restaurant successfully edited!!";
             echo $_SESSION['edit_success'];
         } else {
             array_push($errors, mysqli_error($db));
@@ -972,7 +1018,7 @@ EOT;
 
 
     }
-} 
+}
 
 function generateUserPhotos($isEdit)
 {
