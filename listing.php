@@ -1,4 +1,4 @@
-<?php include('functions.php'); ?>
+<?php include('functions.php')?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -133,8 +133,6 @@
                                 <select name="order_by" class="custom-select mb-2 mr-sm-2 mb-sm-0"
                                         id="inlineFormCustomSelect" onchange="this.form.submit()">
                                     <option disabled selected value></option>
-                                    <?php if (isset($_GET['order_by']))
-                                        echo $_GET['order_by'] ?>
                                     <?php if (isset($_GET['filter_by']) && ($_GET['filter_by'] == 'cost'
                                             || $_GET['filter_by'] == 'rating')) : ?>
                                         <option value="ASC" <?= ($_GET['filter_by'] == 'cost' && !isset($_GET['order_by']))
@@ -146,6 +144,10 @@
                                             Descending
                                         </option>
                                     <?php endif ?>
+                                    <?php if (isset($_GET['filter_by']) && ($_GET['filter_by'] == 'category')) {
+                                        echo "HERE:" . $_GET['order_by'];
+                                        category_filter();
+                                    } ?>
                                 </select>
                             </form>
                             <div class="map-responsive-wrap">

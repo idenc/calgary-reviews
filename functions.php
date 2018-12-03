@@ -532,7 +532,7 @@ function generate_restaurants($find_pending, $featured, $filter_by = -1, $order_
                     ORDER BY AVG(rev.rating) DESC
                     LIMIT 3";
         $div_class = "col-md-4 featured-responsive";
-    } else if ($filter_by != -1) {
+    } else if ($filter_by != -1 && ($filter_by != 'category' || $order_by != -1)) {
         if ($filter_by == 'cost') {
             if ($order_by == -1) {
                 $order_by = 'ASC';
@@ -557,9 +557,13 @@ function generate_restaurants($find_pending, $featured, $filter_by = -1, $order_
             $time = date('H:i:s');
             $query = "SELECT res.*
                       FROM restaurant AS res, business_hours AS bh
-                      WHERE bh.day_of_week = $day_of_week AND
+                      WHERE bh.day_of_week = $day_of_week AND res.pending = '0' AND
                       '$time' > bh.open_time AND '$time' < bh.close_time
                        AND res.r_id = bh.r_id";
+        } else if ($filter_by == 'category') {
+            $query = "SELECT *
+                      FROM restaurant AS res, restaurant_category AS cg
+                      WHERE res.pending = '0' AND res.r_id = cg.r_id AND cg.category = '$order_by'";
         }
     } else {
         $query = "SELECT *
@@ -679,6 +683,30 @@ function accept_pending()
                SET pending = 0";
     $query1 = mysqli_query($db, $query1) or die(mysqli_error($db));
     header('location: viewpending.php');
+}
+
+function category_filter() {
+    global $db;
+    $cg = "SELECT category
+            FROM restaurant_category";
+    $cg = mysqli_query($db, $cg);
+    if (isset($_GET['order_by'])) {
+        $category = $_GET['order_by'];
+        echo "<option value=$category selected='selected'>$category</option>";
+    } else {
+        echo "<option disabled selected value> -- select an option --</option>";
+    }
+    while ($row = mysqli_fetch_array($cg, MYSQLI_NUM)) {
+
+        echo "<option value=$row[0]>$row[0]</option>";
+
+    }
+}
+
+if (isset($_GET['filter_by'])) {
+    if (isset($_SESSION['prev_filter']) && $_SESSION['prev_filter'] != $_GET['filter_by'])
+        unset($_GET['order_by']);
+    $_SESSION['prev_filter'] = $_GET['filter_by'];
 }
 
 /*
