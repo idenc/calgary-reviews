@@ -1,4 +1,19 @@
-<?php include('functions.php') ?>
+<?php include('functions.php');
+/**
+ * Created by PhpStorm.
+ * User: Iden
+ * Date: 11/28/2018
+ * Time: 10:30 PM
+ */
+
+global $r_id;
+if (isset($_GET['r_id'])) {
+    $r_id = $_GET['r_id'];
+}
+global $info;
+$info = get_info($r_id);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,7 +28,7 @@
     <!-- Favicons -->
     <link rel="shortcut icon" href="#">
     <!-- Page Title -->
-    <title>Listing &amp; Directory Website Template</title>
+    <title>Calgary Reviews</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- Google Fonts -->
@@ -47,7 +62,7 @@
                     <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                         <ul class="navbar-nav">
                             <li class="nav-item active">
-                                <a class="nav-link" href="#">Browse</a>
+                                <a class="nav-link" href="listing.php">Browse</a>
                             </li>
                             <?php if (isset($_SESSION['user'])) : ?>
                                 <li class="nav-item dropdown">
@@ -92,47 +107,30 @@
         </div>
     </div>
 </div>
-
-<?php
-global $r_id;
-if (isset($_GET['r_id'])) {
-    $r_id = $_GET['r_id'];
-}; ?>
 <!--//END HEADER -->
 <!-- SLIDER -->
 <div style="background: #3F3F3F; height: fit-content;">
-    <form method="post" action="review.php?r_id=<?php echo $r_id ?>" class="register" style="margin-bottom: 30%;">
-        <?php
-        $query = "SELECT name
-                  FROM restaurant
-                  WHERE r_id = $r_id";
-        $query = mysqli_query($db, $query);
-        $temp = mysqli_fetch_array($query);
-        echo "<h5 style='color: white;'>$temp[0]</h5>"; ?>
-        <?php echo display_error(); ?>
+    <form method="post" action="addfood.php?r_id=<?php echo $r_id ?>" class="register" style="margin-bottom: 30%;" enctype="multipart/form-data">
+        <?php display_error(); ?>
+        <h5 style="color: white"><?php echo $info['name']?></h5>
         <div class="reg-input">
-            <label>Your Review</label>
-            <textarea rows="10" cols="85" name="review_content" placeholder="Your review here..." autofocus></textarea>
+            <label>Food Name</label>
+            <input type="text" name="name">
         </div>
-        <label for="review_rating" style="color: white;">Rating</label>
-        <select name="review_rating" id="review_rating">
-            <option value=""></option>
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select>
-        <label for="review_cost" style="color: white;">Cost</label>
-        <select name="review_cost" id="review_cost">
-            <option value=""></option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-        </select>
         <div class="reg-input">
-            <button type="submit" class="btn" name="review_btn">Submit Your Review</button>
+            <label>Price</label>
+            <input type="number" name="price" min="0" step="any">
+        </div>
+        <div class="reg-input">
+            <label>Calories</label>
+            <input type="number" name="calories" min="0" step="any">
+        </div>
+        <div class="files">
+            Image for food item:
+            <input type="file" name="pic" accept="image/*" style="padding: 5px 0 5px 0; width: 60%;">
+        </div>
+        <div class="reg-input">
+            <button type="submit" class="btn" name="edit_listing_btn">Add Food Item</button>
         </div>
     </form>
 </div>
@@ -144,8 +142,8 @@ if (isset($_GET['r_id'])) {
                 <div class="copyright">
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     <p>Copyright &copy; 2018 Listing. All rights reserved | This template is made with <i
-                                class="ti-heart" aria-hidden="true"></i> by <a href="https://colorlib.com"
-                                                                               target="_blank">Colorlib</a>
+                            class="ti-heart" aria-hidden="true"></i> by <a href="https://colorlib.com"
+                                                                           target="_blank">Colorlib</a>
                     </p>
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     <ul>

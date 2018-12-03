@@ -568,7 +568,7 @@ function generate_restaurants($name, $find_pending, $featured, $filter_by = -1, 
     } else if ($name != NULL) {
         $query = "SELECT *
         FROM restaurant
-        WHERE pending = '0' and name LIKE '%" .$name . "%'";
+        WHERE pending = '0' and name LIKE '%" . $name . "%'";
     } else {
         $query = "SELECT *
                   FROM restaurant
@@ -689,7 +689,8 @@ function accept_pending()
     header('location: viewpending.php');
 }
 
-function category_filter() {
+function category_filter()
+{
     global $db;
     $cg = "SELECT category
             FROM restaurant_category";
@@ -1001,6 +1002,80 @@ function edit_listing()
 
 /*
  * =========================================================
+ * FOOD FUNCTIONS
+ * =========================================================
+ */
+
+function add_food()
+{
+    // call these variables with the global keyword to make them available in function
+    global $db, $errors;
+
+    $wifi = 0;
+    $delivery = 0;
+    $alcohol = 0;
+    // receive all input values from the form. Call the e() function
+    // defined below to escape form values
+    $r_name = e($_POST['name']);
+    $location = e($_POST['location']);
+    if (isset($_POST['phone_num']))
+        $phone_num = e($_POST['phone_num']);
+    if (isset($_POST['wifi']))
+        $wifi = 1;
+    if (isset($_POST['delivery']))
+        $delivery = 1;
+    if (isset($_POST['alcohol']))
+        $alcohol = 1;
+    if (isset($_POST['website']))
+        $website = e($_POST['website']);
+
+    // form validation: ensure that the form is correctly filled
+    if (empty($r_name)) {
+        array_push($errors, "Restaurant name is required");
+    }
+    if (empty($location)) {
+        array_push($errors, "Restaurant location is required");
+    }
+
+    if (count($errors) == 0) {
+
+        if (isAdmin()) {
+            $query = "INSERT INTO restaurant (name, location, wifi, delivery, alcohol, phone_num, website, pending) 
+					  VALUES('$r_name', '$location', $wifi, $delivery, $alcohol, '$phone_num', '$website', 0)";
+            $query = mysqli_query($db, $query);
+            if ($query) {
+                $_SESSION['listing_success'] = "New restaurant successfully created!!";
+                $new_r_id = mysqli_insert_id($db);
+                handle_images($new_r_id);
+                handle_hours($new_r_id);
+                if (count($errors) == 0) {
+                    header('location: detail.php?r_id=' . $new_r_id);
+                }
+            } else {
+                array_push($errors, mysqli_error($db));
+            }
+        } else {
+            $query = "INSERT INTO restaurant (name, location, wifi, delivery, alcohol, phone_num, website, pending) 
+					  VALUES('$r_name', '$location', $wifi, $delivery, $alcohol, '$phone_num', '$website', 1)";
+            $query = mysqli_query($db, $query);
+
+            if ($query) {
+                $_SESSION['listing_pend_success'] = "Restaurant submitted for approval";
+                if (isset($_SESSION['admin_success'])) {
+                    echo '<script language="javascript">';
+                    echo $_SESSION['listing_pend_success'];
+                    echo '</script>';
+                }
+                header('location: index.php');
+            } else {
+                array_push($errors, "Error submitting restaurant");
+            }
+        }
+    }
+}
+
+/*
+ * =========================================================
  * USER FUNCTIONS
  * =========================================================
  */
@@ -1252,20 +1327,20 @@ $user_id = "";
 
 function create_list()
 {
-    
+
     global $db;
     $listname = e($_POST['listname']);
     $user_id = $_SESSION['user']['username'];
     $query = "INSERT INTO list (name, num_likes, num_restaurants, user_id) 
 			  VALUES('$listname', 0, 0, '$user_id')";
     $query = mysqli_query($db, $query) or die(mysqli_error($db));
-             
+
     /*
     $user_id = $_SESSION['user']['username'];
     echo $listname;
     echo $user_id;
     */
-} 
+}
 
 function view_list_info()
 {

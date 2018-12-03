@@ -58,7 +58,8 @@
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                         <a class="dropdown-item" href="profile.php">Profile</a>
-                                        <a class="dropdown-item" href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
+                                        <a class="dropdown-item"
+                                           href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
                                         <a class="dropdown-item"
                                            href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
                                     </div>
@@ -96,16 +97,6 @@
 </div>
 <!--//END HEADER -->
 <!--============================= DETAIL =============================-->
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
->
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Search results</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" type="text/css" href="style.css"/>
-</head>
-<body>
 <?php
 
 $query = $_GET['search'];
@@ -141,24 +132,23 @@ if (strlen($query) >= 1) { // if query length is more or equal minimum length th
             $user_id = $results2['username'];
             $href = "showuser.php?username=$user_id";
             echo <<< EOT
-
-                
-                 <div class="customer-img">
-                     <a href=$href> <p>$user_id</p> </a> 
-                 
+                 <div style="font-size: 20px">
+                    <hr>
+                    <a href=$href> <p style="font-size: 25px">$user_id</p> </a>
 EOT;
             if ($results2['fname'] == NULL) {
                 echo "First Name: NULL";
             } else {
                 echo "First Name: " . "" . $results2['fname'];
             }
-            echo "<div>";
+            echo "<br>";
             if ($results2['lname'] == NULL) {
                 echo "Last Name: NULL";
             } else {
                 echo "Last Name: " . "" . $results2['lname'];
             }
             echo "<hr>";
+            echo "</div>";
         }
 
     } else { // if there is no matching rows do following
@@ -169,9 +159,6 @@ EOT;
     echo "Please enter at least one letter";
 }
 ?>
-</body>
-</html>
-
 <!--//END DETAIL -->
 <!--============================= FOOTER =============================-->
 <footer class="main-block dark-bg">

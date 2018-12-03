@@ -6,7 +6,7 @@
  * Time: 10:30 PM
  */
 
-global $r_id, $wifi, $delivery, $alcohol;
+global $r_id, $wifi, $delivery, $alcohol, $info;
 if (isset($_GET['r_id'])) {
     $r_id = $_GET['r_id'];
 }
@@ -14,7 +14,7 @@ $array = get_ticks($r_id);
 $wifi = $array['wifi'];
 $delivery = $array['delivery'];
 $alcohol = $array['alcohol'];
-
+$info = get_info($r_id);
 ?>
 
 <!DOCTYPE html>
@@ -117,6 +117,7 @@ $alcohol = $array['alcohol'];
           style="margin-bottom: 30%;"
           enctype="multipart/form-data">
         <?php display_error(); ?>
+        <h5 style="color: white"><?php echo $info['name']?></h5>
         <div class="reg-input">
             <label>Restaurant Name</label>
             <input type="text" name="name" value="<?php echo $r_name; ?>">

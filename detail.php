@@ -39,7 +39,7 @@
         <div class="row">
             <div class="col-md-12">
                 <nav class="navbar navbar-expand-lg navbar-light">
-                    <a class="navbar-brand" href="index.php">Listing</a>
+                    <a class="navbar-brand" href="index.php">Calgary Reviews</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
                             aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="icon-menu"></span>
@@ -138,7 +138,7 @@
                     </div>
                     <div class="reserve-btn">
                         <div class="featured-btn-wrap">
-                            <a href="#" class="btn btn-danger">ORDER FROM HERE</a>
+                            <a href="food.php?r_id=<?php echo $r_id?>" class="btn btn-danger">ORDER FROM HERE</a>
                         </div>
                     </div>
                 </div>
