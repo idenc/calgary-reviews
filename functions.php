@@ -512,19 +512,19 @@ function delete_review()
  * =========================================================
  */
 
-function generate_restaurants($find_pending, $featured, $filter_by = -1, $order_by = -1)
+function generate_restaurants($name, $find_pending, $featured, $filter_by = -1, $order_by = -1)
 {
     global $db;
     $pendingpath = "";
     $div_class = "col-sm-6 col-lg-12 col-xl-6 featured-responsive";
 
     //Determine how to query restaurants
-    if ($find_pending) {
+    if ($find_pending and $name == NULL) {
         $query = "SELECT *
                   FROM restaurant
                   WHERE pending = 0x1";
         $pendingpath = "../";
-    } else if ($featured) {
+    } else if ($featured and $name == NULL) {
         $query = "SELECT res.*
                     FROM restaurant AS res, review AS rev
                     WHERE res.pending = '0' AND res.r_id = rev.r_id
@@ -532,7 +532,7 @@ function generate_restaurants($find_pending, $featured, $filter_by = -1, $order_
                     ORDER BY AVG(rev.rating) DESC
                     LIMIT 3";
         $div_class = "col-md-4 featured-responsive";
-    } else if ($filter_by != -1) {
+    } else if ($filter_by != -1 and $name == NULL) {
         if ($filter_by == 'cost') {
             if ($order_by == -1) {
                 $order_by = 'ASC';
@@ -561,6 +561,10 @@ function generate_restaurants($find_pending, $featured, $filter_by = -1, $order_
                       '$time' > bh.open_time AND '$time' < bh.close_time
                        AND res.r_id = bh.r_id";
         }
+    } else if ($name != NULL) {
+        $query = "SELECT *
+        FROM restaurant
+        WHERE pending = '0' and name LIKE '%" .$name . "%'";
     } else {
         $query = "SELECT *
                   FROM restaurant
