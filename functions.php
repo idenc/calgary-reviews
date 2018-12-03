@@ -512,19 +512,19 @@ function delete_review()
  * =========================================================
  */
 
-function generate_restaurants($find_pending, $featured, $filter_by = -1, $order_by = -1)
+function generate_restaurants($name, $find_pending, $featured, $filter_by = -1, $order_by = -1)
 {
     global $db;
     $pendingpath = "";
     $div_class = "col-sm-6 col-lg-12 col-xl-6 featured-responsive";
 
     //Determine how to query restaurants
-    if ($find_pending) {
+    if ($find_pending and $name == NULL) {
         $query = "SELECT *
                   FROM restaurant
                   WHERE pending = 0x1";
         $pendingpath = "../";
-    } else if ($featured) {
+    } else if ($featured and $name == NULL) {
         $query = "SELECT res.*
                     FROM restaurant AS res, review AS rev
                     WHERE res.pending = '0' AND res.r_id = rev.r_id
@@ -532,7 +532,7 @@ function generate_restaurants($find_pending, $featured, $filter_by = -1, $order_
                     ORDER BY AVG(rev.rating) DESC
                     LIMIT 3";
         $div_class = "col-md-4 featured-responsive";
-    } else if ($filter_by != -1 && ($filter_by != 'category' || $order_by != -1)) {
+    } else if ($filter_by != -1 && ($filter_by != 'category' || $order_by != -1) and $name == NULL) {
         if ($filter_by == 'cost') {
             if ($order_by == -1) {
                 $order_by = 'ASC';
@@ -565,6 +565,10 @@ function generate_restaurants($find_pending, $featured, $filter_by = -1, $order_
                       FROM restaurant AS res, restaurant_category AS cg
                       WHERE res.pending = '0' AND res.r_id = cg.r_id AND cg.category = '$order_by'";
         }
+    } else if ($name != NULL) {
+        $query = "SELECT *
+        FROM restaurant
+        WHERE pending = '0' and name LIKE '%" .$name . "%'";
     } else {
         $query = "SELECT *
                   FROM restaurant
@@ -1240,11 +1244,17 @@ function delete_user_photo()
     }
 }
 
+$name = "";
+$num_likes = "";
+$num_restaurants = "";
+$user_id = "";
 
-function create_list($listname)
+
+function create_list()
 {
     
     global $db;
+    $listname = e($_POST['listname']);
     $user_id = $_SESSION['user']['username'];
     $query = "INSERT INTO list (name, num_likes, num_restaurants, user_id) 
 			  VALUES('$listname', 0, 0, '$user_id')";
@@ -1256,5 +1266,52 @@ function create_list($listname)
     echo $user_id;
     */
 } 
+
+function view_list_info()
+{
+    global $db;
+    $query = "SELECT * FROM list WHERE user_id = '{$_GET['username']}'";
+    $result = mysqli_query($db, $query) or die(mysqli_error($db));
+    while ($temp = mysqli_fetch_array($result)) {
+        $name = $temp['name'];
+        $date_created = $temp['date_created'];
+        $num_likes = $temp['num_likes'];
+        //$num_restaurants = $temp['num_restaurants'];
+        $num_restaurants = num_restaurants_in_list($name);
+
+        echo <<< EOT
+        <h4> $name </h4>
+        <hr>
+            <p>Date created: $date_created</p>
+            <br>
+            <p>Number of likes: $num_likes</p>
+            <br>
+            <p>Number of restaurants: $num_restaurants</p>
+        <hr>
+
+EOT;
+
+    }
+}
+
+if (isset($_POST['add_list_btn'])) {
+    create_list();
+}
+
+// Get the number of restaurants that are in a list
+function num_restaurants_in_list($name)
+{
+    global $db;
+
+    $query = "SELECT COUNT(*)
+              FROM adds_to
+              WHERE list_name = '$name'";
+    $query = mysqli_query($db, $query) or die(mysqli_error($db));
+    $query = mysqli_fetch_array($query);
+    return $query[0];
+}
+
+
+
 
 

@@ -6,6 +6,9 @@ if (isset($_SESSION['admin_success'])) {
     echo '</script>';
 }
 ?>
+<?php if(isset($_GET['search']))
+{   $temp = $_GET['search'];
+    header("location: listing.php?search=$temp");exit();}?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -65,7 +68,7 @@ if (isset($_SESSION['admin_success'])) {
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                             <a class="dropdown-item" href="profile.php?">Profile</a>
-                                            <a class="dropdown-item" href="lists.php">Lists</a>
+                                            <a class="dropdown-item" href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
                                             <a class="dropdown-item"
                                                href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
                                         </div>
@@ -122,7 +125,7 @@ if (isset($_SESSION['admin_success'])) {
                         <div class="col-md-10">
                             <form class="form-wrap mt-4">
                                 <div class="btn-group" role="group" aria-label="Basic example">
-                                    <input type="text" placeholder="What are your looking for?" class="btn-group1">
+                                    <input  type="text" name = "search" method = "get" placeholder="What are your looking for?" class="btn-group1">
                                     <button type="submit" class="btn-form"><span
                                                 class="icon-magnifier search-icon"></span>SEARCH<i
                                                 class="pe-7s-angle-right"></i></button>
@@ -151,7 +154,7 @@ if (isset($_SESSION['admin_success'])) {
             </div>
         </div>
         <div class="row">
-            <?php generate_restaurants(false, true) ?>
+            <?php generate_restaurants(NULL,false, true) ?>
         </div>
         <div class="row justify-content-center">
             <div class="col-md-4">

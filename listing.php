@@ -58,7 +58,7 @@
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                         <a class="dropdown-item" href="profile.php">Profile</a>
-                                        <a class="dropdown-item" href="#">Lists</a>
+                                        <a class="dropdown-item" href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
                                         <a class="dropdown-item"
                                            href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
                                     </div>
@@ -103,7 +103,20 @@
                 <div class="row detail-filter-wrap">
                     <div class="col-md-4 featured-responsive">
                         <div class="detail-filter-text">
+                        <?php if (!(isset($_GET['search']))) : ?>
                             <p><?php echo get_num_restaurants() ?> Results For <span>Restaurant</span></p>
+
+                        <?php else: ?>
+                            <p><?php 
+                            global $temp;
+                            $temp = $_GET['search'];
+                            $query = "SELECT COUNT(*) FROM restaurant WHERE name LIKE '%" .$temp . "%'";
+                            $query = mysqli_query($db, $query);
+                            $query = mysqli_fetch_array($query);
+                            echo $query[0];
+                            ?> Results For <span><?php echo $_GET['search'] ?></span></p>
+
+                        <?php endif ?>
                         </div>
                         <form action="search.php" method="GET">
                             <input type="text" placeholder="Find Users" class="btn-group1" name="search"/>
@@ -216,15 +229,21 @@
                     </div>
                 </div>
                 <div class="row light-bg detail-options-wrap">
+                <?php if (!(isset($_GET['search']))) : ?>
                     <?php
                     if (isset($_GET['filter_by']) && isset($_GET['order_by'])) {
-                        generate_restaurants(false, false, $_GET['filter_by'], $_GET['order_by']);
+                        generate_restaurants(NULL,false, false, $_GET['filter_by'], $_GET['order_by']);
                     } else if (isset($_GET['filter_by'])) {
-                        generate_restaurants(false, false, $_GET['filter_by']);
+                        generate_restaurants(NULL,false, false, $_GET['filter_by']);
                     } else {
-                        generate_restaurants(false, false);
+                        generate_restaurants(NULL, false, false);
                     }
                     ?>
+                    <?php else: ?>
+                    <?php generate_restaurants($temp, false, false) 
+                    ?>
+
+                <?php endif ?>
                 </div>
             </div>
         </div>

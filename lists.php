@@ -57,9 +57,9 @@
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="#">Profile</a>
+                                        <a class="dropdown-item" href="profile.php?">Profile</a>
                                         <a class="dropdown-item" href="#">Lists</a>
-                                        <a class="dropdown-item" href="#">Photos</a>
+                                        <a class="dropdown-item" href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
                                     </div>
                                 </li>
                                 <?php if (isAdmin()) : ?>
@@ -101,20 +101,13 @@
             <div class="col-md-7 responsive-wrap">
 
                 <div>
-                    <?php
-                
-                    if (isset($_GET['listname'])) {
-                      create_list($_GET['listname']);
-                    }
-                                        
-                  ?>
-                       
-                    <form action="" method="GET">
-                        <h7> Enter name of list: </h7>
-                        <input type="text" name="listname">
-                        <input type ="submit" value="Create List">
-                    </form>
+                    <div class="featured-btn-wrap">
+                        <a href="addlist.php" class="btn btn-danger">Create a new list!</a>
+                    </div>
 
+                    <?php 
+                        view_list_info();
+                    ?>
                 </div>
 
 
