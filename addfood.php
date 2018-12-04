@@ -127,10 +127,10 @@ $info = get_info($r_id);
         </div>
         <div class="files">
             Image for food item:
-            <input type="file" name="pic" accept="image/*" style="padding: 5px 0 5px 0; width: 60%;">
+            <input type="file" name="pic0" accept="image/*" style="padding: 5px 0 5px 0; width: 60%;">
         </div>
         <div class="reg-input">
-            <button type="submit" class="btn" name="edit_listing_btn">Add Food Item</button>
+            <button type="submit" class="btn" name="add_food_btn">Add Food Item</button>
         </div>
     </form>
 </div>

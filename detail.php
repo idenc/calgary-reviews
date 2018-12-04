@@ -133,7 +133,7 @@
                         <span><?php echo generate_avg_review($r_id) ?></span>
                     </div>
                     <div class="review-btn">
-                        <a <?php review_button($r_id) ?> class="btn btn-outline-danger">WRITE A REVIEW</a>
+                        <a <?php require_login($r_id, 'review') ?> class="btn btn-outline-danger">WRITE A REVIEW</a>
                         <span><?php echo get_num_reviews($r_id) ?> Reviews</span>
                     </div>
                     <div class="reserve-btn">
@@ -182,7 +182,7 @@
                     </div>
                 </div>
                 <div class="review-btn" style="margin: 0">
-                    <a href='editrestaurant.php?r_id=<?php echo $r_id ?>' class="btn btn-outline-danger">EDIT THIS
+                    <a <?php require_login($r_id, 'editrestaurant') ?> class="btn btn-outline-danger">EDIT THIS
                         RESTAURANT</a>
                 </div>
             </div>

@@ -109,12 +109,10 @@ $info = get_info($r_id); ?>
         <div class="row">
             <div class="col-md-7 responsive-wrap">
                 <h2><?php echo $info['name'] ?></h2>
-                <div>
-
-                </div>
+                    <?php generate_food($r_id)?>
                 <div class="reg-input">
                     <div class="reserve-btn">
-                            <a href="addfood.php?r_id=<?php echo $r_id?>" class="btn btn-danger">Add Food Item</a>
+                            <a <?php require_login($r_id, 'addfood') ?> class="btn btn-danger">Add Food Item</a>
                     </div>
                 </div>
             </div>
