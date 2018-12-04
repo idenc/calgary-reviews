@@ -1362,13 +1362,33 @@ function view_list_info()
             <p>Number of likes: $num_likes</p>
             <br>
             <p>Number of restaurants: $num_restaurants</p>
-        <hr>
+            <br>
+            <p>Restaurants:</p>
+        
 
 EOT;
+        generate_list_restaurants($name);
 
     }
 }
 
+// Generates the restaurants in a given list
+function generate_list_restaurants($name)
+{
+    global $db;
+    $query = "SELECT DISTINCT r.name 
+              FROM restaurant AS r, adds_to AS a, list AS l
+              WHERE r.r_id = a.r_id AND a.list_name = '$name'";
+    $result = mysqli_query($db, $query) or die(mysqli_error($db));
+    while ($temp = mysqli_fetch_array($result)) {
+
+        echo "<p>$temp[0]</p><br>";
+        
+    }
+    echo "<hr>";
+}
+
+// Generate lists for drop down select
 function generate_lists()
 {
     global $db;
@@ -1392,6 +1412,19 @@ function num_restaurants_in_list($name)
     $query = mysqli_query($db, $query) or die(mysqli_error($db));
     $query = mysqli_fetch_array($query);
     return $query[0];
+}
+
+// Adds info to adds_to
+function add_to_list($r_id)
+{
+    global $db;
+    if (isset($_POST['selectedlist'])) {
+        $selectedlist = $_POST['selectedlist'];
+    }
+    $user_id = $_SESSION['user']['username'];
+    $query = "INSERT INTO adds_to (user_id, list_name, list_user, r_id) 
+    VALUES('$user_id', '$selectedlist', '$user_id', '$r_id')";
+    $result = mysqli_query($db, $query) or die(mysqli_error($db));
 }
 
 
