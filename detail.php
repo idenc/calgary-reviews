@@ -83,7 +83,8 @@
                                     <a class="nav-link" href="login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
+                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span
+                                            class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
                     </div>
@@ -124,8 +125,7 @@
             <div class="col-md-6">
                 <h5><?php echo $info['name'] ?></h5>
                 <?php generate_avg_cost($r_id);
-                      generate_categories($r_id)?>
-
+                generate_categories($r_id) ?>
             </div>
             <div class="col-md-6">
                 <div class="reserve-seat-block">
@@ -138,26 +138,20 @@
                     </div>
                     <div class="reserve-btn">
                         <div class="featured-btn-wrap">
-                            <a href="food.php?r_id=<?php echo $r_id?>" class="btn btn-danger">ORDER FROM HERE</a>
+                            <a href="food.php?r_id=<?php echo $r_id ?>" class="btn btn-danger">ORDER FROM HERE</a>
                         </div>
                     </div>
-
-                    <div class="review-btn">
-                        <a href="#" class="btn btn-outline-danger">Add restaurant to list:</a>
-                    </div>
-                    
-
-                    <?php 
-                    $lists = generate_lists();
-                    ?>
-
-                    <select>
-                        <?php while($row1 = mysqli_fetch_array($lists)):;?>
-                            <option><?php echo $row1[0];?></option>
-                        <?php endwhile;?>
-                    <select>
-
-
+                    <?php if (isLoggedIn()) : ?>
+                        <div class="review-btn">
+                            <a href="#" class="btn btn-outline-danger">Add restaurant to list:</a>
+                        </div>
+                        <?php $lists = generate_lists(); ?>
+                        <select>
+                            <?php while ($row1 = mysqli_fetch_array($lists)):; ?>
+                                <option><?php echo $row1[0]; ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    <?php endif ?>
                 </div>
             </div>
         </div>

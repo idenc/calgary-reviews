@@ -1062,9 +1062,10 @@ function generate_food($r_id)
                 <h4>$$price</h4>
                 <h4>$calories Calories</h4>
                 <label>Quantity</label>
-                <input type="number" name="quantity_$food_name" min="0" value="0" style="width:40px">
+                <input form="food_form" type="number" name="quantity_$food_name" min="0" value="0" style="width:40px">
             </div>
         </div>
+        <hr>
 EOT;
     }
 }
@@ -1074,6 +1075,69 @@ if (isset($_POST['add_food_btn'])) {
 }
 
 function add_food()
+{
+    // call these variables with the global keyword to make them available in function
+    global $db, $errors;
+
+    // receive all input values from the form. Call the e() function
+    // defined below to escape form values
+    $food_name = e($_POST['name']);
+    $price = e($_POST['price']);
+    $calories = e($_POST['calories']);
+
+    // form validation: ensure that the form is correctly filled
+    if (empty($food_name)) {
+        array_push($errors, "Food name is required");
+    }
+    if (empty($price)) {
+        array_push($errors, "Food price is required");
+    }
+    if (empty($calories)) {
+        array_push($errors, "Food calorie count is required");
+    }
+    if (!file_exists($_FILES["pic0"]['tmp_name']) || !is_uploaded_file($_FILES["pic0"]['tmp_name'])) {
+        array_push($errors, "Food picture is required");
+    }
+
+    if (count($errors) == 0) {
+        handle_images($_GET['r_id'], true, $food_name, $price, $calories);
+        if (count($errors) == 0) {
+            echo "Food Item Created!";
+        }
+    } else {
+        array_push($errors, "There was an error adding food item");
+    }
+}
+
+/*
+ * =========================================================
+ * ORDER FUNCTIONS
+ * =========================================================
+ */
+
+function generate_order($r_id)
+{
+    global $db;
+    $query = "SELECT food_item_name, price
+                FROM food_item
+                WHERE r_id = $r_id";
+    $query = mysqli_query($db, $query);
+    echo "<div style='color: white'>";
+
+    while ($temp = mysqli_fetch_array($query)) {
+        $food_name = $temp[0];
+        $quantity = $_POST['quantity_' . $food_name];
+        if ($quantity == 0)
+            continue;
+        $price = $temp[1];
+        echo "<h6>Order information:</h6>";
+        echo "<p style='display: inline-block'>$food_name [$quantity]</p>";
+        echo "<p style='float: right'>$$price</p>";
+    }
+    echo "</div>";
+}
+
+function add_order()
 {
     // call these variables with the global keyword to make them available in function
     global $db, $errors;
