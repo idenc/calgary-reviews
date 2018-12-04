@@ -265,10 +265,10 @@ function get_num_reviews($r_id)
     return $query[0];
 }
 
-function review_button($r_id)
+function require_login($r_id, $page)
 {
     if (isset($_SESSION['user'])) {
-        echo "href='review.php?r_id=$r_id'";
+        echo "href='$page.php?r_id=$r_id'";
     } else {
         echo "href = 'login.php'";
     }
@@ -518,11 +518,18 @@ function generate_restaurants($name, $find_pending, $featured, $filter_by = -1, 
     $pendingpath = "";
     $div_class = "col-sm-6 col-lg-12 col-xl-6 featured-responsive";
 
+    if (isset($_GET['wifi']))
+        $wifi = e($_GET['wifi']);
+    if (isset($_GET['delivery']))
+        $delivery = e($_GET['delivery']);
+    if (isset($_GET['alcohol']))
+        $alcohol = e($_GET['alcohol']);
+
     //Determine how to query restaurants
     if ($find_pending and $name == NULL) {
         $query = "SELECT *
-                  FROM restaurant
-                  WHERE pending = 0x1";
+                  FROM restaurant AS res
+                  WHERE res.pending = 0x1";
         $pendingpath = "../";
     } else if ($featured and $name == NULL) {
         $query = "SELECT res.*
@@ -567,12 +574,28 @@ function generate_restaurants($name, $find_pending, $featured, $filter_by = -1, 
         }
     } else if ($name != NULL) {
         $query = "SELECT *
-        FROM restaurant
-        WHERE pending = '0' and name LIKE '%" . $name . "%'";
+        FROM restaurant AS res
+        WHERE res.pending = '0' and res.name LIKE '%" . $name . "%'";
     } else {
         $query = "SELECT *
-                  FROM restaurant
-                  WHERE pending = '0'";
+                  FROM restaurant AS res
+                  WHERE res.pending = '0'";
+    }
+
+    if (isset($_GET['wifi']) && $wifi == 'on') {
+        $pos = strpos($query, 'WHERE');
+        $str = " res.wifi = 1 AND";
+        $query = substr_replace($query, $str, $pos + 5, 0);
+    }
+    if (isset($_GET['delivery']) && $delivery == 'on') {
+        $pos = strpos($query, 'WHERE');
+        $str = " res.delivery = 1 AND";
+        $query = substr_replace($query, $str, $pos + 5, 0);
+    }
+    if (isset($_GET['alcohol']) && $alcohol == 'on') {
+        $pos = strpos($query, 'WHERE');
+        $str = " res.alcohol = 1 AND";
+        $query = substr_replace($query, $str, $pos + 5, 0);
     }
 
     $query = mysqli_query($db, $query);
@@ -798,17 +821,20 @@ function add_listing()
     }
 }
 
-function handle_images($r_id)
+function handle_images($r_id, $is_food = false, $food_name = '', $food_price = '', $food_calories = '')
 {
     global $errors, $db;
 
 
     //Code taken from https://www.w3schools.com/php/php_file_upload.asp
-    for ($i = 0; $i < 3; $i++) {
+    for ($i = 0; $is_food ? $i < 1 : $i < 3; $i++) {
         $target_dir = "images\\restaurants\\$r_id\\";
         $target_file = $target_dir . basename($_FILES["pic$i"]["name"]);
         $uploadOk = 1;
-        $category = $_POST["category$i"];
+        if (!$is_food)
+            $category = $_POST["category$i"];
+        else
+            $category = 'food';
 
         if (!file_exists($_FILES["pic$i"]['tmp_name']) || !is_uploaded_file($_FILES["pic$i"]['tmp_name'])) {
             continue;
@@ -859,6 +885,12 @@ function handle_images($r_id)
             $query = "INSERT INTO uploads (user_id, photoid, r_id) 
 					  VALUES('$logged_in_user', $photo_id, $r_id)";
             $query = mysqli_query($db, $query);
+
+            if ($is_food) {
+                $query = "INSERT INTO food_item (food_item_name, price, picture_path, calories, r_id) 
+					  VALUES('$food_name', $food_price, '$filepath', $food_calories, $r_id)";
+                $query = mysqli_query($db, $query) or die(mysqli_error($db));
+            }
 
             if (!$query) {
                 array_push($errors, "Insertion into uploads failed" . mysqli_error($db));
@@ -1006,71 +1038,137 @@ function edit_listing()
  * =========================================================
  */
 
+function generate_food($r_id)
+{
+    global $db;
+    $query = "SELECT *
+                FROM food_item
+                WHERE r_id = $r_id";
+    $query = mysqli_query($db, $query);
+    while ($temp = mysqli_fetch_array($query)) {
+        $food_name = $temp['food_item_name'];
+        $price = $temp['price'];
+        $file_path = $temp['picture_path'];
+        $calories = $temp['calories'];
+        echo <<< EOT
+        <div>
+            <div class="customer-review_wrap" style="width: auto; margin-bottom: 15px">
+                <a href="$file_path" class="grid image-link" id="edit_pics" style="display: inline-block; vertical-align: top">
+                    <img src="$file_path" class="img-fluid" alt="#" title="" style="" id="food_pics">
+                </a>
+            </div>
+            <div style="display: inline-block; float:right">
+                <h3>$food_name</h3>
+                <h4>$$price</h4>
+                <h4>$calories Calories</h4>
+                <label>Quantity</label>
+                <input form="food_form" type="number" name="quantity_$food_name" min="0" value="0" style="width:40px">
+            </div>
+        </div>
+        <hr>
+EOT;
+    }
+}
+
+if (isset($_POST['add_food_btn'])) {
+    add_food();
+}
+
 function add_food()
 {
     // call these variables with the global keyword to make them available in function
     global $db, $errors;
 
-    $wifi = 0;
-    $delivery = 0;
-    $alcohol = 0;
     // receive all input values from the form. Call the e() function
     // defined below to escape form values
-    $r_name = e($_POST['name']);
-    $location = e($_POST['location']);
-    if (isset($_POST['phone_num']))
-        $phone_num = e($_POST['phone_num']);
-    if (isset($_POST['wifi']))
-        $wifi = 1;
-    if (isset($_POST['delivery']))
-        $delivery = 1;
-    if (isset($_POST['alcohol']))
-        $alcohol = 1;
-    if (isset($_POST['website']))
-        $website = e($_POST['website']);
+    $food_name = e($_POST['name']);
+    $price = e($_POST['price']);
+    $calories = e($_POST['calories']);
 
     // form validation: ensure that the form is correctly filled
-    if (empty($r_name)) {
-        array_push($errors, "Restaurant name is required");
+    if (empty($food_name)) {
+        array_push($errors, "Food name is required");
     }
-    if (empty($location)) {
-        array_push($errors, "Restaurant location is required");
+    if (empty($price)) {
+        array_push($errors, "Food price is required");
+    }
+    if (empty($calories)) {
+        array_push($errors, "Food calorie count is required");
+    }
+    if (!file_exists($_FILES["pic0"]['tmp_name']) || !is_uploaded_file($_FILES["pic0"]['tmp_name'])) {
+        array_push($errors, "Food picture is required");
     }
 
     if (count($errors) == 0) {
-
-        if (isAdmin()) {
-            $query = "INSERT INTO restaurant (name, location, wifi, delivery, alcohol, phone_num, website, pending) 
-					  VALUES('$r_name', '$location', $wifi, $delivery, $alcohol, '$phone_num', '$website', 0)";
-            $query = mysqli_query($db, $query);
-            if ($query) {
-                $_SESSION['listing_success'] = "New restaurant successfully created!!";
-                $new_r_id = mysqli_insert_id($db);
-                handle_images($new_r_id);
-                handle_hours($new_r_id);
-                if (count($errors) == 0) {
-                    header('location: detail.php?r_id=' . $new_r_id);
-                }
-            } else {
-                array_push($errors, mysqli_error($db));
-            }
-        } else {
-            $query = "INSERT INTO restaurant (name, location, wifi, delivery, alcohol, phone_num, website, pending) 
-					  VALUES('$r_name', '$location', $wifi, $delivery, $alcohol, '$phone_num', '$website', 1)";
-            $query = mysqli_query($db, $query);
-
-            if ($query) {
-                $_SESSION['listing_pend_success'] = "Restaurant submitted for approval";
-                if (isset($_SESSION['admin_success'])) {
-                    echo '<script language="javascript">';
-                    echo $_SESSION['listing_pend_success'];
-                    echo '</script>';
-                }
-                header('location: index.php');
-            } else {
-                array_push($errors, "Error submitting restaurant");
-            }
+        handle_images($_GET['r_id'], true, $food_name, $price, $calories);
+        if (count($errors) == 0) {
+            echo "Food Item Created!";
         }
+    } else {
+        array_push($errors, "There was an error adding food item");
+    }
+}
+
+/*
+ * =========================================================
+ * ORDER FUNCTIONS
+ * =========================================================
+ */
+
+function generate_order($r_id)
+{
+    global $db;
+    $query = "SELECT food_item_name, price
+                FROM food_item
+                WHERE r_id = $r_id";
+    $query = mysqli_query($db, $query);
+    echo "<div style='color: white'>";
+
+    while ($temp = mysqli_fetch_array($query)) {
+        $food_name = $temp[0];
+        $quantity = $_POST['quantity_' . $food_name];
+        if ($quantity == 0)
+            continue;
+        $price = $temp[1];
+        echo "<h6>Order information:</h6>";
+        echo "<p style='display: inline-block'>$food_name [$quantity]</p>";
+        echo "<p style='float: right'>$$price</p>";
+    }
+    echo "</div>";
+}
+
+function add_order()
+{
+    // call these variables with the global keyword to make them available in function
+    global $db, $errors;
+
+    // receive all input values from the form. Call the e() function
+    // defined below to escape form values
+    $food_name = e($_POST['name']);
+    $price = e($_POST['price']);
+    $calories = e($_POST['calories']);
+
+    // form validation: ensure that the form is correctly filled
+    if (empty($food_name)) {
+        array_push($errors, "Food name is required");
+    }
+    if (empty($price)) {
+        array_push($errors, "Food price is required");
+    }
+    if (empty($calories)) {
+        array_push($errors, "Food calorie count is required");
+    }
+    if (!file_exists($_FILES["pic0"]['tmp_name']) || !is_uploaded_file($_FILES["pic0"]['tmp_name'])) {
+        array_push($errors, "Food picture is required");
+    }
+
+    if (count($errors) == 0) {
+        handle_images($_GET['r_id'], true, $food_name, $price, $calories);
+        if (count($errors) == 0) {
+            echo "Food Item Created!";
+        }
+    } else {
+        array_push($errors, "There was an error adding food item");
     }
 }
 

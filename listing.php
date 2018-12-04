@@ -1,4 +1,4 @@
-<?php include('functions.php')?>
+<?php include('functions.php') ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -58,7 +58,8 @@
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                         <a class="dropdown-item" href="profile.php">Profile</a>
-                                        <a class="dropdown-item" href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
+                                        <a class="dropdown-item"
+                                           href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
                                         <a class="dropdown-item"
                                            href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
                                     </div>
@@ -103,20 +104,20 @@
                 <div class="row detail-filter-wrap">
                     <div class="col-md-4 featured-responsive">
                         <div class="detail-filter-text">
-                        <?php if (!(isset($_GET['search']))) : ?>
-                            <p><?php echo get_num_restaurants() ?> Results For <span>Restaurant</span></p>
+                            <?php if (!(isset($_GET['search']))) : ?>
+                                <p><?php echo get_num_restaurants() ?> Results For <span>Restaurant</span></p>
 
-                        <?php else: ?>
-                            <p><?php 
-                            global $temp;
-                            $temp = $_GET['search'];
-                            $query = "SELECT COUNT(*) FROM restaurant WHERE name LIKE '%" .$temp . "%'";
-                            $query = mysqli_query($db, $query);
-                            $query = mysqli_fetch_array($query);
-                            echo $query[0];
-                            ?> Results For <span><?php echo $_GET['search'] ?></span></p>
+                            <?php else: ?>
+                                <p><?php
+                                    global $temp;
+                                    $temp = $_GET['search'];
+                                    $query = "SELECT COUNT(*) FROM restaurant WHERE name LIKE '%" . $temp . "%'";
+                                    $query = mysqli_query($db, $query);
+                                    $query = mysqli_fetch_array($query);
+                                    echo $query[0];
+                                    ?> Results For <span><?php echo $_GET['search'] ?></span></p>
 
-                        <?php endif ?>
+                            <?php endif ?>
                         </div>
                         <form action="search.php" method="GET">
                             <input type="text" placeholder="Find Users" class="btn-group1" name="search"/>
@@ -126,7 +127,7 @@
                     <div class="col-md-8 featured-responsive">
                         <div class="detail-filter">
                             <p>Filter by</p>
-                            <form class="filter-dropdown" action="listing.php" method="get">
+                            <form class="filter-dropdown" action="listing.php" method="get" id="filter-dropdown">
                                 <select name="filter_by" class="custom-select mb-2 mr-sm-2 mb-sm-0"
                                         id="inlineFormCustomSelect" onchange="this.form.submit()">
                                     <option disabled selected value> -- select an option --</option>
@@ -158,92 +159,53 @@
                                         </option>
                                     <?php endif ?>
                                     <?php if (isset($_GET['filter_by']) && ($_GET['filter_by'] == 'category')) {
-                                        echo "HERE:" . $_GET['order_by'];
                                         category_filter();
                                     } ?>
                                 </select>
                             </form>
-                            <div class="map-responsive-wrap">
-                                <a class="map-icon" href="#"><span class="icon-location-pin"></span></a>
-                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row detail-checkbox-wrap">
                     <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
                         <label class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input">
+                            <input type="checkbox" class="custom-control-input" form="filter-dropdown" name="wifi"
+                                   onchange="this.form.submit()" <?php echo(isset($_GET['wifi']) && $_GET['wifi'] == 'on' ? 'checked' : ''); ?>>
                             <span class="custom-control-indicator"></span>
-                            <span class="custom-control-description">Bike Parking</span>
+                            <span class="custom-control-description">Wifi</span>
                         </label>
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
                         <label class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input">
+                            <input type="checkbox" class="custom-control-input" form="filter-dropdown" name="delivery"
+                                   onchange="this.form.submit()" <?php echo(isset($_GET['delivery']) && $_GET['delivery'] == 'on' ? 'checked' : ''); ?>>
                             <span class="custom-control-indicator"></span>
-                            <span class="custom-control-description">Wireless Internet  </span>
-                        </label>
-                    </div>
-
-                    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
-                        <label class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input">
-                            <span class="custom-control-indicator"></span>
-                            <span class="custom-control-description">Smoking Allowed  </span>
+                            <span class="custom-control-description">Delivery</span>
                         </label>
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
                         <label class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input">
+                            <input type="checkbox" class="custom-control-input" form="filter-dropdown" name="alcohol"
+                                   onchange="this.form.submit()" <?php echo(isset($_GET['alcohol']) && $_GET['alcohol'] == 'on' ? 'checked' : ''); ?>>
                             <span class="custom-control-indicator"></span>
-                            <span class="custom-control-description">Street Parking</span>
+                            <span class="custom-control-description">Alcohol</span>
                         </label>
-                    </div>
-
-                    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
-                        <label class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input">
-                            <span class="custom-control-indicator"></span>
-                            <span class="custom-control-description">Special</span>
-                        </label>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                        <label class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input">
-                            <span class="custom-control-indicator"></span>
-                            <span class="custom-control-description">Accepts Credit cards</span>
-                        </label>
-                    </div>
-
-                    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
-                        <label class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input">
-                            <span class="custom-control-indicator"></span>
-                            <span class="custom-control-description">Pets Friendly</span>
-                        </label>
-
                     </div>
                 </div>
                 <div class="row light-bg detail-options-wrap">
-                <?php if (!(isset($_GET['search']))) : ?>
-                    <?php
-                    if (isset($_GET['filter_by']) && isset($_GET['order_by'])) {
-                        generate_restaurants(NULL,false, false, $_GET['filter_by'], $_GET['order_by']);
-                    } else if (isset($_GET['filter_by'])) {
-                        generate_restaurants(NULL,false, false, $_GET['filter_by']);
-                    } else {
-                        generate_restaurants(NULL, false, false);
-                    }
-                    ?>
+                    <?php if (!(isset($_GET['search']))) : ?>
+                        <?php
+                        if (isset($_GET['filter_by']) && isset($_GET['order_by'])) {
+                            generate_restaurants(NULL, false, false, $_GET['filter_by'], $_GET['order_by']);
+                        } else if (isset($_GET['filter_by'])) {
+                            generate_restaurants(NULL, false, false, $_GET['filter_by']);
+                        } else {
+                            generate_restaurants(NULL, false, false);
+                        }
+                        ?>
                     <?php else: ?>
-                    <?php generate_restaurants($temp, false, false) 
-                    ?>
-
-                <?php endif ?>
+                        <?php generate_restaurants($temp, false, false) ?>
+                    <?php endif ?>
                 </div>
             </div>
         </div>

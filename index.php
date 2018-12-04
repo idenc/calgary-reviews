@@ -131,9 +131,6 @@ if (isset($_SESSION['admin_success'])) {
                                                 class="pe-7s-angle-right"></i></button>
                                 </div>
                             </form>
-                            <div class="slider-link">
-                                <a href="#">Browse Popular</a><span>or</span> <a href="#">Recently Added</a>
-                            </div>
                         </div>
                     </div>
                 </div>

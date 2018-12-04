@@ -1,4 +1,19 @@
-<?php include('functions.php') ?>
+<?php include('functions.php');
+/**
+ * Created by PhpStorm.
+ * User: Iden
+ * Date: 11/28/2018
+ * Time: 10:30 PM
+ */
+
+global $r_id;
+if (isset($_GET['r_id'])) {
+    $r_id = $_GET['r_id'];
+}
+global $info;
+$info = get_info($r_id);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,7 +28,7 @@
     <!-- Favicons -->
     <link rel="shortcut icon" href="#">
     <!-- Page Title -->
-    <title>Listing &amp; Directory Website Template</title>
+    <title>Calgary Reviews</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- Google Fonts -->
@@ -24,6 +39,10 @@
     <link rel="stylesheet" href="css/themify-icons.css">
     <!-- Hover Effects -->
     <link rel="stylesheet" href="css/set1.css">
+    <!-- Swipper Slider -->
+    <link rel="stylesheet" href="css/swiper.min.css">
+    <!-- Magnific Popup CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
     <!-- Main CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -57,9 +76,8 @@
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="profile.php">Profile</a>
-                                        <a class="dropdown-item"
-                                           href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
+                                        <a class="dropdown-item" href="#">Profile</a>
+                                        <a class="dropdown-item" href="#">Lists</a>
                                         <a class="dropdown-item" href="#">Photos</a>
                                     </div>
                                 </li>
@@ -67,10 +85,6 @@
                                     <li class="nav-item active">
                                         <a class="nav-link" href="admin/create_user.php" style="color: red;">Create
                                             User</a>
-                                    </li>
-                                    <li class="nav-item active">
-                                        <a class="nav-link" href="admin/viewpending.php" style="color: red;">View
-                                            Pending</a>
                                     </li>
                                 <?php endif ?>
                                 <li class="nav-item active">
@@ -84,8 +98,7 @@
                                     <a class="nav-link" href="login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span
-                                            class="ti-plus"></span> Add
+                            <li><a href="#" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
                     </div>
@@ -95,36 +108,27 @@
     </div>
 </div>
 <!--//END HEADER -->
-<!--============================= DETAIL =============================-->
-<?php
-global $r_id;
-if (isset($_GET['r_id'])) {
-    $r_id = $_GET['r_id'];
-}
-
-global $info;
-$info = get_info($r_id); ?>
-<section>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-7 responsive-wrap">
-                <h2><?php echo $info['name'] ?></h2>
-                <form method="post" action="order.php?r_id=<?php echo $r_id ?>" id="food_form">
-                    <?php generate_food($r_id) ?>
-                    <div class="reg-input">
-                        <div class="reserve-btn" style="float: right">
-                            <button type="submit" class="btn btn-danger" name="add_order">Make Order</button>
-                        </div>
-                        <div class="reserve-btn">
-                            <a <?php require_login($r_id, 'addfood') ?> class="btn btn-danger">Add Food Item</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
+<!-- SLIDER -->
+<div style="background: #3F3F3F; height: fit-content;">
+    <form method="post" action="addfood.php?r_id=<?php echo $r_id ?>" class="register" style="margin-bottom: 30%;"
+          enctype="multipart/form-data">
+        <?php display_error(); ?>
+        <h5 style="color: white"><?php echo $info['name'] ?></h5>
+        <h6 style="color: white">Please enter your info to complete order:</h6>
+        <div class="reg-input">
+            <label>Address</label>
+            <input type="text" name="address">
         </div>
-    </div>
-</section>
-<!--//END DETAIL -->
+        <div class="reg-input">
+            <label>Email</label>
+            <input type="text" name="email">
+        </div>
+        <?php generate_order($r_id) ?>
+        <div class="reg-input">
+            <button type="submit" class="btn" name="confirm_order_btn">Confirm Order</button>
+        </div>
+    </form>
+</div>
 <!--============================= FOOTER =============================-->
 <footer class="main-block dark-bg">
     <div class="container">
@@ -134,8 +138,14 @@ $info = get_info($r_id); ?>
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     <p>Copyright &copy; 2018 Listing. All rights reserved | This template is made with <i
                                 class="ti-heart" aria-hidden="true"></i> by <a href="https://colorlib.com"
-                                                                               target="_blank">Colorlib</a></p>
+                                                                               target="_blank">Colorlib</a>
+                    </p>
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    <ul>
+                        <li><a href="#"><span class="ti-facebook"></span></a></li>
+                        <li><a href="#"><span class="ti-twitter-alt"></span></a></li>
+                        <li><a href="#"><span class="ti-instagram"></span></a></li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -149,7 +159,10 @@ $info = get_info($r_id); ?>
 <script src="js/jquery-3.2.1.min.js"></script>
 <script src="js/popper.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
-
+<!-- Magnific popup JS -->
+<script src="js/jquery.magnific-popup.js"></script>
+<!-- Swipper Slider JS -->
+<script src="js/swiper.min.js"></script>
 </body>
 
 </html>
