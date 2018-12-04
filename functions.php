@@ -1403,6 +1403,14 @@ EOT;
     }
 }
 
+function generate_lists()
+{
+    global $db;
+    $query = "SELECT name FROM list WHERE user_id = '{$_SESSION['user']['username']}'";
+    $result = mysqli_query($db, $query) or die(mysqli_error($db));
+    return $result;
+}
+
 if (isset($_POST['add_list_btn'])) {
     create_list();
 }
