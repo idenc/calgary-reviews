@@ -141,6 +141,23 @@
                             <a href="food.php?r_id=<?php echo $r_id?>" class="btn btn-danger">ORDER FROM HERE</a>
                         </div>
                     </div>
+
+                    <div class="review-btn">
+                        <a href="#" class="btn btn-outline-danger">Add restaurant to list:</a>
+                    </div>
+                    
+
+                    <?php 
+                    $lists = generate_lists();
+                    ?>
+
+                    <select>
+                        <?php while($row1 = mysqli_fetch_array($lists)):;?>
+                            <option><?php echo $row1[0];?></option>
+                        <?php endwhile;?>
+                    <select>
+
+
                 </div>
             </div>
         </div>
