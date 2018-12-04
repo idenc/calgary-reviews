@@ -100,10 +100,14 @@
         <div class="row">
             <div class="col-md-7 responsive-wrap">
 
+                <?php if ($_GET['username'] != $_SESSION['user']) : ?>
+                
                 <div>
                     <div class="featured-btn-wrap">
                         <a href="addlist.php" class="btn btn-danger">Create a new list!</a>
                     </div>
+
+                <?php endif ?>
 
                     <?php 
                         view_list_info();

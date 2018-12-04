@@ -104,8 +104,10 @@
             show_user();
             show_user_reviews();
             $user_id = $_GET['username'];
-            $href = "viewuserphotos.php?username=$user_id";
-            echo "<a href=$href> <p>View photos</p> </a>";
+            $href1 = "viewuserphotos.php?username=$user_id";
+            echo "<a href=$href1> <p>View photos</p> </a>";
+            $href2 = "lists.php?username=$user_id";
+            echo "<a href=$href2> <p>View lists</p> </a>";
             ?>
             </div>
 
