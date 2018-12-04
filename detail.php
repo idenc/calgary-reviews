@@ -141,42 +141,27 @@
                             <a href="food.php?r_id=<?php echo $r_id ?>" class="btn btn-danger">ORDER FROM HERE</a>
                         </div>
                     </div>
-                    <!--
-                    <div class="review-btn">
-                        <a href="#" class="btn btn-outline-danger">ADD RESTAURANT TO LIST:</a>
-                    </div>
-                    -->
-                    
-
-                    <?php 
-                        $lists = generate_lists();
-                    ?>
-                    <form action="" method="post">
-                        <select name="selectedlist">
-                            <?php while($row1 = mysqli_fetch_array($lists)):;?>
-                                <option value="<?php echo $row1[0];?>"><?php echo $row1[0];?></option>
-                            <?php endwhile;?>
-                        <select>
-                        <button type="submit" class="btn" name="add_to_list_btn">ADD TO LIST</button>
-                    </form>
-                    
-                    <?php 
-                        if (isset($_POST['add_to_list_btn'])) {
-                            add_to_list($r_id);
-                        }
-                    ?>
 
                     <?php if (isLoggedIn()) : ?>
-                        <div class="review-btn">
-                            <a href="#" class="btn btn-outline-danger">Add restaurant to list:</a>
-                        </div>
-                        <?php $lists = generate_lists(); ?>
-                        <select>
-                            <?php while ($row1 = mysqli_fetch_array($lists)):; ?>
-                                <option><?php echo $row1[0]; ?></option>
-                            <?php endwhile; ?>
-                        </select>
+                        <?php 
+                            $lists = generate_lists();
+                        ?>
+                        <form action="" method="post">
+                            <select name="selectedlist">
+                                <?php while($row1 = mysqli_fetch_array($lists)):;?>
+                                    <option value="<?php echo $row1[0];?>"><?php echo $row1[0];?></option>
+                                <?php endwhile;?>
+                            <select>
+                            <button type="submit" class="btn" name="add_to_list_btn">ADD TO LIST</button>
+                        </form>
+                        
+                        <?php 
+                            if (isset($_POST['add_to_list_btn'])) {
+                                add_to_list($r_id);
+                            }
+                        ?>
                     <?php endif ?>
+                    
                 </div>
             </div>
         </div>
