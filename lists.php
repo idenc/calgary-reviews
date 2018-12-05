@@ -99,10 +99,10 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-7 responsive-wrap">
-
+                <div>
                 <?php if ($_GET['username'] == ($_SESSION['user']['username'])) : ?>
                 
-                <div>
+            
                     <div class="featured-btn-wrap">
                         <a href="addlist.php" class="btn btn-danger">Create a new list!</a>
                     </div>

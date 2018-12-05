@@ -1483,6 +1483,12 @@ function view_list_info()
                             <button type='submit' class='btn' name='delete_list' value='$name;$user_id'
                              style='margin: 10px; color: red'>Delete</button>
                         </form>
+
+                        <form method = 'post' action=''>
+                             <input type='text' name='new_name'>
+                             <button type='submit' class='btn' name='edit_list_name' value='$name'
+                             style='margin: 10px; color: red'>Edit List Name</button>
+                        </form>
 EOT;
         }
 
@@ -1507,6 +1513,26 @@ EOT;
 
 if (isset($_POST['delete_list'])) {
     delete_list();
+}
+
+if (isset($_POST['edit_list_name'])) {
+    $new_name = $_POST['new_name'];
+    edit_list_name($new_name);
+}
+
+function edit_list_name($new_name) {
+    global $db;
+    $list = $_POST['edit_list_name'];
+    // Update adds_to first so that foreign key constraint is not voilated
+    $query1 = "UPDATE adds_to SET list_name = '$new_name' WHERE list_name = '$list' ";
+    $query2 = "UPDATE list SET name = '$new_name' WHERE name = '$list' ";
+    $result1 = mysqli_query($db, $query1) or die(mysqli_error($db));
+    $result2 = mysqli_query($db, $query2) or die(mysqli_error($db));
+    if ($result1 && $result2) {
+        echo "List name edited successfully!";
+    } else {
+        echo "Error editing list name";
+    }
 }
 
 
