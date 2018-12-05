@@ -989,8 +989,16 @@ function edit_listing()
         foreach ($_POST['pic_delete'] as $id) {
             $query = "DELETE FROM uploads WHERE photoid = $id";
             $query = mysqli_query($db, $query);
-            if (!$query)
+            if (!$query) {
                 $good = false;
+                echo "There was an error deleting a photo";
+                continue;
+            }
+            $username = $_SESSION['user']['username'];
+            $query = "INSERT INTO deletes (admin_user, r_id, photoid)
+                      VALUES ('$username', $r_id, $id)";
+            $query = mysqli_query($db, $query);
+
         }
         if ($good) {
             echo "Photos deleted from restaurant successfully";
@@ -1024,6 +1032,10 @@ function edit_listing()
         handle_hours($r_id);
         handle_images($r_id);
         if ($query1) {
+            $username = $_SESSION['user']['username'];
+            $query = "INSERT INTO edits (admin_user, r_id)
+                        VALUES ('$username', $r_id)";
+            $query = mysqli_query($db, $query);
             $_SESSION['edit_success'] = "<br>Restaurant successfully edited!!";
             echo $_SESSION['edit_success'];
         } else {
