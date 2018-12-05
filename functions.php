@@ -1439,31 +1439,31 @@ function create_list()
 			  VALUES('$listname', 0, 0, '$user_id')";
     $query = mysqli_query($db, $query) or die(mysqli_error($db));
 
-    /*
-    $user_id = $_SESSION['user']['username'];
-    echo $listname;
-    echo $user_id;
-    */
 }
 
-/*
+
 function delete_list()
 {
     global $db;
     $info = explode(';', $_POST['delete_list']);
-
-    $query = "DELETE l.*, list_name, a.list_user 
-              FROM list AS l, adds_to AS a 
-              WHERE l.name = '$info[0]' AND l.user_id = '$info[1]' 
-              AND a.list_name ='$info[0]' AND a.list_user = '$info[1]' ";
-    $query = mysqli_query($db, $query) or die(mysqli_error($db));
-    if ($query) {
+    $list = $info[0];
+    $user = $info[1];
+    // Delete from child table first to prevent froeign key constraint being violated
+    $query1 = "DELETE 
+               FROM adds_to
+               WHERE list_name = '$list' AND list_user = '$user'";
+    $query2 = "DELETE 
+               FROM list 
+               WHERE name = '$list' AND user_id = '$user'";
+    $query1 = mysqli_query($db, $query1) or die(mysqli_error($db));
+    $query2 = mysqli_query($db, $query2) or die(mysqli_error($db));
+    if ($query1 && $query2) {
         echo "List successfully deleted!";
     } else {
         echo "Error deleting list!";
     }
 }
-*/
+
 
 function view_list_info()
 {
@@ -1504,11 +1504,11 @@ EOT;
     }
 }
 
-/*
+
 if (isset($_POST['delete_list'])) {
     delete_list();
 }
-*/
+
 
 // Generates the restaurants in a given list
 function generate_list_restaurants($name)
