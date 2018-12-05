@@ -100,7 +100,7 @@
         <div class="row">
             <div class="col-md-7 responsive-wrap">
 
-                <?php if ($_GET['username'] != $_SESSION['user']) : ?>
+                <?php if ($_GET['username'] == ($_SESSION['user']['username'])) : ?>
                 
                 <div>
                     <div class="featured-btn-wrap">
