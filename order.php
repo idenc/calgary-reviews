@@ -6,12 +6,24 @@
  * Time: 10:30 PM
  */
 
+
 global $r_id;
 if (isset($_GET['r_id'])) {
     $r_id = $_GET['r_id'];
 }
 global $info;
 $info = get_info($r_id);
+
+$no_food = true;
+foreach ($_POST as $item) {
+    if ($item != 0) {
+        $no_food = false;
+    }
+}
+
+if ($no_food) {
+    echo "You must order at least one item";
+}
 ?>
 
 <!DOCTYPE html>
@@ -110,7 +122,7 @@ $info = get_info($r_id);
 <!--//END HEADER -->
 <!-- SLIDER -->
 <div style="background: #3F3F3F; height: fit-content;">
-    <form method="post" action="addfood.php?r_id=<?php echo $r_id ?>" class="register" style="margin-bottom: 30%;"
+    <form method="post" action="index.php" class="register" style="margin-bottom: 30%;"
           enctype="multipart/form-data">
         <?php display_error(); ?>
         <h5 style="color: white"><?php echo $info['name'] ?></h5>
@@ -124,9 +136,11 @@ $info = get_info($r_id);
             <input type="text" name="email">
         </div>
         <?php generate_order($r_id) ?>
-        <div class="reg-input">
-            <button type="submit" class="btn" name="confirm_order_btn">Confirm Order</button>
-        </div>
+        <?php if (!$no_food) : ?>
+            <div class="reg-input">
+                <button type="submit" class="btn" name="confirm_order_btn">Confirm Order</button>
+            </div>
+        <?php endif ?>
     </form>
 </div>
 <!--============================= FOOTER =============================-->

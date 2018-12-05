@@ -1066,7 +1066,7 @@ function generate_food($r_id)
         <div>
             <div class="customer-review_wrap" style="width: auto; margin-bottom: 15px">
                 <a href="$file_path" class="grid image-link" id="edit_pics" style="display: inline-block; vertical-align: top">
-                    <img src="$file_path" class="img-fluid" alt="#" title="" style="" id="food_pics">
+                    <img src="$file_path" class="img-fluid" alt="#" id="food_pics">
                 </a>
             </div>
             <div style="display: inline-block; float:right">
@@ -1130,57 +1130,82 @@ function add_food()
 function generate_order($r_id)
 {
     global $db;
+    $order_items = array();
     $query = "SELECT food_item_name, price
                 FROM food_item
                 WHERE r_id = $r_id";
     $query = mysqli_query($db, $query);
     echo "<div style='color: white'>";
-
+    echo "<h6>Order information:</h6>";
     while ($temp = mysqli_fetch_array($query)) {
         $food_name = $temp[0];
         $quantity = $_POST['quantity_' . $food_name];
         if ($quantity == 0)
             continue;
         $price = $temp[1];
-        echo "<h6>Order information:</h6>";
+        array_push($order_items, array("name" => $food_name, "quantity" => $quantity, "price" => $price));
         echo "<p style='display: inline-block'>$food_name [$quantity]</p>";
         echo "<p style='float: right'>$$price</p>";
+        echo "<br>";
     }
     echo "</div>";
+    $_SESSION['order_rid'] = $r_id;
+    $serialized = htmlspecialchars(serialize($order_items));
+    echo "<input type=\"hidden\" name=\"ArrayData\" value=\"$serialized\"/>";
+
+}
+
+if (isset($_POST['confirm_order_btn'])) {
+    add_order();
 }
 
 function add_order()
 {
     // call these variables with the global keyword to make them available in function
     global $db, $errors;
-
+    $order_items =  unserialize($_POST['ArrayData']);
     // receive all input values from the form. Call the e() function
     // defined below to escape form values
-    $food_name = e($_POST['name']);
-    $price = e($_POST['price']);
-    $calories = e($_POST['calories']);
+    $address = "";
+    $email = "";
+
+    if (isset($_POST['address']))
+        $address = $_POST['address'];
+    if (isset($_POST['email']))
+        $email = $_POST['email'];
 
     // form validation: ensure that the form is correctly filled
-    if (empty($food_name)) {
-        array_push($errors, "Food name is required");
+    if (empty($address)) {
+        array_push($errors, "Address is required");
     }
-    if (empty($price)) {
-        array_push($errors, "Food price is required");
-    }
-    if (empty($calories)) {
-        array_push($errors, "Food calorie count is required");
-    }
-    if (!file_exists($_FILES["pic0"]['tmp_name']) || !is_uploaded_file($_FILES["pic0"]['tmp_name'])) {
-        array_push($errors, "Food picture is required");
+    if (empty($email)) {
+        array_push($errors, "Email is required");
     }
 
     if (count($errors) == 0) {
-        handle_images($_GET['r_id'], true, $food_name, $price, $calories);
-        if (count($errors) == 0) {
-            echo "Food Item Created!";
+        $user_id = $_SESSION['user']['username'];
+        $price = 0;
+        foreach ($order_items as $item) {
+            $price += $item['price'];
         }
+        $query = "INSERT INTO `order` (total_price, email, address, user_id)
+                  VALUES ($price, '$email', '$address', '$user_id') ";
+        $query = mysqli_query($db, $query) or die(mysqli_error($db));
+        if ($query) {
+            $order_id = mysqli_insert_id($db);
+            $r_id = $_SESSION['order_rid'];
+            unset($_SESSION['order_rid']);
+            foreach ($order_items as $item) {
+                $food_name = $item['name'];
+                $quantity = $item['quantity'];
+                $query = "INSERT INTO made_from (food_item_name, orderid, r_id, quantity)
+                          VALUES ('$food_name', $order_id, $r_id, $quantity)";
+                $query = mysqli_query($db, $query) or die(mysqli_error($db));
+            }
+        }
+        echo "Order Placed!";
     } else {
-        array_push($errors, "There was an error adding food item");
+        array_push($errors, "There was an error making order");
     }
 }
 
@@ -1372,7 +1397,6 @@ EOT;
 EOT;
 
 
-
     }
 }
 
@@ -1389,13 +1413,18 @@ function viewUserPhotos($username)
     while ($temp = mysqli_fetch_array($query)) {
 
         echo <<< EOT
-            <div class='swiper-slide'>
-                <a href=$temp[0] class='grid image-link' id='edit_pics'>
-                    <img src=$temp[0] class='img-profile' alt='#'>
+        <div>
+            <div class="customer-review_wrap" style="width: auto; margin-bottom: 15px">
+                <a href=$temp[0] class='grid image-link' id='edit_pics' style="display: inline-block; vertical-align: top">
+                    <img src=$temp[0] class='img-fluid' alt='#' id="food_pics">
                 </a>
-                <label for='pic_delete[]' style='vertical-align: middle'>Delete</label>
-                <input type='checkbox' name='pic_delete[]' value='$temp[1]' style="width: 25px; height: 25px">      
             </div>
+            <div style="display: inline-block; float:right">
+                <label for='pic_delete[]' style='vertical-align: middle'>Delete</label>
+                <input type='checkbox' name='pic_delete[]' value='$temp[1]' style="width: 25px; height: 25px">
+            </div>
+        </div>
+        <hr>
             
 EOT;
     }
@@ -1532,7 +1561,8 @@ if (isset($_POST['edit_list_name'])) {
     edit_list_name($new_name);
 }
 
-function edit_list_name($new_name) {
+function edit_list_name($new_name)
+{
     global $db;
     $list = $_POST['edit_list_name'];
     // Update adds_to first so that foreign key constraint is not voilated
@@ -1559,7 +1589,7 @@ function generate_list_restaurants($name)
     while ($temp = mysqli_fetch_array($result)) {
 
         echo "<p>$temp[0]</p><br>";
-        
+
     }
     echo "<hr>";
 }
