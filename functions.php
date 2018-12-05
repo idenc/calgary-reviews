@@ -1351,8 +1351,14 @@ EOT;
                     <p class="customer-text">$user_review</p>          
                     </div>
                     </div>
+                    <form method = 'post' action='profile.php?'>
+                    <button type='submit' class='btn' name='delete_review' value='$user_review_date;$r_id;$reviewer'
+                    style='margin: 10px; color: red'>Delete</button>
+                    </form>
                     <hr>
+
 EOT;
+
 
 
     }
@@ -1440,9 +1446,29 @@ function create_list()
     */
 }
 
+/*
+function delete_list()
+{
+    global $db;
+    $info = explode(';', $_POST['delete_list']);
+
+    $query = "DELETE l.*, list_name, a.list_user 
+              FROM list AS l, adds_to AS a 
+              WHERE l.name = '$info[0]' AND l.user_id = '$info[1]' 
+              AND a.list_name ='$info[0]' AND a.list_user = '$info[1]' ";
+    $query = mysqli_query($db, $query) or die(mysqli_error($db));
+    if ($query) {
+        echo "List successfully deleted!";
+    } else {
+        echo "Error deleting list!";
+    }
+}
+*/
+
 function view_list_info()
 {
     global $db;
+    $user_id = ($_SESSION['user']['username']);
     $query = "SELECT * FROM list WHERE user_id = '{$_GET['username']}'";
     $result = mysqli_query($db, $query) or die(mysqli_error($db));
     while ($temp = mysqli_fetch_array($result)) {
@@ -1451,6 +1477,14 @@ function view_list_info()
         $num_likes = $temp['num_likes'];
         //$num_restaurants = $temp['num_restaurants'];
         $num_restaurants = num_restaurants_in_list($name);
+        if ($_GET['username'] == ($_SESSION['user']['username'])) {
+            echo <<< EOT
+                        <form method = 'post' action='lists.php?username=$user_id'>
+                            <button type='submit' class='btn' name='delete_list' value='$name;$user_id'
+                             style='margin: 10px; color: red'>Delete</button>
+                        </form>
+EOT;
+        }
 
         echo <<< EOT
         <h4> $name </h4>
@@ -1469,6 +1503,12 @@ EOT;
 
     }
 }
+
+/*
+if (isset($_POST['delete_list'])) {
+    delete_list();
+}
+*/
 
 // Generates the restaurants in a given list
 function generate_list_restaurants($name)
