@@ -75,6 +75,14 @@
                                         <a class="nav-link" href="admin/create_user.php" style="color: red;">Create
                                             User</a>
                                     </li>
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="admin/viewpending.php" style="color: red;">View
+                                            Pending Restaurants</a>
+                                    </li>
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="admin/employee.php" style="color: red;">View
+                                            Pending Orders</a>
+                                    </li>
                                 <?php endif ?>
                                 <li class="nav-item active">
                                     <a class="nav-link" href="index.php?logout='1'" style="color: red;">Logout</a>
@@ -142,7 +150,7 @@
                     </div>
                     <div class="reserve-btn">
                         <div class="featured-btn-wrap">
-                            <a href="food.php?r_id=<?php echo $r_id ?>" class="btn btn-danger">ORDER FROM HERE</a>
+                            <a <?php require_login($r_id, 'food')?> class="btn btn-danger">ORDER FROM HERE</a>
                         </div>
                     </div>
 

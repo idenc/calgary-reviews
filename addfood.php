@@ -110,9 +110,10 @@ $info = get_info($r_id);
 <!--//END HEADER -->
 <!-- SLIDER -->
 <div style="background: #3F3F3F; height: fit-content;">
-    <form method="post" action="addfood.php?r_id=<?php echo $r_id ?>" class="register" style="margin-bottom: 30%;" enctype="multipart/form-data">
+    <form method="post" action="addfood.php?r_id=<?php echo $r_id ?>" class="register" style="margin-bottom: 30%;"
+          enctype="multipart/form-data">
         <?php display_error(); ?>
-        <h5 style="color: white"><?php echo $info['name']?></h5>
+        <h5 style="color: white"><?php echo $info['name'] ?></h5>
         <div class="reg-input">
             <label>Food Name</label>
             <input type="text" name="name">
@@ -142,8 +143,8 @@ $info = get_info($r_id);
                 <div class="copyright">
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     <p>Copyright &copy; 2018 Listing. All rights reserved | This template is made with <i
-                            class="ti-heart" aria-hidden="true"></i> by <a href="https://colorlib.com"
-                                                                           target="_blank">Colorlib</a>
+                                class="ti-heart" aria-hidden="true"></i> by <a href="https://colorlib.com"
+                                                                               target="_blank">Colorlib</a>
                     </p>
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     <ul>

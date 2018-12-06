@@ -83,7 +83,8 @@
                                     <a class="nav-link" href="login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
+                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span
+                                            class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
                     </div>
@@ -112,7 +113,8 @@ if (isset($_GET['r_id'])) {
         <?php echo display_error(); ?>
         <div class="reg-input">
             <label>Your Review</label>
-            <textarea rows="10" cols="2" style="width: 100%" name="review_content" placeholder="Your review here..." autofocus></textarea>
+            <textarea rows="10" cols="2" style="width: 100%" name="review_content" placeholder="Your review here..."
+                      autofocus></textarea>
         </div>
         <label for="review_rating" style="color: white;">Rating</label>
         <select name="review_rating" id="review_rating">

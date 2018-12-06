@@ -117,7 +117,7 @@ $info = get_info($r_id);
           style="margin-bottom: 30%;"
           enctype="multipart/form-data">
         <?php display_error(); ?>
-        <h5 style="color: white"><?php echo $info['name']?></h5>
+        <h5 style="color: white"><?php echo $info['name'] ?></h5>
         <div class="reg-input">
             <label>Restaurant Name</label>
             <input type="text" name="name" value="<?php echo $r_name; ?>">

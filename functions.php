@@ -997,7 +997,7 @@ function edit_listing()
             $username = $_SESSION['user']['username'];
             $query = "INSERT INTO deletes (admin_user, r_id, photoid)
                       VALUES ('$username', $r_id, $id)";
-            $query = mysqli_query($db, $query);
+            mysqli_query($db, $query);
 
         }
         if ($good) {
@@ -1036,8 +1036,12 @@ function edit_listing()
             $query = "INSERT INTO edits (edit_user, r_id)
                         VALUES ('$username', $r_id)";
             $query = mysqli_query($db, $query);
-            $_SESSION['edit_success'] = "<br>Restaurant successfully edited!!";
-            echo $_SESSION['edit_success'];
+            if ($query) {
+                $_SESSION['edit_success'] = "<br>Restaurant successfully edited!!";
+                echo $_SESSION['edit_success'];
+            } else {
+                echo "Error editing restaurant";
+            }
         } else {
             array_push($errors, mysqli_error($db));
         }
@@ -1089,7 +1093,7 @@ if (isset($_POST['add_food_btn'])) {
 function add_food()
 {
     // call these variables with the global keyword to make them available in function
-    global $db, $errors;
+    global $errors;
 
     // receive all input values from the form. Call the e() function
     // defined below to escape form values
@@ -1209,18 +1213,25 @@ function add_order()
     }
 }
 
-function view_orders()
+function view_orders($is_employee = false)
 {
     global $db;
 
     $username = $_SESSION['user']['username'];
-    $query = "SELECT * FROM `order`
-              WHERE user_id = '$username'";
+    if ($is_employee) {
+        $query = "SELECT * FROM `order`
+                  WHERE employee_ssn IS NULL";
+    } else {
+        $query = "SELECT * FROM `order`
+                  WHERE user_id = '$username'";
+    }
     $query = mysqli_query($db, $query);
     if ($query) {
         while ($temp = mysqli_fetch_array($query)) {
             $date_posted = date_format(date_create($temp['time_of_order']), "F j, Y");
             $total_price = $temp['total_price'];
+            $address = $temp['address'];
+            $email = $temp['email'];
             $id = $temp['order_id'];
             $items = "SELECT mf.food_item_name, mf.quantity, res.name, fi.price
                       FROM made_from AS mf, restaurant AS res, food_item AS fi
@@ -1234,6 +1245,8 @@ function view_orders()
                         $r_name = $next['name'];
                         echo "<h5>$r_name</h5>";
                         echo "<h6>$date_posted</h6>";
+                        echo "<p>Address: $address</p>";
+                        echo "<p>Email: $email</p>";
                         $first = false;
                     }
                     $food_name = $next['food_item_name'];
@@ -1246,6 +1259,8 @@ function view_orders()
                 echo "<p style='float: right; text-decoration: underline; margin-bottom: 0'>Total Price</p>";
                 echo "<br>";
                 echo "<p style='float: right'>$$total_price</p>";
+                if ($is_employee)
+                    employee_select($id);
                 echo "<hr>";
             } else {
                 echo "Order missing";
@@ -1373,17 +1388,19 @@ function viewUserPhotos($username)
             </div>
             <div style="display: inline-block; float:right">
 EOT;
-        if ($username == $_SESSION['user']['username'] || isAdmin()) {
+        if (isset($_SESSION['user']['username']) && $username == $_SESSION['user']['username'] || isAdmin()) {
             echo <<< EOT
                 <label for='pic_delete[]' style='vertical-align: middle'>Delete</label>
                 <input type='checkbox' name='pic_delete[]' value='$temp[1]' style="width: 25px; height: 25px">
 EOT;
         }
-        echo <<< EOT
+        if (isset($_SESSION['user']['username'])) {
+            echo <<< EOT
                 <form action="" method="post">
                     <button type="submit" class="btn" name="like_btn_photo" value='$temp[1]'><span class="ti-thumb-up">Like</button>
                 </form>
 EOT;
+        }
         show_pic_likes($temp[1]);
         echo <<< EOT
             </div>
@@ -1391,12 +1408,14 @@ EOT;
         <hr>
 EOT;
     }
-    echo <<< EOT
-            <div class="reg-input">
-                <button type="submit" class="btn" name="edit_photos" value="$temp[1]">Submit</button>
-            </div>
-        </form>
+    if (isset($_SESSION['user']['username']) && $username == $_SESSION['user']['username'] || isAdmin()) {
+        echo <<< EOT
+                <div class="reg-input">
+                    <button type="submit" class="btn" name="edit_photos" value="$temp[1]">Submit</button>
+                </div>
+            </form>
 EOT;
+    }
 }
 
 if (isset($_POST['edit_photos'])) {
@@ -1480,8 +1499,8 @@ function create_list()
     global $db;
     $listname = e($_POST['listname']);
     $user_id = $_SESSION['user']['username'];
-    $query = "INSERT INTO list (name, num_likes, num_restaurants, user_id) 
-			  VALUES('$listname', 0, 0, '$user_id')";
+    $query = "INSERT INTO list (name, num_restaurants, user_id) 
+			  VALUES('$listname', 0, '$user_id')";
     $query = mysqli_query($db, $query) or die(mysqli_error($db));
 
 }
@@ -1514,7 +1533,8 @@ function view_list_info()
 {
     global $db;
     $user_id = ($_SESSION['user']['username']);
-    $query = "SELECT * FROM list WHERE user_id = '{$_GET['username']}'";
+    $list_user = $_GET['username'];
+    $query = "SELECT * FROM list WHERE user_id = '$list_user'";
     $result = mysqli_query($db, $query) or die(mysqli_error($db));
     while ($temp = mysqli_fetch_array($result)) {
         $name = $temp['name'];
@@ -1532,6 +1552,11 @@ function view_list_info()
             <p style="text-decoration: underline">Restaurants:</p>
 EOT;
         generate_list_restaurants($name);
+        echo <<< EOT
+        <form action="" method="post">
+            <button type="submit" class="btn" name="like_btn_list" value='$name;$list_user'><span class="ti-thumb-up">Like</button>
+        </form>
+EOT;
         if ($_GET['username'] == ($_SESSION['user']['username'])) {
             echo <<< EOT
             <form method = 'post' action='lists.php?username=$user_id'>
@@ -1543,6 +1568,7 @@ EOT;
                  style='margin: 10px 10px 10px 0; color: red'>Edit List Name</button>
                  <input type='text' name='new_name'>
             </form>
+            <hr>
 EOT;
         }
     }
@@ -1563,6 +1589,27 @@ function get_list_likes($list, $user)
     } else {
         echo "Could not find likes for this list";
         return -1;
+    }
+}
+
+if (isset($_POST['like_btn_list'])) {
+    like_list();
+}
+
+function like_list()
+{
+    global $db;
+    $info = explode(';', $_POST['like_btn_list']);
+    $user_id = $_SESSION['user']['username'];
+    $list_name = $info[0];
+    $list_user = $info[1];
+    $query = "INSERT INTO likes (user_id, list_user, list_name)
+              VALUES ('$user_id', '$list_user', '$list_name')";
+    $query = mysqli_query($db, $query);
+    if ($query) {
+        echo "Liked!";
+    } else {
+        echo "You've already liked this list";
     }
 }
 
@@ -1655,6 +1702,89 @@ function add_to_list($r_id)
 }
 
 
+/*
+ * =========================================================
+ * EMPLOYEE FUNCTIONS
+ * =========================================================
+ */
 
 
+if (isset($_POST['employee_btn'])) {
+    create_employee();
+}
 
+function create_employee()
+{
+    global $db;
+
+    $ssn = $_POST['ssn'];
+    $fname = $_POST['fname'];
+    $lname = $_POST['lname'];
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+
+    $query = "INSERT INTO employee (ssn, fname, lname, email, phone_num)
+              VALUES ($ssn, '$fname', '$lname', '$email', '$phone')";
+    echo $query;
+    $query = mysqli_query($db, $query);
+    if ($query) {
+        echo "Employee successfully created";
+    } else {
+        echo "Employee creation failed";
+    }
+}
+
+function employee_select($order_id)
+{
+    global $db;
+    $query = "SELECT ssn, fname, lname FROM employee";
+    $query = mysqli_query($db, $query);
+    if (!$query) {
+        echo "Error retrieving employees";
+        return;
+    }
+
+    echo "<form method='post' action=''>";
+    echo "<input name='order_id' type='hidden' value='$order_id'/>";
+    echo "<label for='employee_assign'>Assign Employee ";
+    echo "<select name='employee_assign' onchange=this.form.submit()>";
+    echo "<option disabled selected value> -- select an employee --</option>";
+
+    while ($temp = mysqli_fetch_array($query)) {
+        $ssn = $temp['ssn'];
+        $fname = $temp['fname'];
+        $lname = $temp['lname'];
+
+        if (isset($_POST['employee_assign']) && $ssn == $_POST['employee_assign'])
+            $selected = "selected";
+        else
+            $selected = '';
+
+        echo "<option value='$ssn' $selected>$ssn - $fname $lname</option>";
+    }
+    echo "</select>";
+    echo "</form>";
+}
+
+if (isset($_POST['employee_assign'])) {
+    assign_employee();
+}
+
+function assign_employee()
+{
+    global $db;
+    $order_id = $_POST['order_id'];
+    $emp_ssn = $_POST['employee_assign'];
+    mysqli_query($db, "START TRANSACTION");
+    $query1 = "INSERT INTO delivers_to (order_id, emp_ssn) VALUES ($order_id, $emp_ssn)";
+    $query1 = mysqli_query($db, $query1);
+    $query2 = "UPDATE `order` SET employee_ssn = $emp_ssn WHERE order_id = $order_id";
+    $query2 = mysqli_query($db, $query2);
+    if ($query1 && $query2) {
+        mysqli_query($db, "COMMIT");
+        echo "Employee $emp_ssn assigned to order $order_id";
+    } else {
+        mysqli_query($db, "ROLLBACK");
+        echo "Error assigning employee to order";
+    }
+}

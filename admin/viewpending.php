@@ -63,7 +63,8 @@ if (!isAdmin()) {
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="../showuser.php?username=<?php echo $_SESSION['user']['username']?>">Profile</a>
+                                        <a class="dropdown-item"
+                                           href="../showuser.php?username=<?php echo $_SESSION['user']['username'] ?>">Profile</a>
                                         <a class="dropdown-item"
                                            href="../lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
                                         <a class="dropdown-item"
@@ -77,7 +78,11 @@ if (!isAdmin()) {
                                     </li>
                                     <li class="nav-item active">
                                         <a class="nav-link" href="../admin/viewpending.php" style="color: red;">View
-                                            Pending</a>
+                                            Pending Restaurants</a>
+                                    </li>
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="employee.php" style="color: red;">View
+                                            Pending Orders</a>
                                     </li>
                                 <?php endif ?>
                                 <li class="nav-item active">
@@ -122,16 +127,16 @@ if (!isAdmin()) {
                                 ?>
                             <?php else: ?>
                                 <?php
-                                    global $temp;
-                                    $temp = $_GET['search'];
-                                    $query = "SELECT COUNT(*) FROM restaurant WHERE name LIKE '%" . $temp . "%'";
-                                    $query = mysqli_query($db, $query);
-                                    $query = mysqli_fetch_array($query);
-                                    echo "<p>$query[0]";
-                                    ?> Results For <span><?php echo $_GET['search'] ?></span></p>
+                                global $temp;
+                                $temp = $_GET['search'];
+                                $query = "SELECT COUNT(*) FROM restaurant WHERE name LIKE '%" . $temp . "%'";
+                                $query = mysqli_query($db, $query);
+                                $query = mysqli_fetch_array($query);
+                                echo "<p>$query[0] Results For <span>{$_GET['search']}</span></p>";
+                                ?>
                             <?php endif ?>
                         </div>
-                        <form action="search.php" method="GET">
+                        <form action="../search.php" method="GET">
                             <input type="text" placeholder="Find Users" class="btn-group1" name="search"/>
                             <input type="submit" class="btn" value="Search"/>
                         </form>

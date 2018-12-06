@@ -126,7 +126,6 @@ if (isLoggedIn()) {
             $('.fixed').removeClass('is-sticky');
 
         }
-        ;
     });
 </script>
 </body>

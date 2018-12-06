@@ -1,4 +1,4 @@
-<?php include('functions.php') ?>
+<?php include('../functions.php') ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,17 +15,17 @@
     <!-- Page Title -->
     <title>Listing &amp; Directory Website Template</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700,900" rel="stylesheet">
     <!-- Simple line Icon -->
-    <link rel="stylesheet" href="css/simple-line-icons.css">
+    <link rel="stylesheet" href="../css/simple-line-icons.css">
     <!-- Themify Icon -->
-    <link rel="stylesheet" href="css/themify-icons.css">
+    <link rel="stylesheet" href="../css/themify-icons.css">
     <!-- Hover Effects -->
-    <link rel="stylesheet" href="css/set1.css">
+    <link rel="stylesheet" href="../css/set1.css">
     <!-- Main CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body>
@@ -35,7 +35,7 @@
         <div class="row">
             <div class="col-md-12">
                 <nav class="navbar navbar-expand-lg navbar-light">
-                    <a class="navbar-brand" href="index.php">Calgary Reviews</a>
+                    <a class="navbar-brand" href="../index.php">Calgary Reviews</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
                             aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="icon-menu"></span>
@@ -43,7 +43,7 @@
                     <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                         <ul class="navbar-nav">
                             <li class="nav-item active">
-                                <a class="nav-link" href="listing.php">Browse</a>
+                                <a class="nav-link" href="../listing.php">Browse</a>
                             </li>
                             <?php if (isset($_SESSION['user'])) : ?>
                                 <li class="nav-item dropdown">
@@ -58,34 +58,38 @@
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                         <a class="dropdown-item"
-                                           href="showuser.php?username=<?php echo $_SESSION['user']['username'] ?>">Profile</a>
+                                           href="../showuser.php?username=<?php echo $_SESSION['user']['username'] ?>">Profile</a>
                                         <a class="dropdown-item"
-                                           href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
+                                           href="../lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
                                         <a class="dropdown-item" href="#">Photos</a>
                                     </div>
                                 </li>
                                 <?php if (isAdmin()) : ?>
                                     <li class="nav-item active">
-                                        <a class="nav-link" href="admin/create_user.php" style="color: red;">Create
+                                        <a class="nav-link" href="create_user.php" style="color: red;">Create
                                             User</a>
                                     </li>
                                     <li class="nav-item active">
-                                        <a class="nav-link" href="admin/viewpending.php" style="color: red;">View
-                                            Pending</a>
+                                        <a class="nav-link" href="viewpending.php" style="color: red;">View
+                                            Pending Restaurants</a>
+                                    </li>
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="employee.php" style="color: red;">View
+                                            Pending Orders</a>
                                     </li>
                                 <?php endif ?>
                                 <li class="nav-item active">
-                                    <a class="nav-link" href="index.php?logout='1'" style="color: red;">Logout</a>
+                                    <a class="nav-link" href="../index.php?logout='1'" style="color: red;">Logout</a>
                                 </li>
                             <?php else: ?>
                                 <li class="nav-item active">
-                                    <a class="nav-link" href="register.php">Register</a>
+                                    <a class="nav-link" href="../register.php">Register</a>
                                 </li>
                                 <li class="nav-item active">
-                                    <a class="nav-link" href="login.php">Login</a>
+                                    <a class="nav-link" href="../login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span
+                            <li><a href="../addlisting.php" class="btn btn-outline-light top-btn"><span
                                             class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
@@ -97,30 +101,15 @@
 </div>
 <!--//END HEADER -->
 <!--============================= DETAIL =============================-->
-<?php
-global $r_id;
-if (isset($_GET['r_id'])) {
-    $r_id = $_GET['r_id'];
-}
-
-global $info;
-$info = get_info($r_id); ?>
 <section>
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-7 responsive-wrap">
-                <h2><?php echo $info['name'] ?></h2>
-                <form method="post" action="order.php?r_id=<?php echo $r_id ?>" id="food_form">
-                    <?php generate_food($r_id) ?>
-                    <div class="reg-input">
-                        <div class="reserve-btn" style="float: right">
-                            <button type="submit" class="btn btn-danger" name="add_order">Make Order</button>
-                        </div>
-                        <div class="reserve-btn">
-                            <a <?php require_login($r_id, 'addfood') ?> class="btn btn-danger">Add Food Item</a>
-                        </div>
-                    </div>
-                </form>
+                <div>
+                    <?php
+                    view_orders(true);
+                    ?>
+                </div>
             </div>
         </div>
     </div>
@@ -147,9 +136,9 @@ $info = get_info($r_id); ?>
 
 <!-- jQuery, Bootstrap JS. -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="js/jquery-3.2.1.min.js"></script>
-<script src="js/popper.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
+<script src="../js/jquery-3.2.1.min.js"></script>
+<script src="../js/popper.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
 
 </body>
 

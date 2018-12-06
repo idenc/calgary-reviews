@@ -85,7 +85,11 @@ if (isset($_SESSION['admin_success'])) {
                                         </li>
                                         <li class="nav-item active">
                                             <a class="nav-link" href="admin/viewpending.php" style="color: red;">View
-                                                Pending</a>
+                                                Pending Restaurants</a>
+                                        </li>
+                                        <li class="nav-item active">
+                                            <a class="nav-link" href="admin/employee.php" style="color: red;">View
+                                                Pending Orders</a>
                                         </li>
                                     <?php endif ?>
                                     <li class="nav-item active">

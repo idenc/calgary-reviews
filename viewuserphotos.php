@@ -103,7 +103,7 @@
             <div class="col-md-7 responsive-wrap">
                 <div>
                     <?php
-                    viewuserphotos($_GET['username']);
+                    viewUserPhotos($_GET['username']);
                     ?>
                 </div>
             </div>

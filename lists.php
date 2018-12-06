@@ -111,9 +111,9 @@
 
                     <?php endif ?>
                     <div>
-                    <?php
-                    view_list_info();
-                    ?>
+                        <?php
+                        view_list_info();
+                        ?>
                     </div>
                 </div>
 

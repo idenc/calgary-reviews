@@ -95,7 +95,8 @@
 <!--//END HEADER -->
 <!-- SLIDER -->
 <div style="background: #3F3F3F; height: fit-content;">
-    <form method="post" action="lists.php?username=<?php echo $_SESSION['user']['username'] ?>" class="list" style="margin-bottom: 30%;"
+    <form method="post" action="lists.php?username=<?php echo $_SESSION['user']['username'] ?>" class="list"
+          style="margin-bottom: 30%;"
           enctype="multipart/form-data">
         <?php echo display_error(); ?>
 

@@ -10,8 +10,6 @@
     <meta name="author" content="Colorlib">
     <meta name="description" content="#">
     <meta name="keywords" content="#">
-    <!-- Favicons -->
-    <link rel="shortcut icon" href="#">
     <!-- Page Title -->
     <title>Browse</title>
     <!-- Bootstrap CSS -->
@@ -57,7 +55,8 @@
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="showuser.php?username=<?php echo $_SESSION['user']['username']?>">Profile</a>
+                                        <a class="dropdown-item"
+                                           href="showuser.php?username=<?php echo $_SESSION['user']['username'] ?>">Profile</a>
                                         <a class="dropdown-item"
                                            href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
                                         <a class="dropdown-item"
@@ -72,7 +71,11 @@
                                     </li>
                                     <li class="nav-item active">
                                         <a class="nav-link" href="admin/viewpending.php" style="color: red;">View
-                                            Pending</a>
+                                            Pending Restaurants</a>
+                                    </li>
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="admin/employee.php" style="color: red;">View
+                                            Pending Orders</a>
                                     </li>
                                 <?php endif ?>
                                 <li class="nav-item active">
