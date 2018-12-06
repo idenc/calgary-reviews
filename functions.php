@@ -528,7 +528,7 @@ function generate_restaurants($name, $find_pending, $featured, $filter_by = -1, 
     if ($find_pending and $name == NULL) {
         $query = "SELECT *
                   FROM restaurant AS res
-                  WHERE res.pending = 0x1";
+                  WHERE res.pending = '1'";
         $pendingpath = "../";
     } else if ($featured and $name == NULL) {
         $query = "SELECT res.*
@@ -691,7 +691,7 @@ function get_num_restaurants()
     global $db;
 
     $query = "SELECT COUNT(*)
-              FROM restaurant";
+              FROM restaurant WHERE pending = '0'";
     $query = mysqli_query($db, $query);
     $query = mysqli_fetch_array($query);
     return $query[0];
@@ -718,15 +718,13 @@ function category_filter()
     $cg = "SELECT category
             FROM restaurant_category";
     $cg = mysqli_query($db, $cg);
-    if (isset($_GET['order_by'])) {
-        $category = $_GET['order_by'];
-        echo "<option value=$category selected='selected'>$category</option>";
-    } else {
-        echo "<option disabled selected value> -- select an option --</option>";
-    }
+    echo "<option disabled selected value> -- select an option --</option>";
     while ($row = mysqli_fetch_array($cg, MYSQLI_NUM)) {
-
-        echo "<option value=$row[0]>$row[0]</option>";
+        if (isset($_GET['order_by']) && $row[0] == $_GET['order_by'])
+            $selected = "selected";
+        else
+            $selected = "";
+        echo "<option value=$row[0] $selected>$row[0]</option>";
 
     }
 }

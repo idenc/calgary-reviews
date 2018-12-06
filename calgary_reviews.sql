@@ -12,6 +12,7 @@ SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
+SET FOREIGN_KEY_CHECKS = 0;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -526,7 +527,7 @@ INSERT INTO `user` (`username`, `password`, `date_joined`, `user_type`, `fname`,
 --
 -- Constraints for dumped tables
 --
-
+SET FOREIGN_KEY_CHECKS = 1;
 --
 -- Constraints for table `adds_to`
 --
