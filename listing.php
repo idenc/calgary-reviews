@@ -57,11 +57,12 @@
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="profile.php">Profile</a>
+                                        <a class="dropdown-item" href="showuser.php?username=<?php echo $_SESSION['user']['username']?>">Profile</a>
                                         <a class="dropdown-item"
                                            href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
                                         <a class="dropdown-item"
                                            href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
+                                        <a class="dropdown-item" href="vieworder.php">Orders</a>
                                     </div>
                                 </li>
                                 <?php if (isAdmin()) : ?>

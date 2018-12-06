@@ -57,8 +57,10 @@
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="profile.php">Profile</a>
-                                        <a class="dropdown-item" href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
+                                        <a class="dropdown-item"
+                                           href="showuser.php?username=<?php echo $_SESSION['user']['username'] ?>">Profile</a>
+                                        <a class="dropdown-item"
+                                           href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
                                         <a class="dropdown-item" href="#">Photos</a>
                                     </div>
                                 </li>
@@ -99,14 +101,11 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-7 responsive-wrap">
-
                 <div>
                     <?php
                     viewuserphotos($_GET['username']);
                     ?>
                 </div>
-
-
             </div>
         </div>
     </div>

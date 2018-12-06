@@ -496,7 +496,6 @@ function delete_review()
 {
     global $db;
     $info = explode(';', $_POST['delete_review']);
-
     $query = "DELETE FROM review WHERE date_posted = '$info[0]' AND r_id = $info[1] AND user_id = '$info[2]'";
     $query = mysqli_query($db, $query);
     if ($query) {
@@ -650,7 +649,7 @@ EOT;
         }
         if ($find_pending) {
             echo "<form method = 'post' action='viewpending.php'>";
-            echo "<button type='submit' class='btn' name='accept_res' style='margin: 10px'>Accept</button>";
+            echo "<button type='submit' class='btn' value='$r_id' name='accept_res[]' style='margin: 10px'>Accept</button>";
             echo "</form>";
         }
         echo <<< EOT
@@ -705,11 +704,12 @@ if (isset($_POST['accept_res'])) {
 function accept_pending()
 {
     global $db;
-
-    $query1 = "UPDATE restaurant
-               SET pending = 0";
-    $query1 = mysqli_query($db, $query1) or die(mysqli_error($db));
-    header('location: viewpending.php');
+    foreach ($_POST['accept_res'] as $rid) {
+        $query1 = "UPDATE restaurant
+                    SET pending = 0
+                    WHERE r_id = $rid";
+        $query1 = mysqli_query($db, $query1) or die(mysqli_error($db));
+    }
 }
 
 function category_filter()
@@ -1033,7 +1033,7 @@ function edit_listing()
         handle_images($r_id);
         if ($query1) {
             $username = $_SESSION['user']['username'];
-            $query = "INSERT INTO edits (admin_user, r_id)
+            $query = "INSERT INTO edits (edit_user, r_id)
                         VALUES ('$username', $r_id)";
             $query = mysqli_query($db, $query);
             $_SESSION['edit_success'] = "<br>Restaurant successfully edited!!";
@@ -1163,7 +1163,7 @@ function add_order()
 {
     // call these variables with the global keyword to make them available in function
     global $db, $errors;
-    $order_items =  unserialize($_POST['ArrayData']);
+    $order_items = unserialize($_POST['ArrayData']);
     // receive all input values from the form. Call the e() function
     // defined below to escape form values
     $address = "";
@@ -1209,6 +1209,53 @@ function add_order()
     }
 }
 
+function view_orders()
+{
+    global $db;
+
+    $username = $_SESSION['user']['username'];
+    $query = "SELECT * FROM `order`
+              WHERE user_id = '$username'";
+    $query = mysqli_query($db, $query);
+    if ($query) {
+        while ($temp = mysqli_fetch_array($query)) {
+            $date_posted = date_format(date_create($temp['time_of_order']), "F j, Y");
+            $total_price = $temp['total_price'];
+            $id = $temp['order_id'];
+            $items = "SELECT mf.food_item_name, mf.quantity, res.name, fi.price
+                      FROM made_from AS mf, restaurant AS res, food_item AS fi
+                      WHERE mf.orderid = $id AND mf.r_id = res.r_id AND mf.food_item_name = fi.food_item_name";
+            $items = mysqli_query($db, $items);
+            if ($items) {
+                echo "<div>";
+                $first = true;
+                while ($next = mysqli_fetch_array($items)) {
+                    if ($first) {
+                        $r_name = $next['name'];
+                        echo "<h5>$r_name</h5>";
+                        echo "<h6>$date_posted</h6>";
+                        $first = false;
+                    }
+                    $food_name = $next['food_item_name'];
+                    $quantity = $next['quantity'];
+                    $price = $next['price'];
+                    echo "<p style='display: inline-block'>$food_name [$quantity]</p>";
+                    echo "<p style='float: right'>$$price</p>";
+                    echo "<br>";
+                }
+                echo "<p style='float: right; text-decoration: underline; margin-bottom: 0'>Total Price</p>";
+                echo "<br>";
+                echo "<p style='float: right'>$$total_price</p>";
+                echo "<hr>";
+            } else {
+                echo "Order missing";
+            }
+        }
+    } else {
+        echo "Error getting user orders";
+    }
+}
+
 /*
  * =========================================================
  * USER FUNCTIONS
@@ -1221,38 +1268,6 @@ function show_user()
     global $db;
 
     $query = "SELECT * FROM user WHERE username = '{$_GET['username']}'";
-    $result = mysqli_query($db, $query);
-
-    while ($temp = mysqli_fetch_array($result)) {
-        $usern = $temp['username'];
-        $date_joined = $temp['date_joined'];
-        $first_name = $temp['fname'];
-        $last_name = $temp['lname'];
-
-        echo <<< EOT
-        <h4> User info: </h4>
-        <hr>
-            <p>Username: $usern</p>
-            <br>
-            <p>Date joined: $date_joined</p>
-            <br>
-            <p>First Name: $first_name</p>
-            <br>
-            <p>Last Name: $last_name</p>
-        <hr>
-
-EOT;
-
-    }
-}
-
-
-// Used to display information for the logged in users profile 
-function view_profile()
-{
-    global $db;
-
-    $query = "SELECT * FROM user WHERE username = '{$_SESSION['user']['username']}'";
     $result = mysqli_query($db, $query);
 
     while ($temp = mysqli_fetch_array($result)) {
@@ -1336,70 +1351,6 @@ EOT;
     }
 }
 
-
-function get_profile_reviews()
-{
-    global $db;
-
-    $query = "SELECT rev.*, res.name FROM review AS rev, restaurant AS res WHERE rev.user_id = '{$_SESSION['user']['username']}' AND res.r_id = rev.r_id";
-    $result = mysqli_query($db, $query) or die(mysqli_error($db));
-
-    // get how many reviews the user has posted
-    $query2 = "SELECT COUNT(*)
-               FROM review
-               WHERE user_id = '{$_SESSION['user']['username']}'";
-    $num_reviews = mysqli_query($db, $query2);
-    $num_reviews = mysqli_fetch_array($num_reviews);
-    $num_reviews = $num_reviews[0];
-
-    echo "<h4> User Reviews ($num_reviews): </h4>";
-    while ($temp = mysqli_fetch_array($result)) {
-        $user_review = $temp['content'];
-        $user_rating = $temp['rating'];
-        $user_review_date = $temp['date_posted'];
-        $r_id = $temp['r_id'];
-        $rev_res_name = $temp['name'];
-        $user_review_cost = $temp['cost'];
-        $reviewer = $temp['user_id'];
-
-
-        echo <<< EOT
-                    <hr>
-                    <h6>
-                        <a href='detail.php?r_id=$r_id'>
-                            $rev_res_name
-                        </a>
-                    </h6>
-                    <div class="customer-review_wrap">
-                        <div class="customer-img">
-                            <p>$reviewer</p>
-                        </div>
-                        <div class="customer-content-wrap">
-                            <div class="customer-content">
-                                <div class="customer-review">
-EOT;
-        generate_cost($user_review_cost);
-        echo <<< EOT
-                    <br>
-                    <p>Reviewed $user_review_date</p>
-                    </div>
-                    <div class="customer-rating">$user_rating / 5</div>
-                    </div>
-                    <p class="customer-text">$user_review</p>          
-                    </div>
-                    </div>
-                    <form method = 'post' action='profile.php?'>
-                    <button type='submit' class='btn' name='delete_review' value='$user_review_date;$r_id;$reviewer'
-                    style='margin: 10px; color: red'>Delete</button>
-                    </form>
-                    <hr>
-
-EOT;
-
-
-    }
-}
-
 function viewUserPhotos($username)
 {
     global $db;
@@ -1407,8 +1358,9 @@ function viewUserPhotos($username)
     $query = "SELECT p.file_path, p.photo_id
               FROM photo AS p, uploads AS u
               WHERE p.photo_id = u.photoid AND u.user_id = '$username'";
-    $query = mysqli_query($db, $query);
+    $query = mysqli_query($db, $query) or die(mysqli_error($db));
     echo "<h4>Photos uploaded by $username:</h4>";
+    echo "<hr>";
     echo "<form method = 'post' action='viewuserphotos.php?username=$username'>";
     while ($temp = mysqli_fetch_array($query)) {
 
@@ -1420,17 +1372,28 @@ function viewUserPhotos($username)
                 </a>
             </div>
             <div style="display: inline-block; float:right">
+EOT;
+        if ($username == $_SESSION['user']['username'] || isAdmin()) {
+            echo <<< EOT
                 <label for='pic_delete[]' style='vertical-align: middle'>Delete</label>
                 <input type='checkbox' name='pic_delete[]' value='$temp[1]' style="width: 25px; height: 25px">
+EOT;
+        }
+        echo <<< EOT
+                <form action="" method="post">
+                    <button type="submit" class="btn" name="like_btn_photo" value='$temp[1]'><span class="ti-thumb-up">Like</button>
+                </form>
+EOT;
+        show_pic_likes($temp[1]);
+        echo <<< EOT
             </div>
         </div>
         <hr>
-            
 EOT;
     }
     echo <<< EOT
             <div class="reg-input">
-                <button type="submit" class="btn" name="edit_photos">Submit</button>
+                <button type="submit" class="btn" name="edit_photos" value="$temp[1]">Submit</button>
             </div>
         </form>
 EOT;
@@ -1447,20 +1410,61 @@ function delete_user_photo()
     if (!empty($_POST['pic_delete'])) {
         $good = true;
         foreach ($_POST['pic_delete'] as $id) {
-            $query = "DELETE FROM uploads WHERE photoid = $id";
-            $query = mysqli_query($db, $query);
-            if (!$query)
+            mysqli_query($db, "START TRANSACTION");
+            $query1 = "DELETE FROM uploads WHERE photoid = $id";
+            $query1 = mysqli_query($db, $query1) or die(mysqli_error($db));
+            $username = $_SESSION['user']['username'];
+            $query3 = "INSERT INTO deletes (admin_user, photoid)
+                      VALUES ('$username', $id)";
+            $query3 = mysqli_query($db, $query3) or die(mysqli_error($db));
+            if ($query1 && $query3) {
+                mysqli_query($db, "COMMIT");
+            } else {
+                mysqli_query($db, "ROLLBACK");
                 $good = false;
-            $query = "DELETE FROM photo WHERE photo_id = $id";
-            $query = mysqli_query($db, $query);
-            if (!$query)
-                $good = false;
+            }
         }
         if ($good) {
             echo "Photos deleted successfully";
         } else {
             echo "There was an error deleting photos";
         }
+    }
+}
+
+if (isset($_POST['like_btn_photo'])) {
+    like_photo();
+}
+
+function like_photo()
+{
+    global $db;
+    $user_id = $_SESSION['user']['username'];
+    $p_id = $_POST['like_btn_photo'];
+    $query = "INSERT INTO likes (user_id, photoid)
+              VALUES ('$user_id', $p_id)";
+    $query = mysqli_query($db, $query);
+    if ($query) {
+        echo "Liked!";
+    } else {
+        echo "You've already liked this photo";
+    }
+}
+
+function show_pic_likes($pic_id)
+{
+    global $db;
+
+    $query = "SELECT COUNT(*)
+              FROM LIKES
+              WHERE photoid = $pic_id";
+    $query = mysqli_query($db, $query);
+    if ($query) {
+        $temp = mysqli_fetch_array($query);
+        $num_likes = $temp[0];
+        echo "$num_likes Likes";
+    } else {
+        echo "Could not find likes for this photo";
     }
 }
 
@@ -1515,39 +1519,50 @@ function view_list_info()
     while ($temp = mysqli_fetch_array($result)) {
         $name = $temp['name'];
         $date_created = $temp['date_created'];
-        $num_likes = $temp['num_likes'];
+        $num_likes = get_list_likes($name, $_GET['username']);
         //$num_restaurants = $temp['num_restaurants'];
         $num_restaurants = num_restaurants_in_list($name);
-        if ($_GET['username'] == ($_SESSION['user']['username'])) {
-            echo <<< EOT
-                        <form method = 'post' action='lists.php?username=$user_id'>
-                            <button type='submit' class='btn' name='delete_list' value='$name;$user_id'
-                             style='margin: 10px; color: red'>Delete</button>
-                        </form>
-
-                        <form method = 'post' action=''>
-                             <input type='text' name='new_name'>
-                             <button type='submit' class='btn' name='edit_list_name' value='$name'
-                             style='margin: 10px; color: red'>Edit List Name</button>
-                        </form>
-EOT;
-        }
-
         echo <<< EOT
         <h4> $name </h4>
         <hr>
             <p>Date created: $date_created</p>
-            <br>
             <p>Number of likes: $num_likes</p>
-            <br>
             <p>Number of restaurants: $num_restaurants</p>
             <br>
-            <p>Restaurants:</p>
-        
-
+            <p style="text-decoration: underline">Restaurants:</p>
 EOT;
         generate_list_restaurants($name);
+        if ($_GET['username'] == ($_SESSION['user']['username'])) {
+            echo <<< EOT
+            <form method = 'post' action='lists.php?username=$user_id'>
+                <button type='submit' class='btn' name='delete_list' value='$name;$user_id'
+                 style='margin: 10px 10px 10px 0; color: red'>Delete</button>
+            </form>
+            <form method = 'post' action=''>
+                 <button type='submit' class='btn' name='edit_list_name' value='$name'
+                 style='margin: 10px 10px 10px 0; color: red'>Edit List Name</button>
+                 <input type='text' name='new_name'>
+            </form>
+EOT;
+        }
+    }
+}
 
+function get_list_likes($list, $user)
+{
+    global $db;
+
+    $query = "SELECT COUNT(*)
+              FROM LIKES
+              WHERE list_name = '$list' AND list_user = '$user'";
+    $query = mysqli_query($db, $query);
+    if ($query) {
+        $temp = mysqli_fetch_array($query);
+        $num_likes = $temp[0];
+        return $num_likes;
+    } else {
+        echo "Could not find likes for this list";
+        return -1;
     }
 }
 
@@ -1582,16 +1597,15 @@ function edit_list_name($new_name)
 function generate_list_restaurants($name)
 {
     global $db;
-    $query = "SELECT DISTINCT r.name 
+    $query = "SELECT DISTINCT r.name, r.r_id 
               FROM restaurant AS r, adds_to AS a, list AS l
               WHERE r.r_id = a.r_id AND a.list_name = '$name'";
     $result = mysqli_query($db, $query) or die(mysqli_error($db));
     while ($temp = mysqli_fetch_array($result)) {
 
-        echo "<p>$temp[0]</p><br>";
+        echo "<a href='detail.php?r_id=$temp[1]'><p>$temp[0]</p></a>";
 
     }
-    echo "<hr>";
 }
 
 // Generate lists for drop down select
@@ -1623,14 +1637,21 @@ function num_restaurants_in_list($name)
 // Adds info to adds_to
 function add_to_list($r_id)
 {
-    global $db;
+    global $db, $errors;
     if (isset($_POST['selectedlist'])) {
         $selectedlist = $_POST['selectedlist'];
+    } else {
+        array_push($errors, "No list selected");
     }
-    $user_id = $_SESSION['user']['username'];
-    $query = "INSERT INTO adds_to (user_id, list_name, list_user, r_id) 
-    VALUES('$user_id', '$selectedlist', '$user_id', '$r_id')";
-    $result = mysqli_query($db, $query) or die(mysqli_error($db));
+    if (empty($errors)) {
+        $user_id = $_SESSION['user']['username'];
+        $query = "INSERT INTO adds_to (user_id, list_name, list_user, r_id) 
+        VALUES('$user_id', '$selectedlist', '$user_id', '$r_id')";
+        $result = mysqli_query($db, $query) or die(mysqli_error($db));
+        if ($result) {
+            echo "Restaurant added to list!";
+        }
+    }
 }
 
 

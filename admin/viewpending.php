@@ -19,7 +19,7 @@ if (!isAdmin()) {
     <!-- Favicons -->
     <link rel="shortcut icon" href="#">
     <!-- Page Title -->
-    <title>Listing &amp; Directory Website Template</title>
+    <title>Calgary Reviews</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <!-- Google Fonts -->
@@ -63,15 +63,21 @@ if (!isAdmin()) {
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="#">Profile</a>
-                                        <a class="dropdown-item" href="#">Lists</a>
-                                        <a class="dropdown-item" href="#">Photos</a>
+                                        <a class="dropdown-item" href="../showuser.php?username=<?php echo $_SESSION['user']['username']?>">Profile</a>
+                                        <a class="dropdown-item"
+                                           href="../lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
+                                        <a class="dropdown-item"
+                                           href="../viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
                                     </div>
                                 </li>
                                 <?php if (isAdmin()) : ?>
                                     <li class="nav-item active">
                                         <a class="nav-link" href="../admin/create_user.php" style="color: red;">Create
                                             User</a>
+                                    </li>
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="../admin/viewpending.php" style="color: red;">View
+                                            Pending</a>
                                     </li>
                                 <?php endif ?>
                                 <li class="nav-item active">
@@ -104,44 +110,114 @@ if (!isAdmin()) {
                 <div class="row detail-filter-wrap">
                     <div class="col-md-4 featured-responsive">
                         <div class="detail-filter-text">
-                            <p><?php
+                            <?php if (!(isset($_GET['search']))) : ?>
+                                <?php
                                 global $db;
                                 $query = "SELECT COUNT(*)
                                           FROM restaurant
                                           WHERE pending = 0x1";
                                 $query = mysqli_query($db, $query);
                                 $query = mysqli_fetch_array($query);
-                                echo $query[0];
-                                ?> Results For <span>Pending Restaurants</span></p>
+                                echo "<p>$query[0] Results For <span>Pending Restaurants</span></p>";
+                                ?>
+                            <?php else: ?>
+                                <?php
+                                    global $temp;
+                                    $temp = $_GET['search'];
+                                    $query = "SELECT COUNT(*) FROM restaurant WHERE name LIKE '%" . $temp . "%'";
+                                    $query = mysqli_query($db, $query);
+                                    $query = mysqli_fetch_array($query);
+                                    echo "<p>$query[0]";
+                                    ?> Results For <span><?php echo $_GET['search'] ?></span></p>
+                            <?php endif ?>
                         </div>
+                        <form action="search.php" method="GET">
+                            <input type="text" placeholder="Find Users" class="btn-group1" name="search"/>
+                            <input type="submit" class="btn" value="Search"/>
+                        </form>
                     </div>
                     <div class="col-md-8 featured-responsive">
                         <div class="detail-filter">
                             <p>Filter by</p>
-                            <form class="filter-dropdown">
-                                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                                    <option selected>Best Match</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                            <form class="filter-dropdown" action="viewpending.php" method="get" id="filter-dropdown">
+                                <select name="filter_by" class="custom-select mb-2 mr-sm-2 mb-sm-0"
+                                        id="inlineFormCustomSelect" onchange="this.form.submit()">
+                                    <option disabled selected value> -- select an option --</option>
+                                    <option value="cost" <?= isset($_GET['filter_by']) && $_GET['filter_by'] == 'cost' ? ' selected="selected"' : ''; ?>>
+                                        Cost
+                                    </option>
+                                    <option value="rating" <?= isset($_GET['filter_by']) && $_GET['filter_by'] == 'rating' ? ' selected="selected"' : ''; ?>>
+                                        Rating
+                                    </option>
+                                    <option value="open" <?= isset($_GET['filter_by']) && $_GET['filter_by'] == 'open' ? ' selected="selected"' : ''; ?>>
+                                        Open Now
+                                    </option>
+                                    <option value="category" <?= isset($_GET['filter_by']) && $_GET['filter_by'] == 'category' ? ' selected="selected"' : ''; ?>>
+                                        Category
+                                    </option>
+                                </select>
+                                <select name="order_by" class="custom-select mb-2 mr-sm-2 mb-sm-0"
+                                        id="inlineFormCustomSelect" onchange="this.form.submit()">
+                                    <option disabled selected value></option>
+                                    <?php if (isset($_GET['filter_by']) && ($_GET['filter_by'] == 'cost'
+                                            || $_GET['filter_by'] == 'rating')) : ?>
+                                        <option value="ASC" <?= ($_GET['filter_by'] == 'cost' && !isset($_GET['order_by']))
+                                        || (isset($_GET['order_by']) && $_GET['order_by'] == 'ASC') ? ' selected="selected"' : ''; ?>>
+                                            Ascending
+                                        </option>
+                                        <option value="DESC" <?= ($_GET['filter_by'] == 'rating' && !isset($_GET['order_by']))
+                                        || (isset($_GET['order_by']) && $_GET['order_by'] == 'DESC') ? ' selected="selected"' : ''; ?>>
+                                            Descending
+                                        </option>
+                                    <?php endif ?>
+                                    <?php if (isset($_GET['filter_by']) && ($_GET['filter_by'] == 'category')) {
+                                        category_filter();
+                                    } ?>
                                 </select>
                             </form>
-                            <form class="filter-dropdown">
-                                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect1">
-                                    <option selected>Restaurants</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
-                                </select>
-                            </form>
-                            <div class="map-responsive-wrap">
-                                <a class="map-icon" href="#"><span class="icon-location-pin"></span></a>
-                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="row detail-checkbox-wrap">
+                    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+                        <label class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" form="filter-dropdown" name="wifi"
+                                   onchange="this.form.submit()" <?php echo(isset($_GET['wifi']) && $_GET['wifi'] == 'on' ? 'checked' : ''); ?>>
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description">Wifi</span>
+                        </label>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+                        <label class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" form="filter-dropdown" name="delivery"
+                                   onchange="this.form.submit()" <?php echo(isset($_GET['delivery']) && $_GET['delivery'] == 'on' ? 'checked' : ''); ?>>
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description">Delivery</span>
+                        </label>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+                        <label class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" form="filter-dropdown" name="alcohol"
+                                   onchange="this.form.submit()" <?php echo(isset($_GET['alcohol']) && $_GET['alcohol'] == 'on' ? 'checked' : ''); ?>>
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description">Alcohol</span>
+                        </label>
+                    </div>
+                </div>
                 <div class="row light-bg detail-options-wrap">
-                    <?php generate_restaurants(true, false) ?>
+                    <?php if (!(isset($_GET['search']))) : ?>
+                        <?php
+                        if (isset($_GET['filter_by']) && isset($_GET['order_by'])) {
+                            generate_restaurants(NULL, true, false, $_GET['filter_by'], $_GET['order_by']);
+                        } else if (isset($_GET['filter_by'])) {
+                            generate_restaurants(NULL, true, false, $_GET['filter_by']);
+                        } else {
+                            generate_restaurants(NULL, true, false);
+                        }
+                        ?>
+                    <?php else: ?>
+                        <?php generate_restaurants($temp, true, false) ?>
+                    <?php endif ?>
                 </div>
             </div>
         </div>

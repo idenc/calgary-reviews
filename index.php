@@ -6,9 +6,11 @@ if (isset($_SESSION['admin_success'])) {
     echo '</script>';
 }
 ?>
-<?php if(isset($_GET['search']))
-{   $temp = $_GET['search'];
-    header("location: listing.php?search=$temp");exit();}?>
+<?php if (isset($_GET['search'])) {
+    $temp = $_GET['search'];
+    header("location: listing.php?search=$temp");
+    exit();
+} ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -67,10 +69,13 @@ if (isset($_SESSION['admin_success'])) {
                                             <span class="icon-arrow-down"></span>
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                            <a class="dropdown-item" href="profile.php?">Profile</a>
-                                            <a class="dropdown-item" href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
+                                            <a class="dropdown-item"
+                                               href="showuser.php?username=<?php echo $_SESSION['user']['username'] ?>">Profile</a>
+                                            <a class="dropdown-item"
+                                               href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
                                             <a class="dropdown-item"
                                                href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
+                                            <a class="dropdown-item" href="vieworder.php">Orders</a>
                                         </div>
                                     </li>
                                     <?php if (isAdmin()) : ?>
@@ -117,7 +122,7 @@ if (isset($_SESSION['admin_success'])) {
                         <div class="col-md-12">
                             <div class="slider-content_wrap">
                                 <h1>Discover great places in Calgary</h1>
-                                <h5>Let's uncover the best places to eat, drink, and shop nearest to you.</h5>
+                                <h5>Let's uncover the best places to eat near you.</h5>
                             </div>
                         </div>
                     </div>
@@ -125,7 +130,8 @@ if (isset($_SESSION['admin_success'])) {
                         <div class="col-md-10">
                             <form class="form-wrap mt-4">
                                 <div class="btn-group" role="group" aria-label="Basic example">
-                                    <input  type="text" name = "search" method = "get" placeholder="What are your looking for?" class="btn-group1">
+                                    <input type="text" name="search" placeholder="What are your looking for?"
+                                           class="btn-group1">
                                     <button type="submit" class="btn-form"><span
                                                 class="icon-magnifier search-icon"></span>SEARCH<i
                                                 class="pe-7s-angle-right"></i></button>
@@ -151,7 +157,7 @@ if (isset($_SESSION['admin_success'])) {
             </div>
         </div>
         <div class="row">
-            <?php generate_restaurants(NULL,false, true) ?>
+            <?php generate_restaurants(NULL, false, true) ?>
         </div>
         <div class="row justify-content-center">
             <div class="col-md-4">

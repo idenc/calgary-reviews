@@ -57,9 +57,11 @@
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="profile.php?">Profile</a>
+                                        <a class="dropdown-item"
+                                           href="showuser.php?username=<?php echo $_SESSION['user']['username'] ?>">Profile</a>
                                         <a class="dropdown-item" href="#">Lists</a>
-                                        <a class="dropdown-item" href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
+                                        <a class="dropdown-item"
+                                           href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
                                     </div>
                                 </li>
                                 <?php if (isAdmin()) : ?>
@@ -100,18 +102,19 @@
         <div class="row">
             <div class="col-md-7 responsive-wrap">
                 <div>
-                <?php if ($_GET['username'] == ($_SESSION['user']['username'])) : ?>
-                
-            
-                    <div class="featured-btn-wrap">
-                        <a href="addlist.php" class="btn btn-danger">Create a new list!</a>
-                    </div>
+                    <?php if ($_GET['username'] == ($_SESSION['user']['username'])) : ?>
 
-                <?php endif ?>
 
-                    <?php 
-                        view_list_info();
+                        <div class="featured-btn-wrap">
+                            <a href="addlist.php" class="btn btn-danger">Create a new list!</a>
+                        </div>
+
+                    <?php endif ?>
+                    <div>
+                    <?php
+                    view_list_info();
                     ?>
+                    </div>
                 </div>
 
 

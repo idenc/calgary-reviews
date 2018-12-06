@@ -1,4 +1,4 @@
-<?php include('functions.php');?>
+<?php include('functions.php') ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,9 +57,11 @@
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="profile.php">Profile</a>
-                                        <a class="dropdown-item" href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
-                                        <a class="dropdown-item" href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
+                                        <a class="dropdown-item"
+                                           href="showuser.php?username=<?php echo $_SESSION['user']['username'] ?>">Profile</a>
+                                        <a class="dropdown-item"
+                                           href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
+                                        <a class="dropdown-item" href="#">Photos</a>
                                     </div>
                                 </li>
                                 <?php if (isAdmin()) : ?>
@@ -83,7 +85,8 @@
                                     <a class="nav-link" href="login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
+                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span
+                                            class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
                     </div>
@@ -98,15 +101,11 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-7 responsive-wrap">
-
-            <div>
-            <?php  
-            view_profile();
-            get_profile_reviews(); 
-            ?>
-            </div>
-
-
+                <div>
+                    <?php
+                    view_orders();
+                    ?>
+                </div>
             </div>
         </div>
     </div>

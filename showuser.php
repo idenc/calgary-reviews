@@ -1,4 +1,4 @@
-<?php include('functions.php');?>
+<?php include('functions.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,9 +57,12 @@
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="profile.php">Profile</a>
+                                        <a class="dropdown-item"
+                                           href="showuser.php?username=<?php echo $_SESSION['user']['username'] ?>">Profile</a>
                                         <a class="dropdown-item" href="#">Lists</a>
-                                        <a class="dropdown-item" href="userphotos.php">Photos</a>
+                                        <a class="dropdown-item"
+                                           href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
+                                        <a class="dropdown-item" href="vieworder.php">Orders</a>
                                     </div>
                                 </li>
                                 <?php if (isAdmin()) : ?>
@@ -83,7 +86,8 @@
                                     <a class="nav-link" href="login.php">Login</a>
                                 </li>
                             <?php endif ?>
-                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span class="ti-plus"></span> Add
+                            <li><a href="addlisting.php" class="btn btn-outline-light top-btn"><span
+                                            class="ti-plus"></span> Add
                                     Listing</a></li>
                         </ul>
                     </div>
@@ -99,17 +103,17 @@
         <div class="row">
             <div class="col-md-7 responsive-wrap">
 
-            <div>
-            <?php  
-            show_user();
-            show_user_reviews();
-            $user_id = $_GET['username'];
-            $href1 = "viewuserphotos.php?username=$user_id";
-            echo "<a href=$href1> <p>View photos</p> </a>";
-            $href2 = "lists.php?username=$user_id";
-            echo "<a href=$href2> <p>View lists</p> </a>";
-            ?>
-            </div>
+                <div>
+                    <?php
+                    show_user();
+                    show_user_reviews();
+                    $user_id = $_GET['username'];
+                    $href1 = "viewuserphotos.php?username=$user_id";
+                    echo "<a href=$href1> <p>View photos</p> </a>";
+                    $href2 = "lists.php?username=$user_id";
+                    echo "<a href=$href2> <p>View lists</p> </a>";
+                    ?>
+                </div>
 
 
             </div>

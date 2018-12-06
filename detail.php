@@ -61,9 +61,13 @@
                                         <span class="icon-arrow-down"></span>
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="profile.php">Profile</a>
-                                        <a class="dropdown-item" href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
-                                        <a class="dropdown-item" href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
+                                        <a class="dropdown-item"
+                                           href="showuser.php?username=<?php echo $_SESSION['user']['username'] ?>">Profile</a>
+                                        <a class="dropdown-item"
+                                           href="lists.php?username=<?php echo $_SESSION['user']['username'] ?>">Lists</a>
+                                        <a class="dropdown-item"
+                                           href="viewuserphotos.php?username=<?php echo $_SESSION['user']['username'] ?>">Photos</a>
+                                        <a class="dropdown-item" href="vieworder.php">Orders</a>
                                     </div>
                                 </li>
                                 <?php if (isAdmin()) : ?>
@@ -143,25 +147,25 @@
                     </div>
 
                     <?php if (isLoggedIn()) : ?>
-                        <?php 
-                            $lists = generate_lists();
+                        <?php
+                        $lists = generate_lists();
                         ?>
                         <form action="" method="post">
                             <select name="selectedlist">
-                                <?php while($row1 = mysqli_fetch_array($lists)):;?>
-                                    <option value="<?php echo $row1[0];?>"><?php echo $row1[0];?></option>
-                                <?php endwhile;?>
-                            <select>
+                                <?php while ($row1 = mysqli_fetch_array($lists)):; ?>
+                                    <option value="<?php echo $row1[0]; ?>"><?php echo $row1[0]; ?></option>
+                                <?php endwhile; ?>
+                            </select>
                             <button type="submit" class="btn" name="add_to_list_btn">ADD TO LIST</button>
                         </form>
-                        
-                        <?php 
-                            if (isset($_POST['add_to_list_btn'])) {
-                                add_to_list($r_id);
-                            }
+
+                        <?php
+                        if (isset($_POST['add_to_list_btn'])) {
+                            add_to_list($r_id);
+                        }
                         ?>
                     <?php endif ?>
-                    
+
                 </div>
             </div>
         </div>
