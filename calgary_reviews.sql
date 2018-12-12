@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 06, 2018 at 08:02 AM
+-- Generation Time: Dec 12, 2018 at 10:34 PM
 -- Server version: 5.7.23
 -- PHP Version: 7.2.10
 
@@ -11,7 +11,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
-
+SET FOREIGN_KEY_CHECKS = 0;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -199,7 +199,9 @@ INSERT INTO `edits` (`edit_user`, `r_id`, `photoid`, `list_name`, `list_user`, `
 ('admin', 1, NULL, NULL, NULL, NULL, NULL, '2018-12-06 02:29:24'),
 ('admin', 1, NULL, NULL, NULL, NULL, NULL, '2018-12-06 02:35:20'),
 ('admin', 1, NULL, NULL, NULL, NULL, NULL, '2018-12-06 02:45:16'),
-('admin', 1, NULL, NULL, NULL, NULL, NULL, '2018-12-06 07:52:24');
+('admin', 1, NULL, NULL, NULL, NULL, NULL, '2018-12-06 07:52:24'),
+('admin', 1, NULL, NULL, NULL, NULL, NULL, '2018-12-10 23:12:38'),
+('admin', 1, NULL, NULL, NULL, NULL, NULL, '2018-12-12 22:32:27');
 
 -- --------------------------------------------------------
 
@@ -246,7 +248,7 @@ CREATE TABLE IF NOT EXISTS `food_item` (
 --
 
 INSERT INTO `food_item` (`food_item_name`, `price`, `picture_path`, `calories`, `r_id`) VALUES
-('Beer', 4.50, 'images\\restaurants\\1\\57.jpg', 400, 1),
+('Beer', 4.50, 'images\\restaurants\\1\\beer.jpg', 400, 1),
 ('Pizza', 10.00, 'images\\restaurants\\1\\pizza.jpg', 1000, 1);
 
 -- --------------------------------------------------------
@@ -274,7 +276,8 @@ CREATE TABLE IF NOT EXISTS `likes` (
 
 INSERT INTO `likes` (`user_id`, `photoid`, `list_name`, `list_user`) VALUES
 ('admin', 3, NULL, NULL),
-('admin', NULL, 'restaurants', 'admin');
+('admin', NULL, 'restaurants', 'admin'),
+('ThebigJob', NULL, 'Listt', 'ThebigJob');
 
 -- --------------------------------------------------------
 
@@ -298,6 +301,8 @@ CREATE TABLE IF NOT EXISTS `list` (
 --
 
 INSERT INTO `list` (`name`, `date_created`, `num_restaurants`, `user_id`) VALUES
+('favs', '2018-12-11 20:45:24', 0, 'abcd'),
+('Listt', '2018-12-12 09:07:48', 0, 'ThebigJob'),
 ('restaurants', '2018-12-06 03:43:11', 0, 'admin');
 
 -- --------------------------------------------------------
@@ -382,7 +387,8 @@ INSERT INTO `photo` (`photo_id`, `title`, `date_posted`, `category`, `file_path`
 (6, 'brewery.jpg', '2018-11-30 05:13:01', 'decor', 'images\\restaurants\\1\\brewery.jpg'),
 (7, 'download.jpg', '2018-11-30 06:06:35', 'decor', 'images\\restaurants\\3\\download.jpg'),
 (8, 'metal.png', '2018-12-02 03:53:41', 'decor', 'images\\restaurants\\1\\metal.png'),
-(14, '57.jpg', '2018-12-06 02:35:20', 'decor', 'images\\restaurants\\1\\57.jpg');
+(14, '57.jpg', '2018-12-06 02:35:20', 'decor', 'images\\restaurants\\1\\57.jpg'),
+(15, 'beer.jpg', '2018-12-10 23:12:38', 'decor', 'images\\restaurants\\1\\beer.jpg');
 
 -- --------------------------------------------------------
 
@@ -410,7 +416,7 @@ CREATE TABLE IF NOT EXISTS `restaurant` (
 --
 
 INSERT INTO `restaurant` (`r_id`, `name`, `location`, `wifi`, `delivery`, `alcohol`, `phone_num`, `website`, `pending`) VALUES
-(1, 'Minhas Micro Brewery', '1314 44 Avenue NE', 1, 0, 0, '231231321', 'http://minhasbrewery.com/minhas-micro-brewery-calgary', 0x30),
+(1, 'Minhas Micro Brewery', '1314 44 Avenue NE', 1, 0, 1, '231231321', 'http://minhasbrewery.com/minhas-micro-brewery-calgary', 0x30),
 (2, 'Kinjo Sushi', '5005 Dalhousie Drive NW Unit 415', 0, 0, 0, '(403) 452-8389', 'https://www.kinjosushiandgrill.com/', 0x30),
 (3, 'Iced tea hut', 'kelowna', 1, 1, 1, 'heheh', '', 0x30);
 
@@ -494,7 +500,8 @@ INSERT INTO `uploads` (`user_id`, `photoid`, `r_id`) VALUES
 ('admin', 4, 2),
 ('admin', 5, 1),
 ('admin', 6, 1),
-('ThebigJob', 7, 3);
+('ThebigJob', 7, 3),
+('admin', 15, 1);
 
 -- --------------------------------------------------------
 
@@ -526,7 +533,7 @@ INSERT INTO `user` (`username`, `password`, `date_joined`, `user_type`, `fname`,
 --
 -- Constraints for dumped tables
 --
-
+SET FOREIGN_KEY_CHECKS = 1;
 --
 -- Constraints for table `adds_to`
 --

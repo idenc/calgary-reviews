@@ -691,7 +691,7 @@ function get_num_restaurants()
     global $db;
 
     $query = "SELECT COUNT(*)
-              FROM restaurant";
+              FROM restaurant WHERE pending = '0'";
     $query = mysqli_query($db, $query);
     $query = mysqli_fetch_array($query);
     return $query[0];
