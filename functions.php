@@ -58,7 +58,7 @@ function register()
 
         if (isset($_POST['user_type'])) {
             $user_type = e($_POST['user_type']);
-            $query = "INSERT INTO user (username, user_type, password, fname, lname) 
+            $query = "INSERT INTO user (username, user_type, password, fname, lname)
 					  VALUES('$username', '$user_type', '$password', '$fname', '$lname')";
             $query = mysqli_query($db, $query);
             if ($query) {
@@ -68,7 +68,7 @@ function register()
                 array_push($errors, "Username already exists");
             }
         } else {
-            $query = "INSERT INTO user (username, user_type, password, fname, lname) 
+            $query = "INSERT INTO user (username, user_type, password, fname, lname)
 					  VALUES('$username', 'user', '$password', '$fname', '$lname')";
             $query = mysqli_query($db, $query);
 
@@ -344,7 +344,7 @@ EOT;
                                 </div>
                                 <div class="customer-rating">$rating / 5</div>
                             </div>
-                            <p class="customer-text">$content</p>          
+                            <p class="customer-text">$content</p>
                         </div>
 EOT;
         if (isAdmin()) {
@@ -475,7 +475,7 @@ function submit_review()
     $logged_in_user_id = $_SESSION['user']['username'];
 
     if (count($errors) == 0) {
-        $query = "INSERT INTO review (content, rating, r_id, user_id, cost) 
+        $query = "INSERT INTO review (content, rating, r_id, user_id, cost)
 				  VALUES('$review_content', $review_rating + 1, $r_id, '$logged_in_user_id',
 				   $review_cost)";
         $query = mysqli_query($db, $query);
@@ -785,7 +785,7 @@ function add_listing()
     if (count($errors) == 0) {
 
         if (isAdmin()) {
-            $query = "INSERT INTO restaurant (name, location, wifi, delivery, alcohol, phone_num, website, pending) 
+            $query = "INSERT INTO restaurant (name, location, wifi, delivery, alcohol, phone_num, website, pending)
 					  VALUES('$r_name', '$location', $wifi, $delivery, $alcohol, '$phone_num', '$website', 0)";
             $query = mysqli_query($db, $query);
             if ($query) {
@@ -800,7 +800,7 @@ function add_listing()
                 array_push($errors, mysqli_error($db));
             }
         } else {
-            $query = "INSERT INTO restaurant (name, location, wifi, delivery, alcohol, phone_num, website, pending) 
+            $query = "INSERT INTO restaurant (name, location, wifi, delivery, alcohol, phone_num, website, pending)
 					  VALUES('$r_name', '$location', $wifi, $delivery, $alcohol, '$phone_num', '$website', 1)";
             $query = mysqli_query($db, $query);
 
@@ -870,7 +870,7 @@ function handle_images($r_id, $is_food = false, $food_name = '', $food_price = '
         } else {
             $filename = basename($_FILES["pic$i"]["name"]);
             $filepath = addslashes($target_file);
-            $query = "INSERT INTO photo (title, category, file_path) 
+            $query = "INSERT INTO photo (title, category, file_path)
 					  VALUES('$filename', '$category', '$filepath')";
             $query = mysqli_query($db, $query);
 
@@ -880,12 +880,12 @@ function handle_images($r_id, $is_food = false, $food_name = '', $food_price = '
 
             $photo_id = mysqli_insert_id($db);
             $logged_in_user = $_SESSION['user']['username'];
-            $query = "INSERT INTO uploads (user_id, photoid, r_id) 
+            $query = "INSERT INTO uploads (user_id, photoid, r_id)
 					  VALUES('$logged_in_user', $photo_id, $r_id)";
             $query = mysqli_query($db, $query);
 
             if ($is_food) {
-                $query = "INSERT INTO food_item (food_item_name, price, picture_path, calories, r_id) 
+                $query = "INSERT INTO food_item (food_item_name, price, picture_path, calories, r_id)
 					  VALUES('$food_name', $food_price, '$filepath', $food_calories, $r_id)";
                 $query = mysqli_query($db, $query) or die(mysqli_error($db));
             }
@@ -1009,9 +1009,9 @@ function edit_listing()
         //Handle restaurant info update
         $query1 = "UPDATE restaurant
                   SET
-                  `name` = IF('" . $r_name . "' = '', name, '$r_name'), 
-                  `location` = IF('" . $location . "' = '', location, '$location'), 
-                  `wifi` = $wifi, 
+                  `name` = IF('" . $r_name . "' = '', name, '$r_name'),
+                  `location` = IF('" . $location . "' = '', location, '$location'),
+                  `wifi` = $wifi,
                   `delivery` = $delivery,
                   `alcohol` = $alcohol,
                   `phone_num` = IF('" . $phone_num . "' = '', phone_num, '$phone_num'),
@@ -1354,7 +1354,7 @@ EOT;
                     </div>
                     <div class="customer-rating">$user_rating / 5</div>
                     </div>
-                    <p class="customer-text">$user_review</p>          
+                    <p class="customer-text">$user_review</p>
                     </div>
                     </div>
                     <hr>
@@ -1497,7 +1497,7 @@ function create_list()
     global $db;
     $listname = e($_POST['listname']);
     $user_id = $_SESSION['user']['username'];
-    $query = "INSERT INTO list (name, num_restaurants, user_id) 
+    $query = "INSERT INTO list (name, num_restaurants, user_id)
 			  VALUES('$listname', 0, '$user_id')";
     $query = mysqli_query($db, $query) or die(mysqli_error($db));
 
@@ -1510,16 +1510,20 @@ function delete_list()
     $info = explode(';', $_POST['delete_list']);
     $list = $info[0];
     $user = $info[1];
-    // Delete from child table first to prevent froeign key constraint being violated
-    $query1 = "DELETE 
+    // Delete from child tables first to prevent froeign key constraint being violated
+    $query3 = "DELETE
+               FROM likes
+               WHERE list_name = '$list' AND list_user = '$user'";
+    $query1 = "DELETE
                FROM adds_to
                WHERE list_name = '$list' AND list_user = '$user'";
-    $query2 = "DELETE 
-               FROM list 
+    $query2 = "DELETE
+               FROM list
                WHERE name = '$list' AND user_id = '$user'";
+    $query3 = mysqli_query($db, $query3) or die(mysqli_error($db));
     $query1 = mysqli_query($db, $query1) or die(mysqli_error($db));
     $query2 = mysqli_query($db, $query2) or die(mysqli_error($db));
-    if ($query1 && $query2) {
+    if ($query1 && $query2 && $query3) {
         echo "List successfully deleted!";
     } else {
         echo "Error deleting list!";
@@ -1642,7 +1646,7 @@ function edit_list_name($new_name)
 function generate_list_restaurants($name)
 {
     global $db;
-    $query = "SELECT DISTINCT r.name, r.r_id 
+    $query = "SELECT DISTINCT r.name, r.r_id
               FROM restaurant AS r, adds_to AS a, list AS l
               WHERE r.r_id = a.r_id AND a.list_name = '$name'";
     $result = mysqli_query($db, $query) or die(mysqli_error($db));
@@ -1690,7 +1694,7 @@ function add_to_list($r_id)
     }
     if (empty($errors)) {
         $user_id = $_SESSION['user']['username'];
-        $query = "INSERT INTO adds_to (user_id, list_name, list_user, r_id) 
+        $query = "INSERT INTO adds_to (user_id, list_name, list_user, r_id)
         VALUES('$user_id', '$selectedlist', '$user_id', '$r_id')";
         $result = mysqli_query($db, $query) or die(mysqli_error($db));
         if ($result) {
