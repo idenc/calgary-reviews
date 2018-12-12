@@ -120,7 +120,7 @@ if (!isAdmin()) {
                                 global $db;
                                 $query = "SELECT COUNT(*)
                                           FROM restaurant
-                                          WHERE pending = 0x1";
+                                          WHERE pending = '1'";
                                 $query = mysqli_query($db, $query);
                                 $query = mysqli_fetch_array($query);
                                 echo "<p>$query[0] Results For <span>Pending Restaurants</span></p>";
