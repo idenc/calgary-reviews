@@ -1473,7 +1473,7 @@ function show_pic_likes($pic_id)
     global $db;
 
     $query = "SELECT COUNT(*)
-              FROM LIKES
+              FROM likes
               WHERE photoid = $pic_id";
     $query = mysqli_query($db, $query);
     if ($query) {
@@ -1580,17 +1580,18 @@ function get_list_likes($list, $user)
 {
     global $db;
 
+
     $query = "SELECT COUNT(*)
-              FROM LIKES
+              FROM likes
               WHERE list_name = '$list' AND list_user = '$user'";
-    $query = mysqli_query($db, $query);
+    $query = mysqli_query($db, $query) or die(mysqli_error($db));
     if ($query) {
         $temp = mysqli_fetch_array($query);
         $num_likes = $temp[0];
         return $num_likes;
     } else {
-        echo "Could not find likes for this list";
-        return -1;
+        $num_likes = 0;
+        return $num_likes;
     }
 }
 
