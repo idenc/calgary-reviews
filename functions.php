@@ -1630,14 +1630,15 @@ function edit_list_name($new_name)
 {
     global $db;
     $list = $_POST['edit_list_name'];
-    // Update adds_to first so that foreign key constraint is not voilated
-    $query1 = "UPDATE adds_to SET list_name = '$new_name' WHERE list_name = '$list' ";
-    $query2 = "UPDATE list SET name = '$new_name' WHERE name = '$list' ";
-    $result1 = mysqli_query($db, $query1) or die(mysqli_error($db));
-    $result2 = mysqli_query($db, $query2) or die(mysqli_error($db));
-    if ($result1 && $result2) {
+    mysqli_query($db, "START TRANSACTION");
+    // Update adds_to first so that foreign key constraint is not violated
+    $query = "UPDATE list SET name = '$new_name' WHERE name = '$list' ";
+    $query = mysqli_query($db, $query) or die(mysqli_error($db));
+    if ($query) {
+        mysqli_query($db, "COMMIT");
         echo "List name edited successfully!";
     } else {
+        mysqli_query($db, "ROLLBACK");
         echo "Error editing list name";
     }
 }

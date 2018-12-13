@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 12, 2018 at 10:34 PM
+-- Generation Time: Dec 13, 2018 at 08:55 PM
 -- Server version: 5.7.23
 -- PHP Version: 7.2.10
 
@@ -11,7 +11,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
-SET FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS=0;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS `adds_to` (
   `list_user` varchar(100) NOT NULL,
   `r_id` int(255) NOT NULL,
   PRIMARY KEY (`user_id`,`list_name`,`r_id`),
-  KEY `list_name` (`list_name`,`list_user`),
-  KEY `r_id` (`r_id`)
+  KEY `r_id` (`r_id`),
+  KEY `adds_to_ibfk_2` (`list_name`,`list_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS `adds_to` (
 --
 
 INSERT INTO `adds_to` (`user_id`, `list_name`, `list_user`, `r_id`) VALUES
-('admin', 'restaurants', 'admin', 1),
-('admin', 'restaurants', 'admin', 2);
+('admin', 'abc', 'admin', 1),
+('admin', 'abc', 'admin', 2);
 
 -- --------------------------------------------------------
 
@@ -265,9 +265,9 @@ CREATE TABLE IF NOT EXISTS `likes` (
   `list_user` varchar(100) DEFAULT NULL,
   UNIQUE KEY `user_id_3` (`user_id`,`photoid`),
   UNIQUE KEY `user_id_2` (`user_id`,`list_name`,`list_user`) USING BTREE,
-  KEY `list_name` (`list_name`,`list_user`),
   KEY `photoid` (`photoid`),
-  KEY `user_id` (`user_id`) USING BTREE
+  KEY `user_id` (`user_id`) USING BTREE,
+  KEY `likes_ibfk_2` (`list_name`,`list_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -276,7 +276,7 @@ CREATE TABLE IF NOT EXISTS `likes` (
 
 INSERT INTO `likes` (`user_id`, `photoid`, `list_name`, `list_user`) VALUES
 ('admin', 3, NULL, NULL),
-('admin', NULL, 'restaurants', 'admin'),
+('admin', NULL, 'abc', 'admin'),
 ('ThebigJob', NULL, 'Listt', 'ThebigJob');
 
 -- --------------------------------------------------------
@@ -293,7 +293,7 @@ CREATE TABLE IF NOT EXISTS `list` (
   `user_id` varchar(100) NOT NULL,
   PRIMARY KEY (`name`,`user_id`),
   UNIQUE KEY `date_created` (`date_created`),
-  KEY `user_id` (`user_id`)
+  KEY `list_ibfk_1` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -301,9 +301,9 @@ CREATE TABLE IF NOT EXISTS `list` (
 --
 
 INSERT INTO `list` (`name`, `date_created`, `num_restaurants`, `user_id`) VALUES
+('abc', '2018-12-06 03:43:11', 0, 'admin'),
 ('favs', '2018-12-11 20:45:24', 0, 'abcd'),
-('Listt', '2018-12-12 09:07:48', 0, 'ThebigJob'),
-('restaurants', '2018-12-06 03:43:11', 0, 'admin');
+('Listt', '2018-12-12 09:07:48', 0, 'ThebigJob');
 
 -- --------------------------------------------------------
 
@@ -539,7 +539,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 --
 ALTER TABLE `adds_to`
   ADD CONSTRAINT `adds_to_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`username`),
-  ADD CONSTRAINT `adds_to_ibfk_2` FOREIGN KEY (`list_name`,`list_user`) REFERENCES `list` (`name`, `user_id`),
+  ADD CONSTRAINT `adds_to_ibfk_2` FOREIGN KEY (`list_name`,`list_user`) REFERENCES `list` (`name`, `user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `adds_to_ibfk_3` FOREIGN KEY (`r_id`) REFERENCES `restaurant` (`r_id`);
 
 --
@@ -593,14 +593,14 @@ ALTER TABLE `food_item`
 --
 ALTER TABLE `likes`
   ADD CONSTRAINT `likes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`username`),
-  ADD CONSTRAINT `likes_ibfk_2` FOREIGN KEY (`list_name`,`list_user`) REFERENCES `list` (`name`, `user_id`),
+  ADD CONSTRAINT `likes_ibfk_2` FOREIGN KEY (`list_name`,`list_user`) REFERENCES `list` (`name`, `user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `likes_ibfk_3` FOREIGN KEY (`photoid`) REFERENCES `photo` (`photo_id`);
 
 --
 -- Constraints for table `list`
 --
 ALTER TABLE `list`
-  ADD CONSTRAINT `list_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`username`);
+  ADD CONSTRAINT `list_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `made_from`
